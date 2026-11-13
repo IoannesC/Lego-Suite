@@ -50,7 +50,9 @@ Opciones Avanzadas: Polling de TDP en segundo plano, perfiles AC, undervolt expe
 
 ### 2. Controles (Mandos e Iluminación)
 
-Iluminación RGB de Controles**: Control del LED de encendido y anillos RGB de los mandos (modos Solid, Dynamic, Pulse, Spiral, brillo, velocidad, tono/hue y perfiles por juego).
+Iluminación RGB de Controles: Control del LED de encendido y anillos RGB de los mandos (modos Solid, Dynamic, Pulse, Spiral, brillo, velocidad, tono/hue y perfiles por juego).
+
+Sincronización con el plugin CSS Loader y el complemento Color Toggles: Al deslizar la iluminación del led de los mandos (En solido ó pulso) se cambia en tiempo real el acento del tema de la interfaz del Gamescope. 
 
 Remapeo de Botones y Giroscopio**: Asignación de botones traseros (`Y1`, `Y2`, `Y3`, `M2`, `M3`), activación/desactivación del Touchpad y remapeo de giroscopios izquierdo/derecho por juego.
 
