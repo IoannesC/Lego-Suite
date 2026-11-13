@@ -4,7 +4,7 @@
   "description": "LeGO Suite v0.198 - TDP, Power, Fan & Controller Suite for Lenovo Legion Go",
   "type": "module",
   "scripts": {
-    "build": "./scripts/build_i18n_json.sh && rollup -c",
+    "build": "node ./scripts/build_i18n_json.mjs && rollup -c",
     "watch": "rollup -c -w",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
