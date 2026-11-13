@@ -2,7 +2,13 @@
 
 ### LeGO Suite v0.198
 
-LeGO Suite es la suite integral de control de energía, ventilación, eGPU e interfaz de mandos para Lenovo Legion Go en Decky Loader y modo escritorio.
+LeGO Suite es la suite integral de control para sacarle el mayor provecho a tu Legion Go en Linux. 
+
+### Sin vinculación directa o indirecta con ninguna marca registrada. No tiene afiliación ni relación ninguna con Lenovo ni con ninguna otra empresa. 
+
+### Descargo de responsabilidad
+El uso de este software es responsabilidad de quien lo utiliza. Carece de cualquier tipo de garantía y es el usuario el único responsable para todos los efectos conducentes.
+
 
 ### Notas sobre la v0.198:
 Está probada y funciona correctamente en mi Lenovo Legion Go Gen 1, Z1 Extreme con 16Gb de RAM. No tengo acceso a otros dispositivos. Si llego a conseguir ponerle las manos encima a otro dispositivo o a otra máquina de Lenovo, con gusto optimizaré para esos sistemas; o en su defecto testers con otras máquinas. Por el momento si necesitas probarlo en tu equipo que no es Lenovo Legion Go Gen 1, hazlo por tu propia iniciativa.
@@ -12,7 +18,7 @@ Me gustaría agregar más opciones y más funcionalidades utiles, poco a poco lo
 
 Hay dos aplicaciones en una. Un práctico Plugin para Decky y una aplicación para escritorio. Puedes utilizar el plugin para Decky sin necesidad de descargar e instalar la aplicación de escritorio. Pero ambas de complementan y te ofrecen más opciones. 
 
-1. TDP (Energía y Ventilación).
+### 1. TDP (Energía y Ventilación).
    
 Control de TDP**: Ajuste de TDP global y por juego (WMI de Lenovo y `ryzenadj`).
 Control de GPU y eGPU**: Modos Batería, Balance, Rango de frecuencias, Frecuencia fija y detección/integración con eGPUs externas.
