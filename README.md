@@ -20,7 +20,7 @@ Hay dos aplicaciones en una. Un práctico Plugin para Decky y una aplicación pa
 
 ### <div align="center"> LeGO Suite Versión Decky Plugin </div>
 
-<img width="326" height="449" alt="f1" src="https://github.com/user-attachments/assets/7a841a7f-e3e5-43b3-bef9-b6c555a5b6a4" />
+<div align="center"> <img width="326" height="449" alt="f1" src="https://github.com/user-attachments/assets/7a841a7f-e3e5-43b3-bef9-b6c555a5b6a4" /> </div>
 
 
 
