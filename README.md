@@ -32,8 +32,10 @@ Opcionales:
 
 Input Plumber para la gestión y emulación de perfiles de los mandos (No Handheld Daemon).
 En ciertas distros, habría que liberar de una regla Udev que secuestra el acelerometro de la pantalla -Y su conveniente uso como tablet vertical- para Input Plumber (Lo utiliza como acelerometro de los mandos, pero es inutil, dado que puede coexistir el uso por Input Plumber sin esa regla). 
+
 CSS Loader en Decky y el complemento Color Toggles.
-Allwaysegpu para utilizar la eGPU en Gamescope sin latencia de regreso al utilizar el HDMI de la GPU
+
+Allwaysegpu para utilizar la eGPU en Gamescope sin latencia de regreso al utilizar el HDMI de la GPU (CachyOS).
 
 ### Notas sobre la v0.198:
 Está probada y funciona correctamente en mi **Lenovo Legion Go Gen 1, Z1 Extreme con 16Gb de RAM en CachyOS con kernel LTS.** No tengo acceso a otros dispositivos. Si llego a conseguir ponerle las manos encima a otro dispositivo o a otra máquina de Lenovo, con gusto optimizaré para esos sistemas; o en su defecto testers con otras máquinas. Por el momento si necesitas probarlo en tu equipo que no es Lenovo Legion Go Gen 1, hazlo por tu propia iniciativa.
