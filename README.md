@@ -29,8 +29,11 @@ Control de TDP: Ajuste de TDP global y por juego (WMI de Lenovo y `ryzenadj`).
 Control de GPU: Modos Batería, Balance, Rango de frecuencias, Frecuencia fija y detección/integración con eGPUs externas.
 
 Perfiles personalizados si se está conectado a una eGPU:
-Novedad implementada en v0.198
-<img width="849" height="1077" alt="Captura de pantalla_20261113_093423" src="https://github.com/user-attachments/assets/c9313848-24c4-469a-8ba2-d30daa728c61" />
+
+Implementada en v0.198
+
+<img width="849" height="1077" alt="Captura de pantalla_20261113_093423" src="https://github.com/user-attachments/assets/53a69ea0-f8cf-41ce-984d-83c41474cec9" />
+
 Al conectar una eGPU, el Plugin detecta en tiempo real la conexión, y si activas la opción, te permite crear perfiles de TDP exclusivos con la eGPU conectada. 
 
 Perfiles específicos de TDP por juego, por juegos con carga al alimentador de corriente y con eGPU conectada (Excluyentes entre sí). 
