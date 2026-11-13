@@ -94,7 +94,7 @@ Y otras opciones más que podrás descubrir por ti mismo.
 
 <div align="center">  <img width="368" height="307" alt="f2" src="https://github.com/user-attachments/assets/e8ab1454-5ddc-4f9e-9cd4-84a83304eb3e" /> </div>
 
-Ofrece la misma funcionalidad del plugin, pero sin pefiles específicos. Utiliza y modifica el perfil predeterminado del Gamescope al estar en el escritorio y poder modificar el tiempo real del mismo (Si utilizamos aplicaciones de diseño o productividad que requieren cierta potencia, y no queremos regresar a Decky). En el apartado Pantalla, puede inyectar las coordenadas correctas de la pantalla de la Legion Go, para utilizarla como Tablet y activar el giro automático según la posición de la misma.
+Ofrece la misma funcionalidad del plugin, pero sin perfiles específicos. Utiliza y modifica el perfil predeterminado del Gamescope al estar en el escritorio y poder modificar en tiempo real el mismo (Si utilizamos aplicaciones de diseño o productividad que requieren cierta potencia, y no queremos regresar a Decky). En el apartado Pantalla, puede inyectar las coordenadas correctas de la pantalla de la Legion Go, para utilizarla como Tablet y activar el giro automático según la posición de la misma.
 
 ## Agradecimientos y Créditos (Credits & Acknowledgments)
 
