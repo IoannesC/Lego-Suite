@@ -271,4 +271,5 @@ Este proyecto se basa e inspira en el excelente trabajo de la comunidad de Decky
 Muchas gracias a todos los autores, mantenedores y contribuidores de estos proyectos de código abierto.
 
 </details>
-[![Invítame un café](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/ioannesc)
+
+<script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js" data-name="bmc-button" data-slug="ioannesc" data-color="#FFDD00" data-emoji="☕" data-font="Cookie" data-text="Buy me a coffee" data-outline-color="#000000" data-font-color="#000000" data-coffee-color="#ffffff" ></script>
