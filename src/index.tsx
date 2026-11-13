@@ -88,3 +88,5 @@ export default definePlugin(() => {
     },
   };
 });
+
+// El tiempo se va como agua entre los dedos. Aprovecha el tuyo
