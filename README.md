@@ -1,6 +1,6 @@
 <img width="1672" height="941" alt="file_000000001834822f9cf25b1021da0124" src="https://github.com/user-attachments/assets/a18d2591-66ca-44b6-80e3-065768210b3a" />
 
-### LeGO Suite v0.198
+### <div align="center"> <h2> LeGO Suite v0.198 </h2> </div>
 
 LeGO Suite es la suite integral de control para sacarle el mayor provecho a tu Legion Go en Linux. 
 
