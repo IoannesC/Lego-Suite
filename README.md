@@ -8,6 +8,7 @@ LeGO Suite is the all-in-one control suite designed to get the most out of your 
 
 ### Disclaimer
 The use of this software is at the user's own risk. It comes without any kind of warranty, and the user is solely responsible for all resulting effects and consequences.
+Part of this code was developed with the help of AI assistants. Everything was reviewed and tested on a Legion Go.
 
 **Dependencies and Requirements:**
 
@@ -120,6 +121,8 @@ LeGO Suite es la suite integral de control para sacarle el mayor provecho a tu L
 
 ### Descargo de responsabilidad
 El uso de este software es responsabilidad de quien lo utiliza. Carece de cualquier tipo de garantía y es el usuario el único responsable para todos los efectos conducentes.
+
+Parte de este código se desarrolló con ayuda de asistentes de IA. Todo fue revisado y probado en una Legion Go.
 
 **Dependencias y requerimientos:**
 
