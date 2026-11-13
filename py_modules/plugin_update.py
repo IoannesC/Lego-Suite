@@ -22,7 +22,6 @@ def sync_from_scratch():
     scratch_dir = os.environ.get("LEGO_SUITE_DEV_DIR", os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     plugin_dir = os.environ.get("DECKY_PLUGIN_DIR", os.path.expanduser("~/homebrew/plugins/LeGO Suite"))
     if os.path.exists(scratch_dir) and os.path.exists(plugin_dir):
-      # Copy files and ensure permissions
       cmd = f'rsync -av --no-perms --no-owner --no-group "{scratch_dir}/" "{plugin_dir}/" && chmod -R u+rwX,go+rX "{plugin_dir}"'
       res = subprocess.run(cmd, shell=True, check=True, capture_output=True, text=True)
       decky_plugin.logger.info(f"sync_from_scratch output: {res.stdout}")

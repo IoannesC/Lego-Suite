@@ -98,7 +98,6 @@ def get_saved_settings():
     setting_file.read()
     settings = setting_file.settings
 
-    # Combine profiles from the 3 dedicated JSON files
     tdp_data = _read_json_file(tdp_path)
     tdpac_data = _read_json_file(tdpac_path)
     tdpegpu_data = _read_json_file(tdpegpu_path)
@@ -149,7 +148,6 @@ def merge_tdp_profiles(tdp_profiles):
     if tdpegpu_changed:
         _write_json_file(tdpegpu_path, tdpegpu_data)
 
-    # Clean up tdpProfiles from settings.json if present
     if 'tdpProfiles' in setting_file.settings:
         del setting_file.settings['tdpProfiles']
         setting_file.commit()
@@ -172,7 +170,6 @@ def bootstrap_profile(game_id):
         profiles = _read_json_file(tdpegpu_path)
         default_profile = profiles.get('default-egpu')
         if not default_profile:
-            # fallback to base default
             base = _read_json_file(tdp_path)
             default_profile = base.get('default')
         if default_profile and not profiles.get(key):
@@ -243,21 +240,18 @@ def get_nested_setting(path):
     return result
 
 def clear_game_profiles():
-    # Eliminar completamente tdp.json del disco
     try:
         if tdp_path.exists():
             tdp_path.unlink()
     except Exception:
         pass
 
-    # Asegurar que settings.json no contenga tdpProfiles
     if 'tdpProfiles' in setting_file.settings:
         del setting_file.settings['tdpProfiles']
         setting_file.commit()
     return True
 
 def clear_ac_profiles():
-    # Eliminar completamente tdpac.json del disco
     try:
         if tdpac_path.exists():
             tdpac_path.unlink()
@@ -270,7 +264,6 @@ def clear_ac_profiles():
     return True
 
 def clear_egpu_profiles():
-    # Eliminar completamente tdpegpu.json del disco
     try:
         if tdpegpu_path.exists():
             tdpegpu_path.unlink()

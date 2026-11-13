@@ -7,7 +7,6 @@ class TimeoutException(Exception): pass
 @contextmanager
 def time_limit(seconds):
   if threading.current_thread() is not threading.main_thread():
-    # SIGALRM only works on the main thread; skip timeout
     yield
     return
 

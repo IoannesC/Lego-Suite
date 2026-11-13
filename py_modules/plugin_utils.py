@@ -13,7 +13,6 @@ SCALING_DRIVER = get_scaling_driver()
 def set_values_for_game_id(game_id):
   tdp_profile = get_tdp_profile(game_id)
   if tdp_profile:
-    # If game profile has a saved thermal/tdpMode, apply it
     saved_mode = tdp_profile.get('tdpMode')
     if saved_mode:
       import legion_space
@@ -26,7 +25,6 @@ def set_values_for_game_id(game_id):
 def set_values_for_tdp_profile(tdp_profile, set_tdp = True, set_gpu = True, set_governor = True):
   charge_limit.initialize_charge_limit()
   
-  # Check if a non-custom thermal mode is active (Quiet, Balanced, Performance)
   from plugin_settings import get_saved_settings
   settings = get_saved_settings()
   current_tdp_mode = str(tdp_profile.get('tdpMode') or settings.get('tdpMode') or 'custom').lower()
@@ -37,8 +35,6 @@ def set_values_for_tdp_profile(tdp_profile, set_tdp = True, set_gpu = True, set_
     if set_gpu:
       set_gpu_for_tdp_profile(tdp_profile)
   else:
-    # If in a preset mode (Quiet/Balanced/Performance), DO NOT apply custom WMI TDP
-    # because lenovo.set_tdp forces the platform profile to 'custom' (purple LED)!
     pass
 
   profile = tdp_profile
@@ -57,7 +53,6 @@ def set_values_for_tdp_profile(tdp_profile, set_tdp = True, set_gpu = True, set_
   set_smt_for_tdp_profile(profile)
   set_cpu_boost_for_tdp_profile(profile)
 
-  # if user has manual CPU controls disabled, use default CPU profile instead
   if not manual_cpu_management_enabled:
     profile = power_utils.DEFAULT_CPU_PROFILE
 
@@ -78,8 +73,6 @@ def set_power_governor_for_tdp_profile(tdp_profile):
       SCALING_DRIVER == ScalingDrivers.PSTATE_EPP.value or
       SCALING_DRIVER == ScalingDrivers.INTEL_PSTATE.value
     ):
-      # epp cannot be changed when governor is performance
-      # this is to handle for all other governor options
       sleep(0.3)
       set_epp_for_tdp_profile(tdp_profile)
 
@@ -174,7 +167,6 @@ def persist_gpu(minGpuFrequency, maxGpuFrequency, game_id):
     profile_contents["minGpuFrequency"] = minGpuFrequency
     profile_contents["maxGpuFrequency"] = maxGpuFrequency
   else:
-    # invalid, return
     return
   profile_contents['gpuMode'] = gpu_mode
 

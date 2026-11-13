@@ -119,7 +119,7 @@ export const InputPlumberSubmenu: React.FC<{
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-      {/* Back button header */}
+      {}
       <div
         onClick={onBack}
         style={{
@@ -183,7 +183,7 @@ export const InputPlumberSubmenu: React.FC<{
           </div>
         )}
 
-        {/* Emulation Mode */}
+        {}
         <DeckyRow>
           <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: "4px" }}>
             <label style={{ fontSize: "12px", color: "#9ca3af", fontWeight: 600 }}>
@@ -199,7 +199,7 @@ export const InputPlumberSubmenu: React.FC<{
           </div>
         </DeckyRow>
 
-        {/* Profiles section */}
+        {}
         <div style={{ borderTop: "1px solid rgba(255, 255, 255, 0.08)", paddingTop: "10px" }}>
           <div style={{ fontSize: "12px", fontWeight: 700, color: "#e2e8f0", marginBottom: "8px" }}>
             {isEs ? "Perfiles de Mapeo Rápido" : "Quick Mapping Profiles"}
@@ -226,7 +226,7 @@ export const InputPlumberSubmenu: React.FC<{
           })}
         </div>
 
-        {/* Reset Controllers Section (HHD inspired) */}
+        {}
         <div style={{ borderTop: "1px solid rgba(255, 255, 255, 0.08)", paddingTop: "12px" }}>
           <button
             onClick={handleResetControllers}

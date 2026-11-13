@@ -6,14 +6,11 @@ import base64
 
 def get_theme_candidates() -> list:
     candidates = []
-    # 1. Decky env var
     env_dir = os.environ.get("DECKY_PLUGIN_SETTINGS_DIR")
     if env_dir:
-        # e.g. /home/deck/homebrew/settings/LeGO Suite -> /home/deck/homebrew/themes
         homebrew_root = os.path.abspath(os.path.join(env_dir, "..", ".."))
         candidates.append(os.path.join(homebrew_root, "themes", "Colored Toggles"))
     
-    # 2. Standard system locations
     candidates.extend([
         os.path.expanduser("~/homebrew/themes/Colored Toggles"),
         os.path.expanduser("~/.local/share/Steam/steamui/themes/Colored Toggles"),
@@ -93,7 +90,6 @@ def sync_colored_toggles_color(hue: int) -> bool:
     """
     color_val = f"hsla({int(hue) % 360}, 100%, 50%, 1)"
 
-    # 1. Persistent write across any found candidate folder
     for theme_dir in get_theme_candidates():
         if not os.path.isdir(theme_dir):
             continue
@@ -120,7 +116,6 @@ def sync_colored_toggles_color(hue: int) -> bool:
         except Exception:
             pass
 
-    # 2. Instant live injection into Steam CEF (QuickAccess, MainMenu, SP)
     js_inject = f"""
     (function() {{
         let s = document.getElementById('lego-colored-toggles-live');

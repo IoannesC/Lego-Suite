@@ -52,7 +52,6 @@ def get_gpu_frequency_range():
 def set_gpu_frequency(current_game_id):
   if device_utils.is_intel():
     return
-    # set_intel_gpu_frequency(current_game_id)
   else:
     set_amd_gpu_frequency(current_game_id)
 
@@ -73,7 +72,6 @@ def set_intel_gpu_frequency_range(new_min, new_max):
   env = os.environ.copy()
   env["LD_LIBRARY_PATH"] = ""
 
-  # intel only supports setting GPU clocks, no auto/high/low
   max_cmd = 'ls /sys/class/drm/card*/gt_RP0_freq_mhz'
   max_result = subprocess.run(max_cmd, shell=True, check=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env)
   max_gpu_filepath = max_result.stdout.strip()
@@ -106,7 +104,6 @@ def set_amd_gpu_frequency(current_game_id):
 
   if gpu_mode == GpuModes.BALANCE.value:
     try:
-      # change back to auto
       decky_plugin.logger.error(f"{__name__} set balance")
       set_gpu_level(GpuLevel.AUTO.value)
       return True
@@ -136,9 +133,7 @@ def set_gpu_frequency_range(new_min: int, new_max: int):
     return
 
   if device_utils.is_intel():
-    # set_intel_gpu_frequency_range(new_min, new_max)
 
-    # intel doesn't support manual GPU clocks on iGPU
     return False
   else:
     return set_amd_gpu_frequency_range(new_min, new_max)
@@ -147,8 +142,6 @@ def set_amd_gpu_frequency_range(new_min, new_max):
   try:
     min, max = get_gpu_frequency_range()
 
-    # decky_plugin.logger.info(f'{new_min} {new_max}')
-    # decky_plugin.logger.info(f'{min} {max}')
 
     if not (new_min >= min and new_max <= max and new_min <= new_max):
       if (new_min == 0 and new_max == 0):
@@ -185,12 +178,9 @@ def set_amd_gpu_frequency_range(new_min, new_max):
 
 def get_intel_gpu_clocks():
   try:
-    # legacy i915 layout
     max_files = glob.glob("/sys/class/drm/card?/gt_max_freq_mhz")
     min_files = glob.glob("/sys/class/drm/card?/gt_min_freq_mhz")
 
-    # xe driver layout (Arc / Core Ultra iGPUs): no gt_*_freq_mhz at card root,
-    # frequencies live under device/tile*/gt*/freq*/{min,max}_freq
     if not (max_files and min_files):
       max_files = glob.glob("/sys/class/drm/card?/device/tile*/gt*/freq*/max_freq")
       min_files = glob.glob("/sys/class/drm/card?/device/tile*/gt*/freq*/min_freq")
@@ -220,7 +210,6 @@ def execute_gpu_frequency_command(command):
         file.write(command)
         file.close()
     else:
-      # fallback to subprocess
       cmd = f"echo '{command}' | tee {GPU_FREQUENCY_PATH}"
       result = subprocess.run(cmd, shell=True, check=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=get_env())
   except Exception as e:

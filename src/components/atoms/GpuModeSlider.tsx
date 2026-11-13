@@ -17,12 +17,12 @@ const GpuModeSlider: FC<{ showSeparator: boolean }> = ({ showSeparator }) => {
   const isIntel = useIsIntel();
 
   if (isIntel) {
-    // intel doesn't support different GPU modes, only gpu freq
+    
     return null;
   }
 
   const handleSliderChange = (value: number) => {
-    // enum does reverse mapping, including value to key
+    
     return setGpuMode(Mode[value]);
   };
 
@@ -36,7 +36,7 @@ const GpuModeSlider: FC<{ showSeparator: boolean }> = ({ showSeparator }) => {
       };
     });
 
-  // known bug: typescript has incorrect type for reverse mapping from enums
+  
   const sliderValue = Mode[gpuMode] as any;
 
   return (

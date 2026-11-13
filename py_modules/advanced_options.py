@@ -49,7 +49,6 @@ class SteamDeckSettings(Enum):
   DECK_CUSTOM_GPU_MAX_ENABLED = 'deckCustomGpuMaxEnabled'
   DECK_CUSTOM_GPU_MAX = 'deckCustomGpuMax'
 
-# e.g. get_setting(LegionGoSettings.CUSTOM_TDP_MODE.value)
 def get_setting(setting_name = ''):
   return get_nested_setting(f'advanced.{setting_name}')
 
@@ -90,7 +89,6 @@ def get_default_options():
   options.append(enable_tdp_control)
 
   if not device_utils.is_intel():
-    # GPU controls on AMD only
     enable_gpu_control = {
       'name': t('ADVANCED_ENABLE_GPU_CONTROLS', 'Enable GPU Controls'),
       'nameKey': 'ADVANCED_ENABLE_GPU_CONTROLS',
@@ -195,34 +193,9 @@ def get_default_options():
 
   options.append(max_tdp_on_ac_power)
 
-  # if charge_limit.supports_charge_limit():
-  #   range, default_value, step = charge_limit.get_range_info()
 
-  #   options.append({
-  #     'name': t('ADVANCED_ENABLE_CHARGE_LIMIT', 'Enable Battery Charge Limit'),
-  #     'type': AdvancedOptionsType.BOOLEAN.value,
-  #     'defaultValue': False,
-  #     'currentValue': get_value(DefaultSettings.ENABLE_CHARGE_LIMIT, False),
-  #     'statePath': DefaultSettings.ENABLE_CHARGE_LIMIT.value
-  #   })
 
-  #   set_charge_limit_option = {
-  #     'name': t('ADVANCED_SET_CHARGE_LIMIT', 'Set Battery Charge Limit'),
-  #     'type': AdvancedOptionsType.NUMBER_RANGE.value,
-  #     'range': range,
-  #     'defaultValue': default_value,
-  #     'step': step,
-  #     'valueSuffix': '%',
-  #     'description': t('ADVANCED_SET_CHARGE_LIMIT_DESC', 'Sets max battery limit'),
-  #     'currentValue': get_number_value(DefaultSettings.CHARGE_LIMIT, default_value),
-  #     'statePath': DefaultSettings.CHARGE_LIMIT.value,
-  #     'disabled': {
-  #       'ifFalsy': [DefaultSettings.ENABLE_CHARGE_LIMIT.value],
-  #       'hideIfDisabled': True
-  #     }
-  #   }
 
-  #   options.append(set_charge_limit_option)
 
   enable_background_polling = {
     'name': t('ADVANCED_ENABLE_BACKGROUND_POLLING', 'Enable Background Polling'),
@@ -289,7 +262,6 @@ def get_default_options():
 
 
   if not device_utils.is_intel():
-    # enable apu-slow-limit control
     enable_apu_slow_limit = {
       'name': t('ADVANCED_ENABLE_APU_SLOW_LIMIT', 'Enable APU Slow Limit'),
       'nameKey': 'ADVANCED_ENABLE_APU_SLOW_LIMIT',

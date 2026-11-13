@@ -19,7 +19,7 @@ import logo from "../assets/Icon.png";
 export default definePlugin(() => {
   initializePollingStore(store);
 
-  // fetch settings from backend, send into redux state
+  
   getSettings().then((result) => {
     const results = (result || {}) as Record<string, any>;
 

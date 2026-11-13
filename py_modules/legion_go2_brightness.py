@@ -18,7 +18,6 @@ _watcher_running = False
 _last_brightness_value = -1
 _gamescope_user = None
 
-# libX11 handle (loaded once)
 _libX11 = None
 _x11_setup_done = False
 
@@ -82,7 +81,6 @@ def _find_gamescope_user():
     if _gamescope_user is not None:
         return _gamescope_user
 
-    # Try /proc scan for gamescope process
     try:
         for entry in os.listdir("/proc"):
             if not entry.isdigit():
@@ -103,7 +101,6 @@ def _find_gamescope_user():
     except Exception as e:
         decky_plugin.logger.error(f"/proc scan failed: {e}")
 
-    # Fallback: use X11 socket owner
     try:
         stat = os.stat("/tmp/.X11-unix/X0")
         if stat.st_uid != 0:
@@ -124,7 +121,7 @@ def _read_max_brightness():
             return int(f.read().strip())
     except OSError as e:
         decky_plugin.logger.error(f"Failed to read max brightness: {e}")
-        return 471000  # fallback default for LGo2
+        return 471000
 
 
 def _read_brightness():
@@ -163,8 +160,6 @@ def set_gamescope_brightness(nits):
 
     user_info = _find_gamescope_user()
 
-    # Switch to gamescope user's credentials before opening the display.
-    # We need to switch and switch back since this runs in the main process.
     original_uid = os.getuid()
     original_gid = os.getgid()
     original_groups = os.getgroups()
@@ -189,10 +184,8 @@ def set_gamescope_brightness(nits):
             atom = lib.XInternAtom(display, atom_name, 0)
             cardinal = lib.XInternAtom(display, b"CARDINAL", 0)
 
-            # Pack the value as a 32-bit array (one element)
             data = (ctypes.c_ubyte * 4)(*struct.pack('I', int_val))
 
-            # PropModeReplace = 0, format = 32, nelements = 1
             lib.XChangeProperty(display, root, atom, cardinal, 32, 0, data, 1)
             lib.XFlush(display)
         finally:
@@ -227,7 +220,7 @@ async def backlight_watcher_loop():
     )
 
     while _watcher_running:
-        await asyncio.sleep(0.05)  # 50ms polling
+        await asyncio.sleep(0.05)
 
         bl_value = _read_brightness()
         if bl_value is None or bl_value == _last_brightness_value:

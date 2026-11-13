@@ -186,7 +186,6 @@ def set_controller_mode(mode: str) -> bool:
         target_gamepad = "xbox-elite" if mode == "default" else mode
         ok = False
 
-        # 1. Primary: Use InputPlumber CLI (direct D-Bus daemon invocation, reliable)
         if os.path.isfile("/usr/bin/inputplumber"):
             try:
                 paths = get_composite_device_paths()
@@ -200,7 +199,6 @@ def set_controller_mode(mode: str) -> bool:
             except Exception as e:
                 decky_plugin.logger.warning(f"CLI targets set note: {e}")
 
-        # 2. Secondary fallback: D-Bus SetTargetDevices call
         if not ok:
             paths = get_composite_device_paths()
             args = f'4 "{target_gamepad}" mouse keyboard touchpad'
@@ -278,12 +276,10 @@ def apply_active_profiles(active_profile_ids: list = None) -> bool:
     decky_plugin.logger.info(f"Applying active profiles to InputPlumber: {active_profile_ids}")
     paths = get_composite_device_paths()
 
-    # Case 1: No active profiles -> Restore default system profile
     if not active_profile_ids:
         default_path = DEFAULT_SYSTEM_PROFILE if os.path.isfile(DEFAULT_SYSTEM_PROFILE) else None
         overall_ok = False
         for path in paths:
-            # 1. Try D-Bus LoadProfilePath with default system profile
             if default_path:
                 try:
                     cmd = ["busctl", "call", _BUSCTL_DEST, path, _BUSCTL_IFACE, "LoadProfilePath", "s", default_path]
@@ -294,7 +290,6 @@ def apply_active_profiles(active_profile_ids: list = None) -> bool:
                 except Exception as e:
                     decky_plugin.logger.error(f"Error restoring default profile on {path}: {e}")
 
-            # 2. Try empty mapping fallback if LoadProfilePath didn't work
             if not overall_ok:
                 try:
                     fallback_yaml = yaml.dump({
@@ -310,7 +305,6 @@ def apply_active_profiles(active_profile_ids: list = None) -> bool:
                 except Exception:
                     pass
 
-        # 3. CLI fallback
         if os.path.isfile("/usr/bin/inputplumber") and default_path:
             for idx in range(len(paths)):
                 subprocess.run(["/usr/bin/inputplumber", "device", str(idx), "profile", "load", default_path],
@@ -318,9 +312,7 @@ def apply_active_profiles(active_profile_ids: list = None) -> bool:
 
         return overall_ok
 
-    # Case 2: Active profiles present -> Merge with base default and apply
     all_mappings = []
-    # Include base mappings from default.yaml if present so native buttons (paddles, dials) are kept
     if os.path.isfile(DEFAULT_SYSTEM_PROFILE):
         try:
             with open(DEFAULT_SYSTEM_PROFILE, "r") as f:
@@ -330,7 +322,6 @@ def apply_active_profiles(active_profile_ids: list = None) -> bool:
         except Exception as e:
             decky_plugin.logger.warning(f"Could not read default profile base mappings: {e}")
 
-    # Append active profile mappings
     for pid in active_profile_ids:
         p_path = os.path.join(PROFILES_DIR, f"{pid}.yaml")
         if os.path.isfile(p_path):
@@ -350,7 +341,6 @@ def apply_active_profiles(active_profile_ids: list = None) -> bool:
     }
     yaml_str = yaml.dump(combined, default_flow_style=False, sort_keys=False)
 
-    # Save to disk for LoadProfilePath and CLI
     try:
         with open(ACTIVE_PROFILE_TMP, "w", encoding="utf-8") as f:
             f.write(yaml_str)
@@ -359,7 +349,6 @@ def apply_active_profiles(active_profile_ids: list = None) -> bool:
 
     overall_ok = False
     for path in paths:
-        # Try LoadProfilePath first (most reliable in inputplumber)
         try:
             cmd = ["busctl", "call", _BUSCTL_DEST, path, _BUSCTL_IFACE, "LoadProfilePath", "s", ACTIVE_PROFILE_TMP]
             res = subprocess.run(cmd, capture_output=True, text=True, check=False, timeout=2.0, env=_get_env())
@@ -370,7 +359,6 @@ def apply_active_profiles(active_profile_ids: list = None) -> bool:
         except Exception:
             pass
 
-        # Try LoadProfileFromYaml
         try:
             cmd = ["busctl", "call", _BUSCTL_DEST, path, _BUSCTL_IFACE, "LoadProfileFromYaml", "s", yaml_str]
             res = subprocess.run(cmd, capture_output=True, text=True, check=False, timeout=2.0, env=_get_env())
@@ -382,7 +370,6 @@ def apply_active_profiles(active_profile_ids: list = None) -> bool:
         except Exception as e:
             decky_plugin.logger.error(f"Error calling LoadProfileFromYaml on {path}: {e}")
 
-    # Fallback via inputplumber CLI
     if os.path.isfile("/usr/bin/inputplumber") and os.path.isfile(ACTIVE_PROFILE_TMP):
         for idx in range(len(paths)):
             subprocess.run(["/usr/bin/inputplumber", "device", str(idx), "profile", "load", ACTIVE_PROFILE_TMP],

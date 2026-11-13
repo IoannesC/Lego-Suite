@@ -32,7 +32,6 @@ from devices import lenovo
 import charge_limit
 import i18n
 
-# LegionGoRemapper modules
 import ambient_light_sensor
 import legion_configurator
 import legion_space
@@ -86,7 +85,6 @@ class Plugin:
     try:
       settings = get_saved_settings()
 
-      # LegionGoRemapper settings initialization
       try:
         settings.setdefault("chargeLimitValue", 80)
         if settings.get("chargeLimitEnabled", False):
@@ -104,7 +102,6 @@ class Plugin:
       except Exception as e:
         decky_plugin.logger.error(f"main#get_settings remapper info error: {e}")
 
-      # SimpleDeckyTDP settings initialization
       try:
         with plugin_timeout.time_limit(5):
           settings['advancedOptions'] = advanced_options.get_advanced_options()
@@ -345,7 +342,6 @@ class Plugin:
         return current_status
     return None
 
-  # --- LegionGoRemapper methods ---
 
   async def find_als(self):
     return ambient_light_sensor.find_als()
@@ -457,7 +453,6 @@ class Plugin:
               if os.path.exists(t_path):
                 with open(t_path, "r") as tf:
                   cpu_temp = round(int(tf.read().strip()) / 1000.0, 1)
-      # Fan RPM detection (hwmon / platform sensors or dynamic curve estimation)
       fan_rpm = None
       try:
         for hwmon in glob.glob("/sys/class/hwmon/hwmon*"):
@@ -477,7 +472,6 @@ class Plugin:
 
       if fan_rpm is None:
         try:
-          # Estimate realistic Legion Go fan RPM based on active mode/curve and CPU temperature
           cur_mode = str(remapper_settings.get_settings().get('tdpMode', 'custom')).lower()
           all_fan = remapper_settings.get_settings().get('fan', {}).get('default', {})
           is_full = bool(all_fan.get('fullFanSpeedEnabled', False))
@@ -485,7 +479,6 @@ class Plugin:
             fan_rpm = 6500
           elif cpu_temp is not None:
             t = max(30.0, min(95.0, float(cpu_temp)))
-            # Curve estimation ~2200 RPM to ~6200 RPM
             factor = max(0.0, min(1.0, (t - 35.0) / 55.0))
             fan_rpm = int(2200 + (factor ** 1.3) * 4000)
             fan_rpm = int(round(fan_rpm / 50.0) * 50)
@@ -527,14 +520,10 @@ class Plugin:
         del active_fan_profile['fullFanSpeedEnabled']
       active_fan_curve = list(active_fan_profile.values())
 
-      # Full fan override works in any mode if explicitly requested
       if enable_full_fan_speed:
         legion_space.set_full_fan_speed(True)
       else:
         legion_space.set_full_fan_speed(False)
-        # CRUCIAL: Only apply custom fan curve when in 'custom' mode!
-        # In presets (quiet, balanced, performance), NEVER send custom curve;
-        # the Lenovo EC firmware manages the fan natively using its internal tables.
         if current_mode == 'custom' and customFanCurvesEnabled and remapper_settings.supports_custom_fan_curves():
           sleep(0.3)
           legion_space.set_active_fan_curve(active_fan_curve)
@@ -558,7 +547,6 @@ class Plugin:
     try:
       mode = str(mode).lower()
       remapper_settings.set_setting('tdpMode', mode)
-      # Also update mode in active profile in dedicated files
       try:
         merge_tdp_profiles({gameId: {'tdpMode': mode}})
       except Exception:
@@ -686,7 +674,6 @@ class Plugin:
     except Exception as e:
       decky_plugin.logger.error(f"set_rumble_intensity error: {e}")
 
-  # --- InputPlumber integration methods ---
 
   async def get_inputplumber_info(self):
     return inputplumber_utils.get_inputplumber_info()
@@ -700,7 +687,6 @@ class Plugin:
   async def reset_controllers(self):
     return controllers.reset_controllers()
 
-  # --- Local Desktop App RPC Bridge (127.0.0.1:47392) ---
 
   async def _handle_desktop_rpc(self, reader: asyncio.StreamReader, writer: asyncio.StreamWriter):
     try:
@@ -736,13 +722,11 @@ class Plugin:
       except Exception:
         pass
 
-  # --- Lifecycle methods ---
 
   async def _main(self):
     decky_plugin.logger.info("LeGO Suite Starting")
     migrations.check_ryzenadj_coall_support()
 
-    # Restore saved thermal mode (Quiet, Balanced, Performance, Custom)
     try:
       settings = get_saved_settings()
       saved_mode = settings.get('tdpMode')

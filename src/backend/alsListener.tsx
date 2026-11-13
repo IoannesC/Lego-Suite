@@ -1,11 +1,11 @@
 import { call } from "@decky/api";
 import { logInfo, readAls, setGamescopeBrightnessPct } from './utils';
 
-// Brightness thresholds
-// [ALS value, brightness as percentage]
-// Calibrated Brightness thresholds for Legion Go HID Sensor
-// Raw ALS reading on Legion Go is typically 0-5 in dark/indoor rooms, and up to 100+ under direct sunlight.
-// [ALS value threshold, target brightness %]
+
+
+
+
+
 const BRIGHTNESS_THRESHOLDS = [
   [0, 28],
   [1, 38],
@@ -49,9 +49,9 @@ export const DEFAULT_SMOOTH_TIME = 500;
 export const DEFAULT_SENSITIVITY = 50;
 export const DEFAULT_BRIGHTNESS_OFFSET = 0;
 
-let pollingRate = DEFAULT_POLLING_RATE; // Time in milliseconds
-let smoothTime = DEFAULT_SMOOTH_TIME; // Time in milliseconds
-const stepCount = 10; // Less steps = smoother transition
+let pollingRate = DEFAULT_POLLING_RATE; 
+let smoothTime = DEFAULT_SMOOTH_TIME; 
+const stepCount = 10; 
 let brightnessOffset = DEFAULT_BRIGHTNESS_OFFSET;
 
 let previousAlsValues = Array(DEFAULT_SENSITIVITY).fill(-1);
@@ -69,21 +69,21 @@ const handleAls = async () => {
       continue;
     }
 
-    // Keep track of the last N values
+    
     previousAlsValues.push(alsValue);
     previousAlsValues.shift();
 
-    // Set the initial values
+    
     if (previousAlsValues.includes(-1)) {
       continue;
     }
 
-    // Get the average of the last N values
+    
     const averageAlsValue =
       previousAlsValues.reduce((acc, val) => acc + val, 0) /
       previousAlsValues.length;
 
-    // Find the target brightness
+    
     let targetBrightness = currentBrightness;
     for (let i = 0; i < BRIGHTNESS_THRESHOLDS.length; i++) {
       if (averageAlsValue <= BRIGHTNESS_THRESHOLDS[i][0]) {
@@ -96,7 +96,7 @@ const handleAls = async () => {
       }
     }
 
-    // Apply brightness offset and enforce minimum safe floor (20%)
+    
     targetBrightness = Math.min(100, Math.max(20, targetBrightness + brightnessOffset));
 
     if (Math.abs(targetBrightness - currentBrightness) < 2) {

@@ -1,5 +1,5 @@
-// tdp range
-// import { useEffect } from 'react'
+
+
 import TdpRangeSlider from "../atoms/TdpRangeSlider";
 import { useMinTdp, useMaxTdp } from "../../hooks/useTdpRange";
 import { MIN_TDP_RANGE } from "../../utils/constants";
@@ -48,12 +48,12 @@ const TdpRange = () => {
   const maxSupportedTdpValue = useMaxSupportedTdpValue();
 
   if (isIntel) {
-    // intel provides TDP limit values, custom TDP range is unnecessary
+    
     return null;
   }
 
   if (isSteamDeck && tdpRangeSlidersEnabled === false) {
-    // no tdp range slider for Deck
+    
     return null;
   }
 

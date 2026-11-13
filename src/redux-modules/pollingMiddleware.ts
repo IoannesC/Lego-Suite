@@ -6,7 +6,7 @@ import {
 import { setPollTdp } from "../backend/utils";
 import { debounce } from "lodash";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 let store: { getState: () => any } | undefined;
 export const initializePollingStore = (s: { getState: () => any }) => {
   store = s;
@@ -14,7 +14,7 @@ export const initializePollingStore = (s: { getState: () => any }) => {
 
 let pollIntervalId: undefined | number;
 
-const DEBOUNCE_TIME = 1000; // milliseconds
+const DEBOUNCE_TIME = 1000; 
 
 const debouncedSetPollTdp = debounce(setPollTdp, DEBOUNCE_TIME);
 

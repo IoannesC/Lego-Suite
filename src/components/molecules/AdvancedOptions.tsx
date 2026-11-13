@@ -30,11 +30,11 @@ const calculateDisabled = (
   advancedState: { [k: string]: boolean },
 ) => {
   if (option.disabled) {
-    // there is component disable logic to parse
+    
     const { disabled } = option;
 
     if (disabled.ifFalsy) {
-      // ifFalsy = arr of advancedOptions
+      
       const { ifFalsy, hideIfDisabled = false } = disabled;
 
       for (let i = 0; i < ifFalsy.length; i++) {
@@ -44,7 +44,7 @@ const calculateDisabled = (
       }
     }
     if (disabled.ifTruthy) {
-      // ifTruthy = arr of advancedOptions
+      
       const { ifTruthy, hideIfDisabled = false } = disabled;
 
       for (let i = 0; i < ifTruthy.length; i++) {
@@ -63,11 +63,11 @@ const calculateUiHide = (
   advancedState: { [k: string]: boolean },
 ) => {
   if (option.uiShouldHideField) {
-    // there is component disable logic to parse
+    
     const { uiShouldHideField } = option;
 
     if (uiShouldHideField.ifFalsy) {
-      // ifFalsy = arr of advancedOptions
+      
       const { ifFalsy } = uiShouldHideField;
 
       for (let i = 0; i < ifFalsy.length; i++) {
@@ -77,7 +77,7 @@ const calculateUiHide = (
       }
     }
     if (uiShouldHideField.ifTruthy) {
-      // ifTruthy = arr of advancedOptions
+      
       const { ifTruthy } = uiShouldHideField;
 
       for (let i = 0; i < ifTruthy.length; i++) {
@@ -126,7 +126,7 @@ const AdvancedOptions = () => {
                 statePath === AdvancedOptionsEnum.AC_POWER_PROFILES &&
                 !supportsCustomAcPowerManagement
               ) {
-                // only enable AC TDP profiles on Desktop if custom AC is supported
+                
                 return null;
               }
             }
@@ -137,7 +137,7 @@ const AdvancedOptions = () => {
                 advancedState,
               );
 
-              // uiShouldHideField only hides the field, it does not set the actual value of the field to 'false'
+              
               const { uiShouldHideField } = calculateUiHide(
                 option,
                 advancedState,

@@ -1,7 +1,4 @@
-/*
-  Components in this file will be replaced in different frontends,
-  such as the Electron SimpleDeckyTDP frontend
-*/
+
 import {
   ButtonItem,
   Field,
@@ -26,7 +23,7 @@ export const DeckyButton = ButtonItem;
 
 export const DeckyField = Field;
 
-// from @decky/ui
+
 export type NotchLabel = {
   notchIndex: number;
   label: string;

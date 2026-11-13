@@ -14,8 +14,6 @@ LENOVO_WMI_SLOW_PATH = f"{LENOVO_WMI_PATH}/{SLOW_SUFFIX}/current_value"
 LENOVO_WMI_STAPM_PATH = f"{LENOVO_WMI_PATH}/{STAPM_SUFFIX}/current_value"
 LENOVO_WMI_CPU_CL_PATH = f"{LENOVO_WMI_PATH}/{CPU_CL_SUFFIX}/current_value"
 
-# credit:
-# https://github.com/mengmeet/PowerControl/blob/main/py_modules/devices/lenovo/lenovo_device.py
 
 
 PLATFORM_PROFILE_PATH = None

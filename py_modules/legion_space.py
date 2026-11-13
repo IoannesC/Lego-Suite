@@ -1,10 +1,7 @@
-# import subprocess
 import decky_plugin
 from time import sleep
 from typing import NamedTuple, Sequence
 
-# source: hhd-adjustor
-# https://github.com/hhd-dev/adjustor/blob/072411bff14bb5996b0fe00da06f36d17f31a389/src/adjustor/core/lenovo.py#L13
 
 def set_full_fan_speed(enable: bool):
     decky_plugin.logger.info(f"Setting full fan mode to {enable}.")
@@ -14,7 +11,6 @@ def set_active_fan_curve(arr: Sequence[int]):
     current_mode = get_tdp_mode()
 
     if current_mode != "custom":
-        # set custom
         set_tdp_mode("custom")
     
     sleep(0.3)
@@ -134,16 +130,10 @@ def get_charge_limit():
     decky_plugin.logger.info(f"Retrieving charge limit.")
     return get_feature(0x03010001)
 
-# on
-# echo '\_SB.GZFD.WMAE 0 0x12 {0x01, 0x00, 0x01, 0x03, 0x01, 0x00, 0x00, 0x00}' | sudo tee /proc/acpi/call; sudo cat /proc/acpi/call   
-# off        
-# echo '\_SB.GZFD.WMAE 0 0x12 {0x01, 0x00, 0x01, 0x03, 0x00, 0x00, 0x00, 0x00}' | sudo tee /proc/acpi/call
-# 80% charge limit
 def set_charge_limit(enabled: bool, limit: int = 80):
 
     current_charge_limit = get_charge_limit()
 
-    # decky_plugin.logger.info(f'charge limit {current_charge_limit} {current_charge_limit == 0}')
 
     if enabled and current_charge_limit == 0:
         return call(
@@ -185,7 +175,6 @@ def set_charge_limit(enabled: bool, limit: int = 80):
                 ),
             ],
         )
-    # no changes required
     return True
 
 def call(method: str, args: Sequence[bytes | int], risky: bool = True):

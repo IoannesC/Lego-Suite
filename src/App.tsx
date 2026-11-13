@@ -28,7 +28,7 @@ import { useAdvancedOption } from "./hooks/useAdvanced";
 import { maxTdpAcProfilesEnabledSelector, getSystemLangSelector } from "./redux-modules/settingsSlice";
 import { call } from "@decky/api";
 
-// Controls & Hardware components
+
 import RemapButtons from "./components/controller/RemapButtons";
 import ControllerLightingPanel from "./components/rgb/ControllerLightingPanel";
 import FanPanel from "./components/fan/FanPanel";
@@ -72,7 +72,7 @@ const App: FC = memo(({}) => {
   const handleToggleLanguage = (lang: string) => {
     setForcedLanguage(lang);
     setCurrentLang(lang);
-    // Persist to backend settings.json so Desktop app and Plugin share language seamlessly
+    
     try {
       call("set_setting", "language", lang);
       call("save_settings", { language: lang, desktopTheme: { language: lang } });
@@ -102,7 +102,7 @@ const App: FC = memo(({}) => {
 
   return (
     <>
-      {/* Top Header with Transparent Logo, Version 0.198 and Gear Wheel Button */}
+      {}
       <div
         style={{
           position: "relative",
@@ -160,7 +160,7 @@ const App: FC = memo(({}) => {
         </div>
       </div>
 
-      {/* Settings Modal / Overlay for Language selection */}
+      {}
       {showSettings && (
         <div
           style={{
@@ -221,7 +221,7 @@ const App: FC = memo(({}) => {
         </div>
       )}
 
-      {/* Tab Selector Bar: TDP | Controls | Screen */}
+      {}
       <div style={{ padding: "0 16px 8px 16px" }}>
         <Focusable
           style={{
@@ -329,7 +329,7 @@ const App: FC = memo(({}) => {
             />
           ) : (
             <>
-              {/* Input Plumber Submenu Navigation Entry */}
+              {}
               <div
                 onClick={() => setControlsSubmenu("inputplumber")}
                 style={{

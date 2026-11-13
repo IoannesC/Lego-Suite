@@ -1,4 +1,4 @@
-//@ts-nocheck
+
 import { Component } from "react";
 import { logInfo } from "../backend/utils";
 import { DeckyField } from "./atoms/DeckyFrontendLib";

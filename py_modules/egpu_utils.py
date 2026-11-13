@@ -29,7 +29,6 @@ def is_pci_device_alive(dev_dir):
             return False
         with open(config_path, "rb") as f:
             data = f.read(4)
-            # When PCIe hotunplug happens or device is removed, reads return 0xFFFFFFFF or empty
             if not data or len(data) < 4 or data == b"\xff\xff\xff\xff":
                 return False
         return True
@@ -76,7 +75,6 @@ def get_pci_gpus():
     display_classes = ("0x0300", "0x0301", "0x0302", "0x0380")
     for dev_dir in glob.glob("/sys/bus/pci/devices/*"):
         try:
-            # First verify device is physically alive
             if not is_pci_device_alive(dev_dir):
                 continue
 
@@ -118,13 +116,11 @@ def is_egpu_connected():
         configured_egpu_ids = get_configured_egpu_bus_ids()
         configured_igpu_ids = get_configured_igpu_bus_ids()
 
-        # Check 1: Any configured egpu-bus-ids physically alive in sysfs
         for egpu_id in configured_egpu_ids:
             pci_path = f"/sys/bus/pci/devices/{egpu_id}"
             if is_pci_device_alive(pci_path):
                 return True
 
-        # Check 2: Check all-ways-egpu bind-paths (Method 2)
         bind_paths_file = "/etc/all-ways-egpu/bind-paths"
         if os.path.exists(bind_paths_file):
             try:
@@ -135,31 +131,25 @@ def is_egpu_connected():
             except Exception:
                 pass
 
-        # Check 3: Active, alive PCI GPUs detection
         pci_gpus = get_pci_gpus()
 
-        # If any active alive GPU matches configured eGPU IDs
         for gpu in pci_gpus:
             if gpu["bus_id"] in configured_egpu_ids:
                 return True
 
-        # If user configured internal iGPUs and we detect an active GPU NOT in that list
         if configured_igpu_ids:
             for gpu in pci_gpus:
                 if gpu["bus_id"] not in configured_igpu_ids:
                     return True
 
-        # Check 4: Multiple alive display GPUs present in system
         if len(pci_gpus) > 1:
             return True
 
-        # Check 5: PCI hierarchy (Thunderbolt / USB4 / external bridge)
         for gpu in pci_gpus:
             p = gpu["path"].lower()
             if any(key in p for key in ("thunderbolt", "usb4", "usb-")):
                 return True
 
-        # Check 6: Multiple DRM cards where backing device is alive
         alive_drm_cards = 0
         for c in glob.glob("/sys/class/drm/card[0-9]*"):
             if "-" not in os.path.basename(c):
@@ -182,13 +172,11 @@ def get_egpu_model_name():
     pci_gpus = get_pci_gpus()
     target_bus = None
 
-    # Priority 1: Matched configured eGPU bus id
     for gpu in pci_gpus:
         if gpu["bus_id"] in configured_egpu_ids:
             target_bus = gpu["bus_id"]
             break
 
-    # Priority 2: In external / thunderbolt / usb bridge
     if not target_bus:
         for gpu in pci_gpus:
             p = gpu["path"].lower()
@@ -196,14 +184,12 @@ def get_egpu_model_name():
                 target_bus = gpu["bus_id"]
                 break
 
-    # Priority 3: Non-iGPU if configured
     if not target_bus and configured_igpu_ids:
         for gpu in pci_gpus:
             if gpu["bus_id"] not in configured_igpu_ids:
                 target_bus = gpu["bus_id"]
                 break
 
-    # Priority 4: Secondary GPU (non-boot_vga or second device)
     if not target_bus and len(pci_gpus) > 1:
         for gpu in pci_gpus:
             if gpu.get("boot_vga", 0) == 0:
@@ -224,7 +210,6 @@ def get_egpu_model_name():
             cleaned = re.sub(r"^[0-9a-fA-F:\.]+\s+", "", out)
             cleaned = re.sub(r"^(VGA compatible controller|3D controller|Display controller):\s+", "", cleaned, flags=re.I)
             cleaned = re.sub(r"\(rev [0-9a-fA-F]+\)", "", cleaned).strip()
-            # Clean up brackets for clean commercial name if present
             brackets = re.findall(r"\[(.*?)\]", cleaned)
             if brackets:
                 for b in reversed(brackets):

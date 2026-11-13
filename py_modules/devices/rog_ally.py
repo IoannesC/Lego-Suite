@@ -70,7 +70,6 @@ def set_platform_profile(tdp):
       current_status = f.read().strip()
       f.close()
       if current_status == command.strip():
-        # platform profile already the correct value
         return True
   except Exception as e:
     decky_plugin.logger.error(f"{__name__} platform_profile error while reading platform profile value: {e}")
@@ -97,17 +96,14 @@ def set_tdp(tdp):
       set_tdp_via_asus_armoury(tdp)
     else:
       decky_plugin.logger.info(f"{__name__} Setting TDP {tdp} via Legacy WMI")
-      # fast limit
       with open(FAST_WMI_PATH, 'w') as file:
         file.write(f'{tdp}')
       sleep(0.1)
 
-      # slow limit
       with open(SLOW_WMI_PATH, 'w') as file:
         file.write(f'{tdp}')
       sleep(0.1)
 
-      # stapm limit
       with open(STAPM_WMI_PATH, 'w') as file:
         file.write(f'{tdp}')
       sleep(0.1)
@@ -130,20 +126,13 @@ def supports_mcu_powersave():
   mc_path_exists = os.path.exists(LEGACY_MCU_POWERSAVE_PATH) or os.path.exists(ASUS_ARMORY_MCU_POWERSAVE_PATH)
 
   if mc_path_exists:
-    # bazzite has it's own workaround for MCU
     if is_bazzite_deck():
       return True
 
     if device_utils.is_rog_ally_series():
       return True
 
-    # check MCU version
-    # mc_version = get_mcu_version()
 
-    # if device_utils.is_rog_ally() and mc_version >= 319:
-    #   return True
-    # if device_utils.is_rog_ally_x() and mc_version >= 314:
-    #   return True
 
   return False
 
@@ -167,7 +156,6 @@ def get_mcu_version():
     return 0
 
 def set_tdp_via_asus_armoury(tdp):
-  # fast limit
   fast_limit_path = ASUS_ARMORY_FAST_WMI_PATH
   if (
     os.path.exists(UPDATED_ASUS_ARMORY_FAST_WMI_PATH)
@@ -182,12 +170,10 @@ def set_tdp_via_asus_armoury(tdp):
     file.write(f'{fast_tdp}')
   sleep(0.1)
 
-  # slow limit
   with open(ASUS_ARMORY_SLOW_WMI_PATH, 'w') as file:
     file.write(f'{slow_tdp}')
   sleep(0.1)
 
-  # stapm limit
   with open(ASUS_ARMORY_STAPM_WMI_PATH, 'w') as file:
     file.write(f'{stapm_tdp}')
   sleep(0.1)
@@ -200,7 +186,6 @@ def get_asus_armoury_tdp_values(tdp):
   platform_profile_choices = get_platform_profile_options()
 
   if 'low-power' in platform_profile_choices:
-    # newer asus armoury enforces different min/max values
     if fast_tdp < 15:
       fast_tdp = 15
     if slow_tdp < 15:

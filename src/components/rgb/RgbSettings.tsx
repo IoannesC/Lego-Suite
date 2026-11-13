@@ -123,7 +123,7 @@ export const RgbSettings: FC<{ controller: ControllerType }> = ({
       };
     }
 
-    // SOLID
+    
     return {
       ...base,
       background: activeColor,

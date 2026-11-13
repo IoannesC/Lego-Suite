@@ -22,7 +22,7 @@ import {
 import { PayloadAction } from "@reduxjs/toolkit";
 import { suspendAction } from "./extraActions";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 export const commonMiddleware =
   (store: { getState: () => any }) =>
   (dispatch: Dispatch) =>

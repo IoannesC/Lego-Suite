@@ -25,11 +25,8 @@ INTEL_LEGACY_TDP_PREFIX="/sys/devices/virtual/powercap/intel-rapl/intel-rapl:0"
 
 INTEL_MAX_TDP_SETTING = 'INTEL_MAX_TDP_SETTING'
 
-# arbitrary values can be set on Intel devices, likely a bug in intel-rapl
-# as a safety mitigation, 40W to be used as as a ceiling for PC handheld devices
 INTEL_MAX_TDP = 40
 
-# sysfs intel-rapl power limits are in microwatts (path suffix `_uw`)
 MICROWATTS_PER_WATT = 1_000_000
 
 class ScalingDrivers(Enum):
@@ -70,7 +67,6 @@ def set_tdp(tdp: int):
   settings = get_saved_settings()
   current_tdp_mode = str(settings.get('tdpMode', 'custom')).lower()
   if current_tdp_mode != 'custom':
-    # If in a preset mode (Quiet, Balanced, Performance), do not override Lenovo profile
     return
 
   if device_utils.is_steam_deck():
@@ -80,7 +76,6 @@ def set_tdp(tdp: int):
     tdp_path = intel_tdp_path()
 
     if not tdp_path:
-      # TDP not supported on this intel chipset, no known path to set TDP
       decky_plugin.logger.info("No Known Path for to set TDP on this Intel chipset")
       return
 
@@ -108,7 +103,6 @@ def set_amd_tdp(tdp: int):
         if advanced_options.get_setting(RogAllySettings.USE_WMI.value) and rog_ally.supports_wmi_tdp():
           return rog_ally.set_tdp(tdp)
 
-    # use ryzenadj by default (only for non-WMI devices)
     return ryzenadj.set_tdp(tdp)
   except Exception as e:
     decky_plugin.logger.error(e)
@@ -128,16 +122,12 @@ def set_cpb_boost(enabled):
     if os.path.exists(INTEL_CPU_BOOST_PATH):
       try:
         with open(INTEL_CPU_BOOST_PATH, 'w') as file:
-          # sys endpoint is named 'no_turbo'
-          # so no_turbo == 0 == cpu boost on
-          # no_turbo == 1 == cpu boost off
           file.write("0" if enabled else "1")
           file.close()
           sleep(0.1)
       except Exception as e:
         decky_plugin.logger.error(e)
   else:
-    # AMD CPU boost global cpb boost toggle doesn't exist, set it per-cpu
     paths = get_cpb_boost_paths()
     if len(paths) > 0 and os.path.exists(paths[0]):
       try:
@@ -154,7 +144,6 @@ def set_cpb_boost(enabled):
       except Exception as e:
         decky_plugin.logger.error(e)
     else:
-      # fallback to legacy cpu boost
       set_cpu_boost(enabled)
 
 def supports_cpu_boost():
@@ -191,7 +180,6 @@ def supports_smt():
     if os.path.exists(SMT_PATH):
       with open(SMT_PATH, 'r') as file:
         state = file.read().strip()
-      # 'notsupported' / 'notimplemented' / 'forceoff' cannot be toggled
       return state in ('on', 'off')
   except Exception as e:
     decky_plugin.logger.error(e)
@@ -200,13 +188,9 @@ def supports_smt():
 
 def set_smt(enabled = True):
   try:
-    # SMT_PATH is identical for both AMD and Intel
     if os.path.exists(SMT_PATH):
       with open(SMT_PATH, 'r') as file:
         state = file.read().strip()
-      # skip when SMT can't be toggled (CPUs without HyperThreading report
-      # 'notsupported'/'notimplemented'/'forceoff' and the kernel returns
-      # -ENODEV/-EPERM on write)
       if state not in ('on', 'off'):
         return True
       with open(SMT_PATH, 'w') as file:
@@ -253,26 +237,19 @@ def get_online_cpus():
     with open('/sys/devices/system/cpu/online', 'r') as file:
       online_cpus = file.read().strip()
       file.close()
-      # example online_cpus:
-      # 0-2,3,4,5,6-8,10
-      # 0-15
-      # 0-1,3-15
       parts = online_cpus.split(',')
 
       result = []
       for part in parts:
         if '-' in part:
-          # Handle range
           start, end = map(int, part.split('-'))
           result.extend(range(start, end + 1))
         else:
-          # Handle single value
           result.append(int(part))
       return result
   except Exception as e:
     decky_plugin.logger.error(f'{__name__} error while getting online_cpus {e}')
 
-  # cpu 0 is always online
   return [0]
 
 
@@ -340,7 +317,6 @@ def get_scaling_driver():
     return ''
 
 def get_intel_tdp_limits():
-  # while there is a max TDP provided by intel, there is no min
   min_tdp = 3
   max_tdp = 15
 
@@ -353,10 +329,6 @@ def get_intel_tdp_limits():
   return [min_tdp, max_tdp]
 
 def get_default_tdp_range():
-  # Firmware-declared TDP range for the main slider on non-Intel devices.
-  # Lenovo Legion exposes WMI ppt min/max (e.g. Legion Go 2 = [5, 35]).
-  # Returns None when no device-specific range is known, so the frontend
-  # falls back to its default.
   try:
     if lenovo.supports_wmi_tdp():
       min_tdp, max_tdp = lenovo.get_tdp_limit(lenovo.STAPM_SUFFIX)
@@ -411,7 +383,6 @@ def execute_tdp_command(tdp, tdp_path):
         file.write(tdp_microwatts)
         file.close()
     else:
-      # fallback to tdp via subprocess
       env = os.environ.copy()
       env["LD_LIBRARY_PATH"] = ""
       cmd = f"echo '{tdp_microwatts}' | tee {tdp_path}"

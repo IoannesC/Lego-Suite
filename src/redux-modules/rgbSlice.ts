@@ -253,9 +253,9 @@ export const rgbSlice = createSlice({
   },
 });
 
-// -------------
-// selectors
-// -------------
+
+
+
 
 export const selectRgbInfo =
   (controller: ControllerType) => (state: RootState) => {
@@ -304,9 +304,9 @@ export const selectSeparateRgbManagementEnabled = (state: RootState) => {
   return Boolean(state.rgb.forceEnableSeparateLedManagement);
 };
 
-// -------------
-// middleware
-// -------------
+
+
+
 
 const mutatingActionTypes = [
   rgbSlice.actions.updateRgbProfiles.type,

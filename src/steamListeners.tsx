@@ -1,6 +1,6 @@
 import {
   extractCurrentGameInfo,
-  // DEFAULT_START_TDP,
+  
 } from "./utils/constants";
 import { store } from "./redux-modules/store";
 import {
@@ -57,7 +57,7 @@ export const currentGameInfoListener = () => {
       previousIsAcPower = isAcPower;
       previousIsEgpu = isEgpu;
 
-      // new currentGameId, dispatch to the store
+      
       store.dispatch(setCurrentGameInfo(results));
 
       if (
@@ -66,7 +66,7 @@ export const currentGameInfoListener = () => {
         isAcPower &&
         !isEgpu
       ) {
-        // set max TDP on AC TDP Profile
+        
         store.dispatch(setReduxTdp(settings.maxTdp));
       }
     }
@@ -120,13 +120,13 @@ export const suspendEventListener = () => {
     console.log(e);
   }
 
-  // try mobx suspend observable
+  
   try {
     const suspendObservable = getSuspendResumeObservable();
 
     if (suspendObservable) {
       const unregister = suspendObservable.observe_((change) => {
-        // Note: If newValue is TRUE then it's suspending, otherwise it's resuming.
+        
         const { newValue } = change;
 
         logInfo({ info: `mobX suspend triggered with ${newValue}` });
@@ -143,7 +143,7 @@ export const suspendEventListener = () => {
     console.error(e);
   }
 
-  // fallback to a different path for suspend if SteamClient.System option not available
+  
   try {
     const unregisterOnSuspend =
       SteamClient.User.RegisterForPrepareForSystemSuspendProgress(
@@ -193,7 +193,7 @@ const onResume = async () => {
     t = 15000;
   }
 
-  // sets TDP, etc, to default expected values
+  
   setTimeout(() => {
     if (advancedState[AdvancedOptionsEnum.MAX_TDP_ON_RESUME]) {
       setPolling();
@@ -211,13 +211,13 @@ export const resumeFromSuspendEventListener = () => {
     console.log(e);
   }
 
-  // try mobx resume observable
+  
   try {
     const resumeObservable = getSuspendResumeObservable();
 
     if (resumeObservable) {
       const unregister = resumeObservable.observe_((change) => {
-        // Note: If newValue is TRUE then it's suspending, otherwise it's resuming.
+        
         const { newValue } = change;
         logInfo({ info: `mobX resume triggered with ${newValue}` });
 
@@ -233,7 +233,7 @@ export const resumeFromSuspendEventListener = () => {
     console.error(e);
   }
 
-  // fallback to a different path for resume if SteamClient.System option not available
+  
   try {
     const unregisterOnResume =
       SteamClient.User.RegisterForResumeSuspendedGamesProgress(
@@ -248,7 +248,7 @@ export const resumeFromSuspendEventListener = () => {
 let eACState: number | undefined;
 
 const setAcState = (newACState: number) => {
-  // eACState = 2 for AC power, 1 for Battery
+  
   if (newACState !== eACState) {
     eACState = newACState;
     store.dispatch(setAcPower(newACState));
@@ -282,7 +282,7 @@ export const acPowerEventListener = async () => {
 
       return unregister;
     } else {
-      // use steam's battery state change
+      
       const unregister = SteamClient.System.RegisterForBatteryStateChanges(
         (e: any) => {
           debouncedSetAcPower(e.eACState);

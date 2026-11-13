@@ -88,7 +88,7 @@ const FanPanel = () => {
   return (
     <>
       <style>{`@keyframes legosuitetwirl { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
-      {/* Placed ABOVE the Fan Control panel title */}
+      {}
       <div
         style={{
           display: "flex",
@@ -101,7 +101,7 @@ const FanPanel = () => {
           borderRadius: "6px",
         }}
       >
-        {/* Left: Temp CPU */}
+        {}
         <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
           <span style={{ fontWeight: 600, fontSize: "11px", color: "#9ca3af" }}>
             Temp CPU:
@@ -134,7 +134,7 @@ const FanPanel = () => {
           </span>
         </div>
 
-        {/* Middle: Fan Animation + RPM (Stylized 4-blade fan matching desktop app) */}
+        {}
         <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
           <svg
             viewBox="-11 -11 22 22"
@@ -179,7 +179,7 @@ const FanPanel = () => {
           </span>
         </div>
 
-        {/* Right: Temp GPU */}
+        {}
         <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
           <span style={{ fontWeight: 600, fontSize: "11px", color: "#9ca3af" }}>
             Temp GPU:

@@ -16,7 +16,6 @@ class EppOptions(Enum):
   BALANCE_POWER = 'balance_power'
   POWER_SAVE = 'power'
 
-# if manual CPU controls are disabled by the end user, these values are used by default instead
 DEFAULT_CPU_PROFILE = {
   "cpuBoost": False,
   "smt": True,
@@ -41,7 +40,6 @@ DEFAULT_CPU_PROFILE = {
   }
 }
 
-# these are used when the user enables manual CPU controls
 RECOMMENDED_DEFAULTS = {
   "intel_cpufreq": {
     "powerGovernor": PowerGovernorOptions.POWER_SAVE.value
@@ -85,7 +83,6 @@ def get_available_epp_options():
           if available_options and 'default' in available_options:
             available_options.remove('default')
           file.close()
-          # available_options.remove('default')
           return available_options
   except Exception as e:
     decky_plugin.logger.error(f'{__name__} error getting epp options {e}')
@@ -128,7 +125,6 @@ def write_command(command, paths):
           file.close()
       except OSError as e:
         if e.errno == 16:
-          # Handle the [Errno 16] Device or resource busy error
           decky_plugin.logger.error(f'Error: {str(e)}. The device or resource is busy.')
         continue
       except Exception as e:

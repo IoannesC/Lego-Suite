@@ -118,7 +118,7 @@ export enum ServerAPIMethods {
   GET_LATEST_VERSION_NUM = "get_latest_version_num",
   RESET_SETTINGS = "reset_settings",
   CHECK_RYZENADJ_COALL = "check_ryzenadj_coall",
-  // LegionGoRemapper methods
+  
   RGB_ON = "rgb_on",
   RGB_OFF = "rgb_off",
   REMAP_BUTTON = "remap_button",
@@ -329,7 +329,7 @@ export const persistCpuBoost = ({
   return call(ServerAPIMethods.PERSIST_CPU_BOOST, cpuBoost, gameId);
 };
 
-// --- LegionGoRemapper Direct Call Helpers ---
+
 
 export const extractDisplayName = () =>
   `${Router.MainRunningApp?.display_name || "default"}`;

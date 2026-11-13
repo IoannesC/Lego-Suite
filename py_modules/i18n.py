@@ -12,7 +12,6 @@ I18N_DIR = os.path.join(PLUGIN_DIR, 'i18n')
 if not os.path.exists(I18N_DIR):
     I18N_DIR = os.path.join(PLUGIN_DIR, 'defaults', 'i18n')
 
-# Language metadata
 LANGS = None
 STEAM_LANGUAGE_MAP = None
 
@@ -40,13 +39,11 @@ def load_configs():
 
 load_configs()
 
-# Load translation files
 def load_translations():
     """Load all translation files from the i18n directory"""
     translations = {}
 
     if not os.path.exists(I18N_DIR):
-        # Translation files not found - return empty dictionary
         return translations
     
     try:
@@ -54,7 +51,6 @@ def load_translations():
             if filename.startswith('language_metadata'):
                 continue
 
-            # extract language map
             if filename.startswith('steam_language_map'):
                 continue
 
@@ -70,10 +66,8 @@ def load_translations():
     
     return translations
 
-# Global translation dictionary
 TRANSLATIONS = load_translations()
 
-# Cached language
 _cached_lang = None
 _cached_steam_lang = None
 
@@ -83,7 +77,6 @@ def get_steam_lang():
     if _cached_steam_lang:
         return _cached_steam_lang
 
-    # this initializes the _cached_steam_lang
     get_current_language()
 
     return _cached_steam_lang
@@ -99,7 +92,6 @@ def get_current_language():
     global _cached_lang
     global _cached_steam_lang
     
-    # Check user-configured language in settings.json first
     try:
         from plugin_settings import get_saved_settings
         saved_s = get_saved_settings()
@@ -120,7 +112,6 @@ def get_current_language():
 
     lang = None
     
-    # 1. Read language from Steam config file (most accurate)
     try:
         
         for config_path in STEAM_CONFIG_PATHS:
@@ -129,70 +120,45 @@ def get_current_language():
                     with open(config_path, 'r', encoding='utf-8', errors='ignore') as f:
                         content = f.read()
                         
-                        # Find "language" format
-                        # Ignore language inside steamglobal, find only direct language setting
                         import re
                         
-                        # Find HKCU > Software > Valve > Steam > language
-                        # Exclude steamglobal section
                         hkcu_section = re.search(r'"HKCU"\s*\{(.*?)\}\s*\}', content, re.DOTALL)
                         if hkcu_section:
                             hkcu_content = hkcu_section.group(1)
                             
-                            # Remove steamglobal section
                             hkcu_content = re.sub(r'"steamglobal"\s*\{[^}]*\}', '', hkcu_content, flags=re.DOTALL)
                             
-                            # Now find language in remaining part
                             match = re.search(r'"language"\s+"(\w+)"', hkcu_content, re.IGNORECASE)
                             if match:
                                 steam_lang = match.group(1).lower()
                                 _cached_steam_lang = steam_lang
-                                # Convert Steam language code to standard language code
-                                # e.g.
-                                # STEAM_LANGUAGE_MAP = {
-                                #     'korean': 'ko',
-                                #     'koreana': 'ko',
-                                #     'english': 'en',
-                                #     'japanese': 'ja',
-                                #     'schinese': 'zh',  # Simplified Chinese
-                                #     'tchinese': 'zh',  # Traditional Chinese
-                                #     'spanish': 'es',
-                                #     'german': 'de',
-                                # }
 
                                 lang_code = STEAM_LANGUAGE_MAP.get(steam_lang, steam_lang[:2])
                                 if lang_code in LANGS:
                                     lang = lang_code
                                     break
                 except PermissionError:
-                    # Continue if cannot read due to permission issue
                     continue
                 except Exception:
-                    # Continue on other errors
                     continue
     except Exception:
-        # Ignore Steam config file read failure
         pass
     
-    # 2. Check Steam related environment variables
     if not lang:
         steam_lang = os.environ.get('STEAM_COMPAT_CLIENT_INSTALL_PATH', '')
         if 'korean' in steam_lang.lower():
             lang = 'ko'
     
-    # 3. Check LANGUAGE environment variable
     if not lang:
         lang_env = os.environ.get('LANGUAGE', '').split(':')[0].split('_')[0].lower()
         if lang_env in LANGS:
             lang = lang_env
     
-    # 4. Check LANG environment variable
     if not lang:
         lang_env = os.environ.get('LANG', '').split('.')[0].split('_')[0].lower()
         if lang_env in LANGS:
             lang = lang_env
     
-    # 5. Check system locale
     if not lang:
         try:
             system_locale = locale.getdefaultlocale()[0]
@@ -203,11 +169,9 @@ def get_current_language():
         except:
             pass
     
-    # 6. Default: English
     if not lang:
         lang = 'en'
     
-    # Cache
     _cached_lang = lang
     return lang
 
@@ -251,11 +215,9 @@ def t(key, default_text, lang=None):
         t('ADVANCED_ENABLE_TDP_CONTROLS', 'Enable TDP Controls')
         # Returns: translation based on system language
     """
-    # Use system language if language is not specified
     if lang is None:
         lang = get_current_language()
     
-    # Find translation, return default text if not found
     return TRANSLATIONS.get(lang, {}).get(key, default_text)
 
 def set_language(lang):
@@ -311,7 +273,6 @@ def get_language_debug_info():
         'i18n_paths_checked': [],
     }
     
-    # Check Decky Plugin environment variables
     decky_vars = [
         'DECKY_PLUGIN_DIR',
         'DECKY_PLUGIN_NAME',
@@ -324,14 +285,12 @@ def get_language_debug_info():
         if value:
             debug_info['decky_environment'][var] = value
     
-    # Add expected path if in Decky Plugin environment
     if os.environ.get('DECKY_PLUGIN_DIR'):
         plugin_dir = os.environ.get('DECKY_PLUGIN_DIR')
         decky_i18n_path = os.path.join(plugin_dir, 'i18n')
         debug_info['decky_environment']['expected_i18n_path'] = decky_i18n_path
         debug_info['decky_environment']['expected_i18n_exists'] = os.path.exists(decky_i18n_path)
     
-    # i18n directory candidate paths
     current_file = os.path.abspath(__file__)
     possible_i18n_paths = [
         ('Environment variable I18N_DIR', os.environ.get('I18N_DIR')),
@@ -380,12 +339,10 @@ def get_language_debug_info():
             'language': language_found
         }
     
-    # Check environment variables
     env_vars = ['I18N_DIR', 'LANGUAGE', 'LANG', 'LC_ALL', 'STEAM_COMPAT_CLIENT_INSTALL_PATH', 'HOME', 'USER']
     for var in env_vars:
         debug_info['environment_variables'][var] = os.environ.get(var, None)
     
-    # Actually used i18n directory
     debug_info['i18n_directory_used'] = None
     for path_info in debug_info['i18n_paths_checked']:
         if path_info['exists'] and path_info['is_dir'] and path_info['files']:

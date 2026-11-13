@@ -1,4 +1,4 @@
-// TDP Range Slider
+
 import { useDispatch, useSelector } from "react-redux";
 import {
   getCurrentFixedGpuFrequencySelector,

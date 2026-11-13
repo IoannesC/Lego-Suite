@@ -9,8 +9,6 @@ sincronizada en tiempo real con el plugin LeGO Suite de Decky Loader.
 import os
 import sys
 
-# Force XCB (XWayland) on KDE Plasma to enable smooth window geometry animations
-# and accurate positioning on the right screen edge without compositor restrictions.
 if "QT_QPA_PLATFORM" not in os.environ and "WAYLAND_DISPLAY" in os.environ:
     os.environ["QT_QPA_PLATFORM"] = "xcb"
 
@@ -69,9 +67,6 @@ from PyQt6.QtWidgets import (
     QGridLayout,
 )
 
-# ---------------------------------------------------------------------------
-# Paths & Environment Discovery
-# ---------------------------------------------------------------------------
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = SCRIPT_DIR.parent
@@ -79,8 +74,8 @@ if not (PROJECT_ROOT / "py_modules").exists() and (SCRIPT_DIR / "py_modules").ex
     PROJECT_ROOT = SCRIPT_DIR
 
 ASSETS_DIR = PROJECT_ROOT / "assets"
-LOGO_ICON_PATH = ASSETS_DIR / "logo.jpg"      # Solid black background for App/Tray Icon
-LOGO_UI_PATH = ASSETS_DIR / "logo_ui.png"     # Transparent background for UI Header
+LOGO_ICON_PATH = ASSETS_DIR / "logo.jpg"
+LOGO_UI_PATH = ASSETS_DIR / "logo_ui.png"
 STICK_PATH = ASSETS_DIR / "stick.png"
 
 RPC_HOST = "127.0.0.1"
@@ -132,9 +127,6 @@ SETTINGS_FILE = SETTINGS_DIR / "settings.json"
 TDP_FILE = SETTINGS_DIR / "tdp.json"
 
 
-# ---------------------------------------------------------------------------
-# Standalone Fallback Shims (when Decky RPC is not reachable)
-# ---------------------------------------------------------------------------
 
 class _DummyLogger:
     def info(self, *a, **kw):
@@ -192,9 +184,6 @@ class _SettingsManagerShim:
         return value
 
 
-# ---------------------------------------------------------------------------
-# Backend Client (Talks to Decky RPC on 127.0.0.1:47392 or Direct Fallback)
-# ---------------------------------------------------------------------------
 
 class BackendClient:
     def __init__(self):
@@ -255,9 +244,6 @@ class BackendClient:
         return None
 
 
-# ---------------------------------------------------------------------------
-# Dynamic Theme Stylesheet Builder
-# ---------------------------------------------------------------------------
 
 def _lighten_hex(hex_color: str, factor: float = 1.25) -> str:
     c = QColor(hex_color)
@@ -536,9 +522,6 @@ QSlider::handle:horizontal:disabled {{
 """
 
 
-# ---------------------------------------------------------------------------
-# Theme Customization Dialog (Gear Wheel Settings)
-# ---------------------------------------------------------------------------
 
 THEME_PRESETS = [
     ("theme_preset_0", "#0e1015", "#181b24", "#1e2433"),
@@ -551,9 +534,6 @@ THEME_PRESETS = [
 
 
 
-# ---------------------------------------------------------------------------
-# UI Translations Dictionary
-# ---------------------------------------------------------------------------
 TEXTS = {
     "es": {
         "tab_tdp": "TDP",
@@ -833,7 +813,6 @@ class ThemeSettingsDialog(QDialog):
         self.title_lbl.setStyleSheet("font-size: 15px; font-weight: 700; color: #ffffff;")
         layout.addWidget(self.title_lbl)
 
-        # Language selection row
         lang_row = QHBoxLayout()
         self.lbl_lang = QLabel(tr("lbl_language", self.current_lang))
         self.lbl_lang.setStyleSheet("color: #e5e7eb; font-weight: 600; font-size: 13px;")
@@ -849,7 +828,6 @@ class ThemeSettingsDialog(QDialog):
         lang_row.addWidget(self.cmb_lang)
         layout.addLayout(lang_row)
 
-        # Dockable Sidebar mode checkbox row
         dock_box = QVBoxLayout()
         dock_box.setSpacing(2)
         self.chk_dock_mode = QCheckBox(tr("chk_dock_mode", self.current_lang))
@@ -864,13 +842,11 @@ class ThemeSettingsDialog(QDialog):
         dock_box.addWidget(self.lbl_dock_desc)
         layout.addLayout(dock_box)
 
-        # Separator line
         sep = QFrame()
         sep.setFrameShape(QFrame.Shape.HLine)
         sep.setStyleSheet("color: rgba(255, 255, 255, 0.15);")
         layout.addWidget(sep)
 
-        # Background Color Picker Row
         bg_row = QHBoxLayout()
         self.lbl_bg = QLabel(tr("lbl_bg_color", self.current_lang))
         self.btn_pick_bg = QPushButton(self.bg_color)
@@ -881,7 +857,6 @@ class ThemeSettingsDialog(QDialog):
         bg_row.addWidget(self.btn_pick_bg)
         layout.addLayout(bg_row)
 
-        # Primary Content / Card Color Picker Row
         ct_row = QHBoxLayout()
         self.lbl_ct = QLabel(tr("lbl_ct_color", self.current_lang))
         self.btn_pick_ct = QPushButton(self.content_color)
@@ -892,7 +867,6 @@ class ThemeSettingsDialog(QDialog):
         ct_row.addWidget(self.btn_pick_ct)
         layout.addLayout(ct_row)
 
-        # Secondary Content / Card Color Picker Row (Gradient 2)
         ct2_row = QHBoxLayout()
         self.lbl_ct2 = QLabel(tr("lbl_ct2_color", self.current_lang))
         self.btn_pick_ct2 = QPushButton(self.content_color_2)
@@ -903,7 +877,6 @@ class ThemeSettingsDialog(QDialog):
         ct2_row.addWidget(self.btn_pick_ct2)
         layout.addLayout(ct2_row)
 
-        # Accent / Sliders and Ticks Color Picker Row
         ac_row = QHBoxLayout()
         self.lbl_ac = QLabel(tr("lbl_ac_color", self.current_lang))
         self.btn_pick_ac = QPushButton(self.accent_color)
@@ -914,7 +887,6 @@ class ThemeSettingsDialog(QDialog):
         ac_row.addWidget(self.btn_pick_ac)
         layout.addLayout(ac_row)
 
-        # Quick Presets Grid
         self.lbl_pre = QLabel(tr("lbl_quick_themes", self.current_lang))
         self.lbl_pre.setStyleSheet("color: #9ca3af; font-size: 11px; font-weight: 700; text-transform: uppercase;")
         layout.addWidget(self.lbl_pre)
@@ -937,7 +909,6 @@ class ThemeSettingsDialog(QDialog):
 
         layout.addStretch()
 
-        # Bottom Buttons: Reset Default + Aceptar (Confirm and Save)
         bot_row = QHBoxLayout()
         self.btn_reset = QPushButton(tr("btn_reset", self.current_lang))
         self.btn_reset.setProperty("class", "ActionBtn")
@@ -1049,14 +1020,13 @@ class AnimatedFanWidget(QWidget):
         self._step = 6.0
         self._timer = QTimer(self)
         self._timer.timeout.connect(self._rotate_step)
-        self._timer.start(35)  # ~30 FPS
+        self._timer.start(35)
 
     def set_rpm(self, rpm: int):
         self._rpm = max(0, int(rpm))
         if self._rpm == 0:
             self._step = 0.0
         else:
-            # Map RPM (1000 - 7000) to rotation step (3.0 deg to 24.0 deg)
             self._step = max(3.0, min(24.0, 3.0 + (self._rpm / 7000.0) * 21.0))
         self.update()
 
@@ -1078,7 +1048,6 @@ class AnimatedFanWidget(QWidget):
         painter.translate(cx, cy)
         painter.rotate(self._angle)
 
-        # Draw 4 curved fan blades
         blade_color = QColor("#38bdf8") if self._rpm < 4000 else (QColor("#facc15") if self._rpm < 5500 else QColor("#ef4444"))
         painter.setBrush(QBrush(blade_color))
         painter.setPen(Qt.PenStyle.NoPen)
@@ -1092,7 +1061,6 @@ class AnimatedFanWidget(QWidget):
             painter.drawPath(path)
             painter.rotate(90.0)
 
-        # Center hub
         hub_color = QColor("#1e293b")
         painter.setBrush(QBrush(hub_color))
         painter.drawEllipse(QPointF(0, 0), 3.0, 3.0)
@@ -1119,7 +1087,7 @@ class DualStickRgbWidget(QWidget):
 
         self._start_time = time.monotonic()
         self._timer = QTimer(self)
-        self._timer.setInterval(33)  # ~30 FPS
+        self._timer.setInterval(33)
         self._timer.timeout.connect(self.update)
         self._timer.start()
 
@@ -1176,7 +1144,7 @@ class DualStickRgbWidget(QWidget):
         phase = (elapsed % dur) / dur
         norm_b = max(0.18, min(1.0, self.brightness / 100.0))
 
-        halo_radius = 18.0  # 36px diameter
+        halo_radius = 18.0
         scale = 1.0
         alpha = norm_b
 
@@ -1248,9 +1216,6 @@ class DualStickRgbWidget(QWidget):
         painter.restore()
 
 
-# ---------------------------------------------------------------------------
-# Constants
-# ---------------------------------------------------------------------------
 
 REMAP_OPTIONS = [
     ("remap_disabled", "DISABLED"),
@@ -1309,9 +1274,6 @@ class DockHandle(QFrame):
         super().mousePressEvent(event)
 
 
-# ---------------------------------------------------------------------------
-# Background Controller Button Listener (Guide / Select Toggle)
-# ---------------------------------------------------------------------------
 
 class ControllerShortcutThread(QThread):
     shortcut_triggered = pyqtSignal()
@@ -1334,7 +1296,6 @@ class ControllerShortcutThread(QThread):
         last_trigger_time = 0.0
 
         while self._running:
-            # Look for gamepad / controller input event devices
             devices = {}
             try:
                 for path in evdev.list_devices():
@@ -1342,7 +1303,6 @@ class ControllerShortcutThread(QThread):
                         d = evdev.InputDevice(path)
                         caps = d.capabilities()
                         key_caps = caps.get(evdev.ecodes.EV_KEY, [])
-                        # Target devices having BTN_MODE (316) or BTN_SELECT (314)
                         if evdev.ecodes.BTN_MODE in key_caps or evdev.ecodes.BTN_SELECT in key_caps:
                             devices[d.fd] = d
                     except Exception:
@@ -1358,7 +1318,6 @@ class ControllerShortcutThread(QThread):
                 try:
                     r, _, _ = select.select(list(devices.keys()), [], [], 1.0)
                     if not r:
-                        # Check if device list changed
                         break
 
                     for fd in r:
@@ -1368,23 +1327,18 @@ class ControllerShortcutThread(QThread):
                         try:
                             for ev in dev.read():
                                 if ev.type == evdev.ecodes.EV_KEY and ev.value == 1:
-                                    # BTN_MODE (316, Guide/Home/PlayStation/Legion L) or BTN_SELECT (314, View/Select)
                                     if ev.code in (evdev.ecodes.BTN_MODE, evdev.ecodes.BTN_SELECT):
                                         now = time.time()
                                         if self.enabled and (now - last_trigger_time > 0.4):
                                             last_trigger_time = now
                                             self.shortcut_triggered.emit()
                         except (OSError, IOError):
-                            # Device disconnected
                             devices.pop(fd, None)
                             break
                 except Exception:
                     break
 
 
-# ---------------------------------------------------------------------------
-# Main Window UI
-# ---------------------------------------------------------------------------
 
 class LeGOSuiteMainWindow(QMainWindow):
     def __init__(self, backend: BackendClient):
@@ -1422,34 +1376,26 @@ class LeGOSuiteMainWindow(QMainWindow):
         self._build_tray()
         self._position_top_right()
 
-        # Initial load
         self.refresh_from_backend(force=True)
 
-        # Auto-sync timer (watches settings.json mtime every 1.5s)
         self._sync_timer = QTimer(self)
         self._sync_timer.setInterval(1500)
         self._sync_timer.timeout.connect(self._check_external_sync)
         self._sync_timer.start()
 
-        # Charge limit enforcement timer (every 10s in background tray)
         self._charge_watcher_timer = QTimer(self)
         self._charge_watcher_timer.setInterval(10000)
         self._charge_watcher_timer.timeout.connect(self._enforce_charge_limit_tick)
         self._charge_watcher_timer.start()
-        # Dedicated periodic live temperature & fan RPM update timer (every 2.0s)
         self._temp_timer = QTimer(self)
         self._temp_timer.setInterval(2000)
         self._temp_timer.timeout.connect(self._update_live_temps_and_fan)
         self._temp_timer.start()
 
-        # Background Controller Shortcut Listener (Guide / Select Toggle)
         self._controller_thread = ControllerShortcutThread(self)
         self._controller_thread.shortcut_triggered.connect(self.toggle_slide_panel)
         self._controller_thread.start()
 
-    # ------------------------------------------------------------------
-    # UI Construction
-    # ------------------------------------------------------------------
 
 
     def _is_hwdb_sensor_installed(self) -> bool:
@@ -1540,8 +1486,6 @@ class LeGOSuiteMainWindow(QMainWindow):
     def _check_screen_orientation_tick(self):
         if not self._auto_rotate_active:
             return
-        # Read orientation from iio-sensor-proxy or direct IIO device
-        # Look for accel device (iio:device2 on Legion Go)
         accel_x_file = None
         for dev_path in (Path("/sys/bus/iio/devices/iio:device2"), Path("/sys/bus/iio/devices/iio:device0")):
             if (dev_path / "in_accel_x_raw").exists():
@@ -1552,7 +1496,6 @@ class LeGOSuiteMainWindow(QMainWindow):
             try:
                 x = int(accel_x_file.read_text().strip())
                 y = int(accel_y_file.read_text().strip())
-                # Threshold for rotation detection
                 new_rot = None
                 if abs(x) > abs(y) and abs(x) > 5:
                     new_rot = "none" if x > 0 else "inverted"
@@ -1571,7 +1514,6 @@ class LeGOSuiteMainWindow(QMainWindow):
         self.btn_tab_controls.setText(tr("tab_controls", lang))
         self.btn_tab_screen.setText(tr("tab_screen", lang))
 
-        # Cards
         if hasattr(self, "card_tdp_mode_title") and self.card_tdp_mode_title:
             self.card_tdp_mode_title.setText(tr("card_tdp_mode", lang))
         if hasattr(self, "tdp_mode_buttons"):
@@ -1596,7 +1538,6 @@ class LeGOSuiteMainWindow(QMainWindow):
         if hasattr(self, "card_sensor_title") and self.card_sensor_title:
             self.card_sensor_title.setText(tr("card_sensor", lang))
 
-        # Checkboxes and Labels
         if hasattr(self, "lbl_tdp_title"):
             self.lbl_tdp_title.setText(tr("lbl_tdp", lang))
         if hasattr(self, "lbl_tdp_val") and hasattr(self, "slider_tdp"):
@@ -1621,7 +1562,6 @@ class LeGOSuiteMainWindow(QMainWindow):
         if hasattr(self, "chk_fan_profile"):
             self.chk_fan_profile.setText(tr("chk_fan_profile", lang))
 
-        # Controls Tab
         if hasattr(self, "btn_ip_nav"):
             self.btn_ip_nav.setText(f"🎮  {tr('lbl_ip_title', lang)}   ›")
         if hasattr(self, "btn_ip_back"):
@@ -1665,7 +1605,6 @@ class LeGOSuiteMainWindow(QMainWindow):
         if hasattr(self, "chk_sync_slider_color"):
             self.chk_sync_slider_color.setText(tr("chk_sync_slider_color", lang))
 
-        # Screen Tab
         if hasattr(self, "lbl_s_info"):
             self.lbl_s_info.setText(tr("lbl_hwdb_status_title", lang))
         if hasattr(self, "desc_hwdb_lbl"):
@@ -1673,13 +1612,11 @@ class LeGOSuiteMainWindow(QMainWindow):
         if hasattr(self, "lbl_auto_rotate_hint"):
             self.lbl_auto_rotate_hint.setText(tr("lbl_auto_rotate_hint", lang))
 
-        # Fan
         if hasattr(self, "chk_fan_enabled"):
             self.chk_fan_enabled.setText(tr("chk_fan_enabled", lang))
         if hasattr(self, "chk_full_fan"):
             self.chk_full_fan.setText(tr("chk_full_fan", lang))
 
-        # Remap
         if hasattr(self, "chk_remap_enabled"):
             self.chk_remap_enabled.setText(tr("chk_remap_enabled", lang))
         if hasattr(self, "lbl_rumble"):
@@ -1712,7 +1649,6 @@ class LeGOSuiteMainWindow(QMainWindow):
                 cmb.setCurrentIndex(idx)
             cmb.blockSignals(False)
 
-        # Status & Tooltips
         if hasattr(self, "version_label"):
             mode_txt = tr("status_decky_rpc" if self.backend.rpc_available else "status_local_sync", lang)
             self.version_label.setText(f"Version 0.198 • {mode_txt}")
@@ -1754,11 +1690,9 @@ class LeGOSuiteMainWindow(QMainWindow):
         main_layout.setContentsMargins(14, 10, 14, 12)
         main_layout.setSpacing(8)
 
-        # 1. Header with Transparent Logo + Version 0.198 + Controls (› on left, ⚙, 🗕, ✕ on right)
         header_top_row = QHBoxLayout()
         header_top_row.setContentsMargins(0, 0, 0, 0)
 
-        # Left Header: Dock / Collapse Button (›) - twice as big, on the left of the logo
         left_box = QHBoxLayout()
         left_box.setContentsMargins(0, 0, 0, 0)
         left_box.setSpacing(0)
@@ -1771,7 +1705,7 @@ class LeGOSuiteMainWindow(QMainWindow):
         self.btn_dock.setCursor(Qt.CursorShape.PointingHandCursor)
         self.btn_dock.clicked.connect(self.collapse_to_dock)
         left_box.addWidget(self.btn_dock)
-        left_box.addSpacing(40)  # Balances the 96px width of win_ctrls so logo is centered
+        left_box.addSpacing(40)
         header_top_row.addLayout(left_box, 0)
 
         logo_box = QVBoxLayout()
@@ -1803,12 +1737,10 @@ class LeGOSuiteMainWindow(QMainWindow):
         logo_box.addWidget(self.version_label)
         header_top_row.addLayout(logo_box, 1)
 
-        # Right Header Controls (Gear, Minimize, Close)
         win_ctrls = QHBoxLayout()
         win_ctrls.setSpacing(6)
         win_ctrls.setContentsMargins(0, 0, 0, 0)
 
-        # Settings Gear Wheel Button (⚙)
         self.btn_gear = QPushButton("⚙")
         self.btn_gear.setProperty("class", "GearBtn")
         self.btn_gear.setFixedSize(28, 28)
@@ -1817,7 +1749,6 @@ class LeGOSuiteMainWindow(QMainWindow):
         self.btn_gear.clicked.connect(self._open_theme_dialog)
         win_ctrls.addWidget(self.btn_gear)
 
-        # Minimize Button (🗕)
         self.btn_minimize = QPushButton("🗕")
         self.btn_minimize.setProperty("class", "WindowCtrlBtn")
         self.btn_minimize.setFixedSize(28, 28)
@@ -1826,7 +1757,6 @@ class LeGOSuiteMainWindow(QMainWindow):
         self.btn_minimize.clicked.connect(self._slide_out)
         win_ctrls.addWidget(self.btn_minimize)
 
-        # Close Button (✕)
         self.btn_close = QPushButton("✕")
         self.btn_close.setObjectName("BtnClose")
         self.btn_close.setProperty("class", "WindowCtrlBtn")
@@ -1843,7 +1773,6 @@ class LeGOSuiteMainWindow(QMainWindow):
 
         main_layout.addLayout(header_top_row)
 
-        # 2. Tab Bar: TDP | Controls | Screen
         tab_bar = QHBoxLayout()
         tab_bar.setSpacing(6)
 
@@ -1870,7 +1799,6 @@ class LeGOSuiteMainWindow(QMainWindow):
         tab_bar.addWidget(self.btn_tab_screen)
         main_layout.addLayout(tab_bar)
 
-        # 3. Stacked Pages inside ScrollAreas
         self.stack = QStackedWidget()
         self.stack.addWidget(self._create_scrollable_page(self._build_tdp_tab()))
         self.stack.addWidget(self._create_scrollable_page(self._build_controls_tab()))
@@ -1899,9 +1827,6 @@ class LeGOSuiteMainWindow(QMainWindow):
             layout.addWidget(lbl)
         return frame, layout, lbl
 
-    # ------------------------------------------------------------------
-    # TAB 1: TDP & Energy
-    # ------------------------------------------------------------------
 
     def _build_tdp_tab(self) -> QWidget:
         page = QWidget()
@@ -1909,15 +1834,14 @@ class LeGOSuiteMainWindow(QMainWindow):
         vbox.setContentsMargins(2, 4, 6, 8)
         vbox.setSpacing(10)
 
-        # --- Card 0: Thermal Mode (Power Button LED Color) ---
         card_mode, l_mode, self.card_tdp_mode_title = self._make_card(tr("card_tdp_mode", self.ui_language))
 
         self.tdp_mode_buttons = {}
         self.tdp_mode_colors = {
-            "quiet": "#0019ff",        # Color de AHORA (#0019ff)
-            "balanced": "#f3f4f6",     # White
-            "performance": "#ff0004",  # Color actual (#ff0004)
-            "custom": "#ff00d9"        # Color del acento de AHORA (#ff00d9)
+            "quiet": "#0019ff",
+            "balanced": "#f3f4f6",
+            "performance": "#ff0004",
+            "custom": "#ff00d9"
         }
         modes_grid = QHBoxLayout()
         modes_grid.setSpacing(6)
@@ -1941,13 +1865,11 @@ class LeGOSuiteMainWindow(QMainWindow):
         l_mode.addLayout(modes_grid)
         vbox.addWidget(card_mode)
 
-        # Container for manual TDP / CPU / GPU controls (active only when in 'custom' mode)
         self.custom_tdp_container = QWidget()
         custom_vbox = QVBoxLayout(self.custom_tdp_container)
         custom_vbox.setContentsMargins(0, 0, 0, 0)
         custom_vbox.setSpacing(10)
 
-        # --- Card 1: TDP & GPU ---
         card_tdp, l_tdp, self.card_tdp_title = self._make_card(tr("card_tdp", self.ui_language))
 
         tdp_top = QHBoxLayout()
@@ -1980,7 +1902,6 @@ class LeGOSuiteMainWindow(QMainWindow):
 
         custom_vbox.addWidget(card_tdp)
 
-        # --- Card 2: CPU & Power Controls ---
         card_cpu, l_cpu, self.card_cpu_title = self._make_card(tr("card_cpu", self.ui_language))
 
         self.chk_cpu_boost = QCheckBox(tr("chk_cpu_boost", self.ui_language))
@@ -2015,10 +1936,8 @@ class LeGOSuiteMainWindow(QMainWindow):
 
         custom_vbox.addWidget(card_cpu)
 
-        # Add the custom TDP container (active only in custom mode)
         vbox.addWidget(self.custom_tdp_container)
 
-        # --- Card 3: Battery Charge Limit (80%) ---
         card_bat, l_bat, self.card_bat_title = self._make_card(tr("card_bat", self.ui_language))
 
         self.chk_charge_limit = QCheckBox(tr("chk_charge_limit", self.ui_language))
@@ -2026,14 +1945,12 @@ class LeGOSuiteMainWindow(QMainWindow):
         l_bat.addWidget(self.chk_charge_limit)
         vbox.addWidget(card_bat)
 
-        # --- Card 4: Thermal & Fan Live Monitor ---
         card_monitor, l_monitor, self.card_monitor_title = self._make_card(tr("card_monitor", self.ui_language))
 
         temp_row = QHBoxLayout()
         temp_row.setContentsMargins(4, 2, 4, 2)
         temp_row.setSpacing(8)
 
-        # Left: Temp CPU
         cpu_box = QHBoxLayout()
         cpu_box.setSpacing(5)
         self.lbl_cpu_temp_title = QLabel("Temp CPU:")
@@ -2046,7 +1963,6 @@ class LeGOSuiteMainWindow(QMainWindow):
 
         temp_row.addStretch()
 
-        # Center: Animated Fan RPM Widget + RPM label
         fan_center_box = QHBoxLayout()
         fan_center_box.setSpacing(5)
         self.fan_anim_widget = AnimatedFanWidget()
@@ -2058,7 +1974,6 @@ class LeGOSuiteMainWindow(QMainWindow):
 
         temp_row.addStretch()
 
-        # Right: Temp GPU
         gpu_box = QHBoxLayout()
         gpu_box.setSpacing(5)
         self.lbl_gpu_temp_title = QLabel("Temp GPU:")
@@ -2072,7 +1987,6 @@ class LeGOSuiteMainWindow(QMainWindow):
         l_monitor.addLayout(temp_row)
         custom_vbox.addWidget(card_monitor)
 
-        # --- Card 5: Custom Fan Curves ---
         card_fan, l_fan, self.card_fan_title = self._make_card(tr("card_fan", self.ui_language))
 
         self.chk_fan_enabled = QCheckBox(tr("chk_fan_enabled", self.ui_language))
@@ -2117,7 +2031,6 @@ class LeGOSuiteMainWindow(QMainWindow):
         l_fan.addWidget(self.fan_controls_container)
         custom_vbox.addWidget(card_fan)
 
-        # --- Card 5: TDP Range ---
         card_range, l_range, self.card_range_title = self._make_card(tr("card_range", self.ui_language))
         min_row = QHBoxLayout()
         self.lbl_min_tdp_title = QLabel(tr("lbl_min_tdp", self.ui_language))
@@ -2153,9 +2066,6 @@ class LeGOSuiteMainWindow(QMainWindow):
         vbox.addStretch()
         return page
 
-    # ------------------------------------------------------------------
-    # TAB 2: Controls (Remap Buttons & Controller Lighting)
-    # ------------------------------------------------------------------
 
     def _build_controls_tab(self) -> QWidget:
         page = QWidget()
@@ -2163,7 +2073,6 @@ class LeGOSuiteMainWindow(QMainWindow):
         vbox.setContentsMargins(2, 4, 6, 8)
         vbox.setSpacing(10)
 
-        # --- Submenu Input Plumber Banner Button ---
         self.btn_ip_nav = QPushButton(f"🎮  {tr('lbl_ip_title', self.ui_language)}   ›")
         self.btn_ip_nav.setProperty("class", "ActionBtn")
         self.btn_ip_nav.setStyleSheet("""
@@ -2186,7 +2095,6 @@ class LeGOSuiteMainWindow(QMainWindow):
         self.btn_ip_nav.clicked.connect(self._open_inputplumber_submenu)
         vbox.addWidget(self.btn_ip_nav)
 
-        # --- Card 1: Controller Lighting (with Dual Animated Stick Preview) ---
         card_rgb, l_rgb, self.card_rgb_title = self._make_card(tr("card_rgb", self.ui_language))
 
         self.chk_power_led = QCheckBox(tr("chk_power_led", self.ui_language))
@@ -2288,10 +2196,8 @@ class LeGOSuiteMainWindow(QMainWindow):
         l_rgb.addWidget(self.rgb_details_container)
         vbox.addWidget(card_rgb)
 
-        # --- Card 2: Controller & Remap ---
         card_remap, l_remap, self.card_remap_title = self._make_card(tr("card_remap", self.ui_language))
 
-        # Rumble intensity selector
         row_rumble = QHBoxLayout()
         self.lbl_rumble = QLabel(tr("lbl_rumble_intensity", self.ui_language))
         self.lbl_rumble.setProperty("class", "RowLabel")
@@ -2348,9 +2254,6 @@ class LeGOSuiteMainWindow(QMainWindow):
         vbox.addStretch()
         return page
 
-    # ------------------------------------------------------------------
-    # SUBMENU: Input Plumber (Inside Controls Tab)
-    # ------------------------------------------------------------------
 
     def _build_inputplumber_page(self) -> QWidget:
         page = QWidget()
@@ -2358,7 +2261,6 @@ class LeGOSuiteMainWindow(QMainWindow):
         vbox.setContentsMargins(2, 4, 6, 8)
         vbox.setSpacing(8)
 
-        # Back to Controls Button
         self.btn_ip_back = QPushButton(f"‹  {tr('btn_ip_back', self.ui_language)}")
         self.btn_ip_back.setProperty("class", "ActionBtn")
         self.btn_ip_back.setStyleSheet("""
@@ -2380,10 +2282,8 @@ class LeGOSuiteMainWindow(QMainWindow):
         self.btn_ip_back.clicked.connect(lambda: self._switch_tab(1))
         vbox.addWidget(self.btn_ip_back)
 
-        # Main Card
         card_ip, l_ip, self.card_ip_title = self._make_card(tr("lbl_ip_title", self.ui_language))
 
-        # Status row
         st_row = QHBoxLayout()
         self.lbl_ip_st_title = QLabel("Status:")
         self.lbl_ip_st_title.setProperty("class", "RowLabel")
@@ -2395,7 +2295,6 @@ class LeGOSuiteMainWindow(QMainWindow):
         st_row.addWidget(self.lbl_ip_status)
         l_ip.addLayout(st_row)
 
-        # Mode row
         m_row = QVBoxLayout()
         m_row.setSpacing(4)
         self.lbl_ip_mode_title = QLabel(tr("lbl_ip_mode", self.ui_language))
@@ -2424,7 +2323,6 @@ class LeGOSuiteMainWindow(QMainWindow):
         m_row.addWidget(self.cmb_ip_mode)
         l_ip.addLayout(m_row)
 
-        # Profiles Section
         self.lbl_ip_prof_title = QLabel(tr("lbl_ip_profiles", self.ui_language))
         self.lbl_ip_prof_title.setProperty("class", "SectionTitle")
         self.lbl_ip_prof_title.setStyleSheet("font-size: 10px; margin-top: 4px;")
@@ -2439,7 +2337,6 @@ class LeGOSuiteMainWindow(QMainWindow):
         l_ip.addWidget(self.chk_ip_swap_menu)
         l_ip.addWidget(self.chk_ip_swap_vol)
 
-        # Reset Controllers Section (HHD inspired)
         l_ip.addSpacing(6)
         self.btn_reset_ctrl = QPushButton("🔄  " + tr("btn_reset_controllers", self.ui_language))
         self.btn_reset_ctrl.setCursor(Qt.CursorShape.PointingHandCursor)
@@ -2602,9 +2499,6 @@ class LeGOSuiteMainWindow(QMainWindow):
         self.settings_cache["inputPlumberMode"] = mode
         self._mark_saved()
 
-    # ------------------------------------------------------------------
-    # TAB 3: Screen (Rotación y Sensor de Orientación)
-    # ------------------------------------------------------------------
 
     def _build_screen_tab(self) -> QWidget:
         page = QWidget()
@@ -2614,7 +2508,6 @@ class LeGOSuiteMainWindow(QMainWindow):
 
         es = (self.ui_language == "es")
 
-        # Card: Rotación Automática y Configuración de Sensor (HWDB)
         card_rot, l_rot, self.card_sensor_title = self._make_card(tr("card_sensor", self.ui_language))
 
         status_row = QHBoxLayout()
@@ -2649,9 +2542,6 @@ class LeGOSuiteMainWindow(QMainWindow):
 
         self._check_hwdb_status()
         return page
-    # ------------------------------------------------------------------
-    # Theme Customization (Gear Wheel)
-    # ------------------------------------------------------------------
 
     def _open_theme_dialog(self):
         dlg = ThemeSettingsDialog(
@@ -2703,9 +2593,6 @@ class LeGOSuiteMainWindow(QMainWindow):
         self._update_ui_texts()
         self._mark_saved()
 
-    # ------------------------------------------------------------------
-    # Dock Mode (Collapse to Right Edge & Expand with Slide Animation)
-    # ------------------------------------------------------------------
 
     def _set_skip_taskbar(self, skip: bool):
         """
@@ -2748,7 +2635,6 @@ class LeGOSuiteMainWindow(QMainWindow):
         handle_h = 150
         cur_geom = self.geometry()
         dock_x = max(0, geo.x() + sw - handle_w)
-        # Perfectly centered vertically on the right edge
         dock_y = geo.y() + max(10, (sh - handle_h) // 2)
 
         if hasattr(self, "_anim_dock") and self._anim_dock:
@@ -2774,7 +2660,6 @@ class LeGOSuiteMainWindow(QMainWindow):
                 self.dock_handle.setGeometry(0, 0, handle_w, handle_h)
                 self.dock_handle.show()
             self.setGeometry(dock_x, dock_y, handle_w, handle_h)
-            # Hide window from task manager while collapsed/docked
             self._set_skip_taskbar(True)
 
         self._anim_dock.finished.connect(_on_collapse_done)
@@ -2801,7 +2686,6 @@ class LeGOSuiteMainWindow(QMainWindow):
         if hasattr(self, "_anim_dock") and self._anim_dock:
             self._anim_dock.stop()
 
-        # Restore window to task manager when expanding
         self._set_skip_taskbar(False)
 
         if hasattr(self, "dock_handle"):
@@ -2856,13 +2740,9 @@ class LeGOSuiteMainWindow(QMainWindow):
             self._initial_pos_set = True
             self._position_top_right()
 
-    # ------------------------------------------------------------------
-    # Frameless Drag & Edge Touch Slide Animation
-    # ------------------------------------------------------------------
 
     def mousePressEvent(self, event):
         if event.button() == Qt.MouseButton.LeftButton:
-            # Draggable header area (upper 85px of window)
             if event.position().y() <= 85:
                 self._drag_pos = event.globalPosition().toPoint() - self.frameGeometry().topLeft()
                 event.accept()
@@ -2926,7 +2806,6 @@ class LeGOSuiteMainWindow(QMainWindow):
         self.raise_()
         self.activateWindow()
 
-        # Smooth fade-in animation
         self._anim_fade = QPropertyAnimation(self, b"windowOpacity")
         self._anim_fade.setDuration(220)
         self._anim_fade.setStartValue(0.0)
@@ -2954,9 +2833,6 @@ class LeGOSuiteMainWindow(QMainWindow):
         self.hide()
         self.setWindowOpacity(1.0)
 
-    # ------------------------------------------------------------------
-    # System Tray Setup (Uses Solid Black Background Icon logo.jpg)
-    # ------------------------------------------------------------------
 
     def _build_tray(self):
         self.tray = QSystemTrayIcon(self)
@@ -3076,9 +2952,6 @@ class LeGOSuiteMainWindow(QMainWindow):
             if p.exists():
                 p.unlink()
 
-    # ------------------------------------------------------------------
-    # Tab Switching & State Synchronization
-    # ------------------------------------------------------------------
 
     def _switch_tab(self, index: int):
         self.stack.setCurrentIndex(index)
@@ -3125,7 +2998,6 @@ class LeGOSuiteMainWindow(QMainWindow):
             except Exception:
                 settings = {}
 
-        # Asegurar que el perfil de TDP se lea siempre directamente de tdp.json si falta
         if not settings.get("tdpProfiles") and TDP_FILE.exists():
             try:
                 settings["tdpProfiles"] = json.loads(TDP_FILE.read_text(encoding="utf-8"))
@@ -3154,7 +3026,6 @@ class LeGOSuiteMainWindow(QMainWindow):
     def _apply_settings_to_ui(self, s: dict):
         self._updating_ui = True
         try:
-            # 0. Desktop Theme
             theme = s.get("desktopTheme") or {}
             new_bg = theme.get("bgColor") or DEFAULT_BG_COLOR
             new_ct = theme.get("contentColor") or DEFAULT_CONTENT_COLOR
@@ -3180,7 +3051,6 @@ class LeGOSuiteMainWindow(QMainWindow):
             mode_txt = tr("status_decky_rpc" if self.backend.rpc_available else "status_local_sync", self.ui_language)
             self.version_label.setText(f"Version 0.198 • {mode_txt}")
 
-            # 1. TDP Mode (Thermal profile & LED Color)
             current_mode = str(s.get("tdpMode", "custom")).lower()
             if hasattr(self, "tdp_mode_buttons"):
                 for m_key, btn in self.tdp_mode_buttons.items():
@@ -3199,7 +3069,6 @@ class LeGOSuiteMainWindow(QMainWindow):
                 else:
                     self.custom_tdp_container.setStyleSheet("QWidget { color: #6b7280; } QSlider::groove:horizontal { background: #1f2937; } QSlider::handle:horizontal { background: #4b5563; } QPushButton { background-color: rgba(255,255,255,0.03); color: #6b7280; border-color: rgba(255,255,255,0.03); }")
 
-            # 1.1 TDP & CPU
             min_tdp = int(s.get("minTdp", 4))
             max_tdp = int(s.get("maxTdp", 40))
             self.slider_min_tdp.setValue(min_tdp)
@@ -3216,7 +3085,6 @@ class LeGOSuiteMainWindow(QMainWindow):
                     pass
             tdp_prof = tdp_prof or {}
             
-            # Si tdp_prof trae tdp explícito, usarlo; de lo contrario mantener el valor actual del slider
             if "tdp" in tdp_prof:
                 tdp_val = int(tdp_prof["tdp"])
             else:
@@ -3236,13 +3104,11 @@ class LeGOSuiteMainWindow(QMainWindow):
             if self.cmb_epp.findText(epp) >= 0:
                 self.cmb_epp.setCurrentText(epp)
 
-            # 2. Battery Charge Limit
             c_enabled = bool(s.get("chargeLimitEnabled", False))
             c_val = 80
             self.chk_charge_limit.setChecked(c_enabled)
             self.chk_charge_limit.setText(tr("chk_charge_limit", self.ui_language))
 
-            # 3. Fan Curves
             fan_enabled = bool(s.get("customFanCurvesEnabled", False))
             self.chk_fan_enabled.setChecked(fan_enabled)
             self.fan_controls_container.setVisible(fan_enabled)
@@ -3254,7 +3120,6 @@ class LeGOSuiteMainWindow(QMainWindow):
                 self.fan_labels[temp].setText(f"{spd}%")
                 self.fan_sliders[temp].setEnabled(not self.chk_full_fan.isChecked())
 
-            # 4. RGB Lighting
             self.chk_power_led.setChecked(bool(s.get("powerLedEnabled", True)))
             rgb_ctrl = bool(s.get("enableRgbControl", False))
             self.chk_rgb_control.setChecked(rgb_ctrl)
@@ -3288,7 +3153,6 @@ class LeGOSuiteMainWindow(QMainWindow):
             self.stick_preview.setVisible(led_on)
             self.stick_preview.set_rgb_state(led_on, mode, hue, brightness, speed)
 
-            # 5. Controller Remapping
             remap_on = bool(s.get("controllerRemappingEnabled", False))
             self.chk_remap_enabled.setChecked(remap_on)
             ctrl_prof = (s.get("controller") or {}).get("default") or {}
@@ -3308,7 +3172,6 @@ class LeGOSuiteMainWindow(QMainWindow):
                     cmb.setCurrentIndex(idx)
                 cmb.setEnabled(remap_on)
 
-            # 7. Input Plumber State & Mode
             ip_mode = s.get("inputPlumberMode")
             if not ip_mode:
                 try:
@@ -3384,9 +3247,6 @@ class LeGOSuiteMainWindow(QMainWindow):
         except Exception:
             pass
 
-    # ------------------------------------------------------------------
-    # Event Handlers (TDP & Power)
-    # ------------------------------------------------------------------
 
     def _on_tdp_mode_selected(self, mode: str):
         if self._updating_ui:
@@ -3489,9 +3349,6 @@ class LeGOSuiteMainWindow(QMainWindow):
         self.slider_tdp.setRange(min_v, max_v)
         self._mark_saved()
 
-    # ------------------------------------------------------------------
-    # Event Handlers (Battery Charge Limit)
-    # ------------------------------------------------------------------
 
     def _on_charge_limit_toggled(self, checked: bool):
         if self._updating_ui:
@@ -3504,9 +3361,6 @@ class LeGOSuiteMainWindow(QMainWindow):
         self.backend.call("set_charge_limit", enabled, pct)
         self.refresh_from_backend(force=True)
 
-    # ------------------------------------------------------------------
-    # Event Handlers (Fan Curves)
-    # ------------------------------------------------------------------
 
     def _on_fan_enabled_toggled(self, checked: bool):
         if self._updating_ui:
@@ -3547,9 +3401,6 @@ class LeGOSuiteMainWindow(QMainWindow):
         self.backend.call("save_fan_settings", fan_info, "default")
         self._mark_saved()
 
-    # ------------------------------------------------------------------
-    # Event Handlers (RGB Lighting)
-    # ------------------------------------------------------------------
 
     def _on_power_led_toggled(self, checked: bool):
         if self._updating_ui:
@@ -3655,9 +3506,6 @@ class LeGOSuiteMainWindow(QMainWindow):
         self.backend.call("save_rgb_settings", payload)
         self._mark_saved()
 
-    # ------------------------------------------------------------------
-    # Event Handlers (Controller Remapping)
-    # ------------------------------------------------------------------
 
     def _on_rumble_changed(self, index: int):
         if self._updating_ui:
@@ -3723,9 +3571,6 @@ class LeGOSuiteMainWindow(QMainWindow):
             pass
 
 
-# ---------------------------------------------------------------------------
-# Single-Instance Helper & Entry Point
-# ---------------------------------------------------------------------------
 
 def ensure_single_instance(show_callback):
     try:

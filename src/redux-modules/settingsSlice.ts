@@ -111,7 +111,7 @@ const initialState: SettingsState = {
       powerControls: DEFAULT_POWER_CONTROLS,
     },
   },
-  pollRate: DEFAULT_POLL_RATE, // milliseconds
+  pollRate: DEFAULT_POLL_RATE, 
   pluginVersionNum: "",
 };
 
@@ -236,7 +236,7 @@ export const settingsSlice = createSlice({
       }
       state.minGpuFrequency = minGpuFrequency;
       state.maxGpuFrequency = maxGpuFrequency;
-      // set default min/max gpu frequency if not set
+      
       if (!state.tdpProfiles.default.minGpuFrequency && minGpuFrequency) {
         state.tdpProfiles.default.minGpuFrequency = minGpuFrequency;
       }
@@ -278,7 +278,7 @@ export const settingsSlice = createSlice({
       const { currentGameId, enableTdpProfiles } = state;
 
       if (min) {
-        // set min value
+        
         if (enableTdpProfiles) {
           state.tdpProfiles[currentGameId].minGpuFrequency = min;
         } else {
@@ -286,7 +286,7 @@ export const settingsSlice = createSlice({
         }
       }
       if (max) {
-        // set max value
+        
         if (enableTdpProfiles) {
           state.tdpProfiles[currentGameId].maxGpuFrequency = max;
         } else {
@@ -311,7 +311,7 @@ export const settingsSlice = createSlice({
 
       if (enableTdpProfiles) {
         set(state.tdpProfiles, `${currentGameId}.gpuMode`, newGpuMode);
-        // for users on older version of plugin, gpu freq might not be populated. Populate it here
+        
         if (!state.tdpProfiles[currentGameId].minGpuFrequency) {
           state.tdpProfiles[currentGameId].minGpuFrequency =
             state.tdpProfiles.default.minGpuFrequency;
@@ -382,7 +382,7 @@ function bootstrapTdpProfile(
     return;
   }
 
-  // bootstrap initial TDP profile if it doesn't exist
+  
   if (!state.tdpProfiles[id]) {
     const defaultTdpProfile = clone(state.tdpProfiles.default);
     state.tdpProfiles[id] = defaultTdpProfile;
@@ -391,13 +391,13 @@ function bootstrapTdpProfile(
 
 function getDefaultAcProfile(state: SettingsState, id: string) {
   if (state.tdpProfiles[id]) {
-    // return already existing non-ac profile for game id
+    
     return clone(state.tdpProfiles[id]);
   } else if (state.tdpProfiles[`default-ac-power`]) {
-    // return default ac-power profile
+    
     return clone(state.tdpProfiles[`default-ac-power`]);
   } else {
-    // return regular default profile
+    
     return clone(state.tdpProfiles.default);
   }
 }
@@ -418,7 +418,7 @@ export const gpuControlEnabledSelector = (state: RootState) => {
   return Boolean(advancedState[AdvancedOptionsEnum.ENABLE_GPU_CONTROL]);
 };
 
-// tdp range selectors
+
 export const minTdpSelector = (state: RootState) => state.settings.minTdp;
 export const maxTdpSelector = (state: RootState) => state.settings.maxTdp;
 export const tdpRangeSelector = (state: RootState) => [
@@ -426,11 +426,11 @@ export const tdpRangeSelector = (state: RootState) => [
   state.settings.maxTdp,
 ];
 
-// tdp profile selectors
+
 export const defaultTdpSelector = (state: RootState) =>
   state.settings.tdpProfiles.default.tdp;
 
-// poll rate selectors
+
 export const pollRateSelector = (state: RootState) => state.settings.pollRate;
 export const pollEnabledSelector = (state: RootState) => {
   const { advancedState } = getAdvancedOptionsInfoSelector(state);
@@ -442,7 +442,7 @@ export const pollEnabledSelector = (state: RootState) => {
   return pollingEnabled;
 };
 
-// enableTdpProfiles selectors
+
 export const tdpProfilesEnabled = (state: RootState) =>
   state.settings.enableTdpProfiles;
 
@@ -465,7 +465,7 @@ export const activeTdpProfileSelector = (state: RootState) => {
     const tdpProfile = settings.tdpProfiles[activeGameId];
     return { activeGameId, tdpProfile };
   } else {
-    // tdp from default profile
+    
     return {
       activeGameId: "default",
       tdpProfile: settings.tdpProfiles.default,
@@ -492,16 +492,16 @@ export const getCurrentTdpInfoSelector = (state: RootState) => {
   const tdp = activeTdpProfile.tdp;
 
   if (settings.enableTdpProfiles) {
-    // tdp from game tdp profile
+    
     const displayName = get(settings, `gameDisplayNames.${activeGameId}`, "");
     return { id: activeGameId, tdp, displayName };
   } else {
-    // tdp from default profile
+    
     return { id: "default", tdp, displayName: "Default" };
   }
 };
 
-// GPU selectors
+
 
 export const getCurrentGpuFrequencySelector = (state: RootState) => {
   const activeGameId = activeGameIdSelector(state);
@@ -603,15 +603,15 @@ function handleAdvancedOptionsEdgeCases(
         false,
       );
     }
-    // if (statePath === AdvancedOptionsEnum.ENABLE_BACKGROUND_POLLING && value) {
-    //   if (typeof state?.advanced?.platformProfile === "boolean") {
-    //     set(
-    //       state,
-    //       `advanced.${AdvancedOptionsEnum.USE_PLATFORM_PROFILE}`,
-    //       false,
-    //     );
-    //   }
-    // }
+    
+    
+    
+    
+    
+    
+    
+    
+    
     if (
       statePath === AdvancedOptionsEnum.FORCE_DISABLE_TDP_ON_RESUME &&
       value === true
@@ -645,7 +645,7 @@ function handleSteamDeckAdvancedOptions(
       `advanced.${SteamDeckAdvancedOptions.DECK_CUSTOM_GPU_MAX_ENABLED}`,
       false,
     );
-    // force maxGpuFrequency back to 1600 max for Steam Deck
+    
     set(state, "settings.maxGpuFrequency", 1600);
   };
 
@@ -655,7 +655,7 @@ function handleSteamDeckAdvancedOptions(
         statePath == SteamDeckAdvancedOptions.DECK_CUSTOM_GPU_MAX_ENABLED) &&
       Boolean(value) == true
     ) {
-      // polling must be forced on when using custom TDP limits on deck
+      
       set(
         state,
         `advanced.${AdvancedOptionsEnum.ENABLE_BACKGROUND_POLLING}`,
@@ -666,7 +666,7 @@ function handleSteamDeckAdvancedOptions(
       statePath == AdvancedOptionsEnum.ENABLE_BACKGROUND_POLLING &&
       Boolean(value) == false
     ) {
-      // turn off custom TDP and GPU limits if background polling turned off
+      
       set(
         state,
         `advanced.${SteamDeckAdvancedOptions.DECK_CUSTOM_TDP_LIMITS}`,
@@ -689,10 +689,10 @@ function handleSteamDeckAdvancedOptions(
 
       set(state, "settings.maxGpuFrequency", newMax || 1600);
     }
-  } // end ifSteamDeck
+  } 
 }
 
-// Action creators are generated for each case reducer function
+
 export const {
   updateMinTdp,
   updateMaxTdp,

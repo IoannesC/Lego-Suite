@@ -10,7 +10,6 @@ def set_tdp(tdp: int):
   return _execute_tdp_command(tdp, STEAM_DECK_TDP_PATH)
 
 def get_gpu_range():
-  # Steam Deck pp_od_clk_voltage is empty, so min/max values can't be automatically detected
   GPU_FREQUENCY_RANGE = [200, 1600]
 
   custom_max_enabled = advanced_options.get_setting(

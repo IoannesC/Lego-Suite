@@ -89,11 +89,11 @@ const EppSlider: FC<{ powerControlInfo: PowerControlInfo }> = ({
     (scalingDriver === ScalingDrivers.PSTATE_EPP ||
       scalingDriver == ScalingDrivers.INTEL_PSTATE)
   ) {
-    // return (
-    //   <Field disabled>
-    //     EPP cannot be changed while Governor is set to Performance
-    //   </Field>
-    // );
+    
+    
+    
+    
+    
     return null;
   }
 

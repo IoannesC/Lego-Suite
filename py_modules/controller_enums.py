@@ -4,7 +4,6 @@ class Controller(Enum):
     LEFT = 0x03
     RIGHT = 0x04
 
-# The Button to Remap
 class RemappableButtons(Enum):
     Y1 = 0x1c
     Y2 = 0x1d
@@ -12,7 +11,6 @@ class RemappableButtons(Enum):
     M2 = 0x21
     M3 = 0x22
 
-# The action to assign to Remappable Buttons
 class RemapActions(Enum):
     DISABLED = 0x00
     L_STICK_CLICK = 0x03

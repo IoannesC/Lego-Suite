@@ -1,5 +1,5 @@
-// languages.json build via CI build
-// to generate for localhost/dev, run `build_i18n_json.sh` script
+
+
 import * as languages from "./languages.json";
 
 function getLangs() {
@@ -63,13 +63,7 @@ export const getLanguageName = (lang?: string): string => {
   return LANGS[targetLang]?.name || targetLang;
 };
 
-/**
- * Translate a key to the current language
- *
- * @param key - Translation key
- * @param originalString - Original text (fallback)
- * @returns Translated string or original text if translation not found
- */
+
 const t = (key: string, originalString: string): string => {
   let lang = getCurrentLanguage();
   if (lang && lang.includes("-")) {

@@ -20,7 +20,6 @@ def get_ryzenadj_path():
     return RYZENADJ_PATH
 
   if not device_utils.is_intel():
-    # allow for custom override of ryzenadj for SteamOS
     if os.path.exists(LOCAL_RYZENADJ):
         RYZENADJ_PATH = LOCAL_RYZENADJ
     elif os.path.exists(NIX_RYZENADJ):
@@ -29,13 +28,11 @@ def get_ryzenadj_path():
       RYZENADJ_PATH = shutil.which('ryzenadj')
 
     if RYZENADJ_PATH == None and os.path.exists(FALLBACK_RYZENADJ):
-      # last resort fallback
       RYZENADJ_PATH = FALLBACK_RYZENADJ
 
   return RYZENADJ_PATH
 
 def set_undervolt():
-  # DefaultSettings.ENABLE_RYZENADJ_UNDERVOLT
   undervolt_value = int(get_advanced_option_value('ryzenadjUndervolt') or 0)
   undervolt_enabled = bool(get_advanced_option_value('enableRyzenadjUndervolt'))
   if (
@@ -75,7 +72,6 @@ def set_tdp(tdp: int):
     ]
 
     if get_advanced_option_value(
-      # advanced_options.DefaultSettings.ENABLE_APU_SLOW_LIMIT.value
       'enableApuSlowLimit'
     ):
       commands.append('--apu-slow-limit')
@@ -89,5 +85,4 @@ def set_tdp(tdp: int):
     return results
 
 def get_advanced_option_value(setting_name):
-  # e.g. get_setting(LegionGoSettings.CUSTOM_TDP_MODE.value)
   return get_nested_setting(f'advanced.{setting_name}')

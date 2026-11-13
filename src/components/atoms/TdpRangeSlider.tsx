@@ -1,4 +1,4 @@
-// TDP Range Slider
+
 import { DeckySlider } from "./DeckyFrontendLib";
 
 type PropType = {

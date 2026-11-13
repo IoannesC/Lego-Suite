@@ -11,7 +11,7 @@ const Gpu = () => {
   const isIntel = useIsIntel();
 
   if (isIntel) {
-    // intel currently doesn't support manual GPU clocks on iGPU
+    
     return null;
   }
 

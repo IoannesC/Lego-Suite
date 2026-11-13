@@ -49,7 +49,7 @@ const persistGpu = ({ state, activeGameId, advancedState }: PersistGpuArgs) => {
 
 const debouncedPersistGpu = debounce(persistGpu, 1000);
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 export const settingsMiddleware =
   (store: { getState: () => any }) =>
   (dispatch: Dispatch) =>
@@ -63,7 +63,7 @@ export const settingsMiddleware =
     const activeGameId = activeGameIdSelector(state);
 
     if (action.type === resumeAction.type) {
-      // pollTdp simply tells backend to set TDP according to settings.json
+      
       setPollTdp({ currentGameId: activeGameId });
     }
 
@@ -87,7 +87,7 @@ export const settingsMiddleware =
     }
 
     if (action.type === updatePollRate.type) {
-      // action.type == number (rate in ms)
+      
       setSetting({
         name: "pollRate",
         value: action.payload,

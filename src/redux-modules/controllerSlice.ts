@@ -141,9 +141,9 @@ export const controllerSlice = createSlice({
   },
 });
 
-// -------------
-// selectors
-// -------------
+
+
+
 
 export const selectControllerPerGameProfilesEnabled = (state: RootState) => {
   return state.controller.perGameProfilesEnabled;
@@ -222,9 +222,9 @@ export const selectControllerProfileDisplayName = (state: RootState) => {
   }
 };
 
-// -------------
-// middleware
-// -------------
+
+
+
 
 const mutatingActionTypes = [
   controllerSlice.actions.setPerGameProfilesEnabled.type,

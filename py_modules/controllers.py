@@ -60,7 +60,6 @@ def sync_gyros(current_game_id):
             gyro_code = Gyro[gyro].value
 
             if gyro_remap_action_code >= 0 and gyro_code > 0:
-                # valid codes, set gyro
                 gyro_command = legion_configurator.create_gyro_remap_command(gyro_code, gyro_remap_action_code)
                 legion_configurator.send_command(gyro_command)
         except Exception as e:
@@ -133,7 +132,6 @@ def reset_controllers() -> dict:
     decky_plugin.logger.info("Initiating HHD-style full controller reset & calibration...")
     results = {"led_flash": False, "sysfs_reset": 0, "hid": False, "inputplumber": False}
 
-    # 1. LED Flash Sequence (Joysticks blink 3 times, then return to factory Legion Cyan)
     led_dir = "/sys/class/leds/go:rgb:joystick_rings"
     def _write_led_file(prop, val):
         p = os.path.join(led_dir, prop)
@@ -158,7 +156,6 @@ def reset_controllers() -> dict:
                 _write_led_file("enabled", "false")
                 time.sleep(0.08)
 
-            # Return to native Lenovo Legion Go factory color (Cyan Blue)
             _write_led_file("enabled", "true")
             _write_led_file("mode", "custom")
             _write_led_file("effect", "monocolor")
@@ -169,7 +166,6 @@ def reset_controllers() -> dict:
     except Exception as e:
         decky_plugin.logger.warning(f"Error during LED flash sequence: {e}")
 
-    # 2. Hardware MCU, Handle Resets and Gyro Calibration via hid-lenovo-go driver
     sysfs_targets = [
         "left_handle/reset",
         "right_handle/reset",
@@ -188,7 +184,6 @@ def reset_controllers() -> dict:
                 except Exception:
                     pass
 
-    # 3. Clear HID remappings (Y1-Y3, M2, M3 -> DISABLED, Touchpad -> ON)
     try:
         for btn in [RemappableButtons.Y1.value, RemappableButtons.Y2.value]:
             cmd = legion_configurator.create_button_remap_command(Controller.LEFT.value, btn, RemapActions.DISABLED.value)
@@ -204,7 +199,6 @@ def reset_controllers() -> dict:
     except Exception as e:
         decky_plugin.logger.debug(f"HID remapping clear note: {e}")
 
-    # 4. Reset InputPlumber profiles back to default system profile and re-sync targets
     try:
         import inputplumber_utils
         time.sleep(0.3)
@@ -214,7 +208,6 @@ def reset_controllers() -> dict:
     except Exception as e:
         decky_plugin.logger.error(f"Error resetting InputPlumber during controller reset: {e}")
 
-    # 5. Update settings.json with clean factory state
     try:
         import json
         cands = [

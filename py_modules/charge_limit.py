@@ -35,7 +35,6 @@ def set_charge_limit(limit):
   return False
 
 def get_expected_charge_limit():
-  # CHARGE_LIMIT = 'chargeLimit'
   return get_nested_setting('advanced.chargeLimit')
 
 def charge_limit_enabled():

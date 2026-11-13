@@ -14,18 +14,13 @@ except ImportError:
             def debug(*args): pass
     decky_plugin = _DummyDecky()
 
-# Lenovo Vendor ID
 vendor_id = 0x17EF
 
-# Legion Go controller product IDs
 base_product_ids = [
-    # Legion Go controllers with firmwares from before 2025
     0x6180,
-    # Legion Go controllers with firmwares from 2025 and after
     0x61E0,
 ]
 
-# Vendor defined HID usage page
 usage_page = 0xFFA0
 
 global_config = None
@@ -35,7 +30,6 @@ def get_config():
     global global_config
 
     try:
-        # Enumerate and set the global configuration
         for dev in legion_hid.enumerate(vendor_id):
             for product_id in base_product_ids:
                 product_id_match = lambda x: x & 0xFFF0 == product_id
@@ -71,16 +65,15 @@ def create_touchpad_command(enable):
 
     command = [
         0x05,
-        0x06,  # Report ID and Length
-        0x6B,  # Command (Nibble 6 + b)
-        0x02,  # Command sub-parameter
-        0x04,  # Right Controller
-        enable_byte,  # Enable/Disable flag
-        0x01   # All commands end with 0x01
+        0x06,
+        0x6B,
+        0x02,
+        0x04,
+        enable_byte,
+        0x01
     ]
 
     byte_command = bytes(command)
-    # Pad the byte_command with 0xCD to meet the length of 64 bytes
     buffered_command = byte_command + bytes([0xCD] * (64 - len(byte_command)))
     return buffered_command
 
@@ -93,13 +86,13 @@ def create_rumble_intensity_command(intensity_code, controller=0x00):
     :return: bytes - The command byte array (64 bytes)
     """
     command = [
-        0x05,             # Report ID (GO_OUTPUT_REPORT_ID)
-        0x00,             # MCU_CONFIG_DATA
-        0x06,             # SET_MOTOR_CFG
-        0x02,             # MOTOR_INTENSITY
-        controller,       # Controller (0x00 = all, 0x03 = Left, 0x04 = Right)
-        intensity_code,   # Intensity level
-        0x01              # End marker
+        0x05,
+        0x00,
+        0x06,
+        0x02,
+        controller,
+        intensity_code,
+        0x01
     ]
     byte_command = bytes(command)
     buffered_command = byte_command + bytes([0xCD] * (64 - len(byte_command)))
@@ -121,16 +114,14 @@ def create_rgb_control_command(controller, mode, color, brightness, speed, profi
     """
     on_off_byte = 0x01 if on else 0x00
     command = [
-        0x05, 0x0c if on else 0x06,  # Report ID and Length (0x0c for setting profile, 0x06 for on/off)
-        0x72 if on else 0x70,        # Command (Nibble 7 + 2 for profile, 7 + 0 for on/off)
+        0x05, 0x0c if on else 0x06,
+        0x72 if on else 0x70,
         0x01, controller
     ]
 
     if on:
-        # Adding profile settings when turning on
         command += [mode] + list(color) + [brightness, speed, profile, 0x01]
     else:
-        # Adding the on/off byte when turning off
         command += [on_off_byte, 0x01]
 
     return bytes(command) + bytes([0xCD] * (64 - len(command)))
@@ -145,12 +136,12 @@ def create_rgb_on_off_command(controller, on):
     """
     on_off_byte = 0x01 if on else 0x00
     command = [
-        0x05, 0x06,  # Report ID and Length
-        0x70,        # Command (Nibble 7 + 0)
-        0x02,        # Sub-parameter
-        controller,  # Controller
-        on_off_byte, # On/Off
-        0x01         # Command end marker
+        0x05, 0x06,
+        0x70,
+        0x02,
+        controller,
+        on_off_byte,
+        0x01
     ]
     return bytes(command) + bytes([0xCD] * (64 - len(command)))
 
@@ -163,11 +154,11 @@ def create_gyro_remap_command(gyro, joystick):
     :return: bytes - The command byte array
     """
     command = [
-        0x05, 0x08,  # Report ID and Length
-        0x6a,        # Command (Nibble 6 + a)
-        0x06, 0x01, 0x01,  # Sub-parameters
+        0x05, 0x08,
+        0x6a,
+        0x06, 0x01, 0x01,
         gyro, joystick,
-        0x01         # Command end marker
+        0x01
     ]
     return bytes(command) + bytes([0xCD] * (64 - len(command)))
 
@@ -190,10 +181,10 @@ def create_button_remap_command(controller, button, action):
     :return: bytes - The command byte array
     """
     command = [
-        0x05, 0x07,  # Report ID and Length
-        0x6c,        # Command (Nibble 6 + c)
+        0x05, 0x07,
+        0x6c,
         0x02, controller, button, action,
-        0x01         # Command end marker
+        0x01
     ]
     return bytes(command) + bytes([0xCD] * (64 - len(command)))
 
@@ -206,11 +197,11 @@ def create_vibration_command(controller, vibration_level):
     :return: bytes - The command byte array
     """
     command = [
-        0x05, 0x06,  # Report ID and Length
-        0x67,        # Command (Nibble 6 + 7)
-        0x02,        # Sub-parameter
+        0x05, 0x06,
+        0x67,
+        0x02,
         controller, vibration_level,
-        0x01         # Command end marker
+        0x01
     ]
     return bytes(command) + bytes([0xCD] * (64 - len(command)))
 
@@ -225,11 +216,11 @@ def create_fps_remap_command(controller, profile, button, action):
     :return: bytes - The command byte array
     """
     command = [
-        0x05, 0x08,  # Report ID and Length
-        0x6c,        # Command (Nibble 6 + c)
-        0x04,        # Sub-parameter
+        0x05, 0x08,
+        0x6c,
+        0x04,
         controller, profile, button, action,
-        0x01         # Command end marker
+        0x01
     ]
     return bytes(command) + bytes([0xCD] * (64 - len(command)))
 

@@ -86,7 +86,6 @@ def merge_settings(new_settings):
     settings = get_settings()
 
     if new_settings:
-        # Strip tdpProfiles so it is never merged into settings.json
         if 'tdpProfiles' in new_settings:
             del new_settings['tdpProfiles']
         deep_merge(new_settings, settings)
