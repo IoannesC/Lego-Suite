@@ -9,6 +9,23 @@ LeGO Suite es la suite integral de control para sacarle el mayor provecho a tu L
 ### Descargo de responsabilidad
 El uso de este software es responsabilidad de quien lo utiliza. Carece de cualquier tipo de garantía y es el usuario el único responsable para todos los efectos conducentes.
 
+**Dependencias requeridas:**
+
+**1. Plugin de Decky Loader**
+Decky Loader (en SteamOS, Bazzite o Linux).
+Permisos root (configurado en plugin.json).
+Python 3 con la librería hid==1.0.5 (requirements.txt).
+Reglas udev para mandos Lenovo (idVendor=="17ef"), que se configuran con install.sh.
+RyzenAdj (ya viene incluido en bin/).
+(Solo para compilar desde código fuente): Node.js y pnpm (para instalar dependencias de package.json y ejecutar pnpm build).
+
+**2. App de Escritorio (desktop/lego_suite_desktop.py)**
+Python 3 (/usr/bin/python3).
+PyQt6 (para la interfaz gráfica y el icono en la bandeja del sistema).
+XWayland / XCB (QT_QPA_PLATFORM=xcb, usado al lanzar la app en desktop/install_desktop_app.sh).
+KDE Plasma / KWin (opcional): para aplicar automáticamente la regla de ventana sin bordes arriba a la derecha (kwinrulesrc y qdbus6).
+RyzenAdj (incluido en bin/) y las reglas udev para los mandos.
+
 
 ### Notas sobre la v0.198:
 Está probada y funciona correctamente en mi **Lenovo Legion Go Gen 1, Z1 Extreme con 16Gb de RAM en CachyOS con kernel LTS.** No tengo acceso a otros dispositivos. Si llego a conseguir ponerle las manos encima a otro dispositivo o a otra máquina de Lenovo, con gusto optimizaré para esos sistemas; o en su defecto testers con otras máquinas. Por el momento si necesitas probarlo en tu equipo que no es Lenovo Legion Go Gen 1, hazlo por tu propia iniciativa.
@@ -67,6 +84,7 @@ Y otras opciones más que podrás descubrir por ti mismo.
 
 <div align="center">  <img width="368" height="307" alt="f2" src="https://github.com/user-attachments/assets/e8ab1454-5ddc-4f9e-9cd4-84a83304eb3e" /> </div>
 
+Ofrece la misma funcionalidad del plugin, pero sin pefiles específicos. Utiliza y modifica el perfil predeterminado del Gamescope al estar en el escritorio y poder modificar el tiempo real del mismo (Si utilizamos aplicaciones de diseño o productividad que requieren cierta potencia, y no queremos regresar a Decky). En el apartado Pantalla, puede inyectar las coordenadas correctas de la pantalla de la Legion Go, para utilizarla como Tablet y activar el giro automático según la posición de la misma.
 
 ## Agradecimientos y Créditos (Credits & Acknowledgments)
 
