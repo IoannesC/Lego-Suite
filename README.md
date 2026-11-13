@@ -1,17 +1,25 @@
-# LeGO Suite v0.198
+<img width="1672" height="941" alt="file_000000001834822f9cf25b1021da0124" src="https://github.com/user-attachments/assets/a18d2591-66ca-44b6-80e3-065768210b3a" />
 
-**LeGO Suite** es la suite integral de control de energía, ventilación, eGPU e interfaz de mandos para Lenovo Legion Go en Decky Loader y modo escritorio.
+LeGO Suite v0.198
 
-## Pestañas del Plugin
+LeGO Suite es la suite integral de control de energía, ventilación, eGPU e interfaz de mandos para Lenovo Legion Go en Decky Loader y modo escritorio.
 
-### 1. TDP (Energía y Ventilación)
-- **Control de TDP**: Ajuste de TDP global y por juego (WMI de Lenovo y `ryzenadj`).
-- **Control de GPU y eGPU**: Modos Batería, Balance, Rango de frecuencias, Frecuencia fija y detección/integración con eGPUs externas.
-- **Controles de CPU**: CPU Boost, SMT, Gobernador de energía (Power Governor) y Preferencia de rendimiento energético (EPP).
-- **Curvas de Ventilación (Fan Control)**: Curvas de temperatura/velocidad de ventilador personalizadas, perfiles de ventilación por juego y modo de velocidad máxima (Full Fan Speed).
-- **Límite de Carga de Batería (80%)**: Protección de batería mediante llamadas ACPI de Lenovo.
-- **Brillo Adaptativo (ALS)**: Sensor de luz ambiental configurable.
-- **Opciones Avanzadas**: Polling de TDP en segundo plano, perfiles AC, undervolt experimental vía `ryzenadj`, y manejo de suspensión/reanudación.
+Notas sobre la v0.198:
+Está probada y funciona correctamente en mi Lenovo Legion Go Gen 1, Z1 Extreme con 16Gb de RAM. No tengo acceso a otros dispositivos. Si llego a conseguir ponerle las manos encima a otro dispositivo o a otra máquina de Lenovo, con gusto optimizaré para esos sistemas; o en su defecto testers con otras máquinas. Por el momento si necesitas probarlo en tu equipo que no es Lenovo Legion Go Gen 1, hazlo por tu propia iniciativa.
+Me gustaría agregar más opciones y más funcionalidades utiles, poco a poco lo iré haciendo. 
+
+Sobre LeGO Suite:
+
+Hay dos aplicaciones en una. Un práctico Plugin para Decky y una aplicación para escritorio. Puedes utilizar el plugin para Decky sin necesidad de descargar e instalar la aplicación de escritorio. Pero ambas de complementan y te ofrecen más opciones. 
+
+1. TDP (Energía y Ventilación).
+   
+Control de TDP**: Ajuste de TDP global y por juego (WMI de Lenovo y `ryzenadj`).
+Control de GPU y eGPU**: Modos Batería, Balance, Rango de frecuencias, Frecuencia fija y detección/integración con eGPUs externas.
+Controles de CPU**: CPU Boost, SMT, Gobernador de energía (Power Governor) y Preferencia de rendimiento energético (EPP).
+Curvas de Ventilación (Fan Control)**: Curvas de temperatura/velocidad de ventilador personalizadas, perfiles de ventilación por juego y modo de velocidad máxima (Full Fan Speed).
+Límite de Carga de Batería (80%)**: Protección de batería mediante llamadas ACPI de Lenovo.
+Opciones Avanzadas**: Polling de TDP en segundo plano, perfiles AC, undervolt experimental vía `ryzenadj`, y manejo de suspensión/reanudación.
 
 ### 2. Controls (Mandos e Iluminación)
 - **Iluminación RGB de Controles**: Control del LED de encendido y anillos RGB de los mandos (modos Solid, Dynamic, Pulse, Spiral, brillo, velocidad, tono/hue y perfiles por juego).
