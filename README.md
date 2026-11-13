@@ -34,6 +34,8 @@ Optional:
 InputPlumber for controller profile management and emulation (Not Handheld Daemon).
 On certain distributions, you may need to remove a udev rule that hijacks the screen's accelerometer—preventing its convenient use as a vertical tablet—for InputPlumber (it uses it as a controller accelerometer, which is useless since InputPlumber can coexist and function without that rule).
 
+Even though SimpledeckyTDP, Legion GO Remapper, and HDD are awesome utilities and my efforts are super modest, if you want to test these apps, you'll need to uninstall those first.
+
 CSS Loader on Decky and the Color Toggles plugin.
 
 All-Ways-EGPU to use the eGPU in Gamescope without loopback latency when using the GPU's HDMI output (CachyOS).
@@ -168,6 +170,8 @@ Opcionales:
 
 Input Plumber para la gestión y emulación de perfiles de los mandos (No Handheld Daemon).
 En ciertas distros, habría que liberar de una regla Udev que secuestra el acelerometro de la pantalla -Y su conveniente uso como tablet vertical- para Input Plumber (Lo utiliza como acelerometro de los mandos, pero es inutil, dado que puede coexistir el uso por Input Plumber sin esa regla). 
+
+Aunque SimpledeckyTDP, Legion GO Remmaper, y HHD son grandísimas utilidades y mis esfuerzos son sumamente modestos, si quieres probar estas aplicaciones, debes eliminar previamente las mencionadas. 
 
 CSS Loader en Decky y el complemento Color Toggles.
 
