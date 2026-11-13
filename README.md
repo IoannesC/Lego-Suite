@@ -36,7 +36,7 @@ On certain distributions, you may need to remove a udev rule that hijacks the sc
 
 Even though SimpledeckyTDP, Legion GO Remapper, and HDD are awesome utilities and my efforts are super modest, if you want to test these apps, you'll need to uninstall those first.
 
-CSS Loader on Decky and the Color Toggles plugin.
+CSS Loader on Decky and the Colored Toggles plugin.
 
 All-Ways-EGPU to use the eGPU in Gamescope without loopback latency when using the GPU's HDMI output (CachyOS).
 
@@ -92,7 +92,7 @@ Advanced Options: Background TDP polling, AC profiles, experimental undervolting
 
 Controller RGB Lighting: Control of the power LED and controller RGB rings (Solid, Dynamic, Pulse, Spiral modes, brightness, speed, hue, and per-game profiles).
 
-Synchronization with the CSS Loader plugin and the Color Toggles add-on: Sliding the controller LED lighting color (in Solid or Pulse mode) changes the Gamescope UI theme accent color in real time.
+Synchronization with the CSS Loader plugin and the Colored Toggles add-on: Sliding the controller LED lighting color (in Solid or Pulse mode) changes the Gamescope UI theme accent color in real time.
 
 **Button and Gyroscope Remapping**: Assignment of back buttons (`Y1`, `Y2`, `Y3`, `M2`, `M3`), Touchpad enable/disable toggle, and per-game left/right gyroscope remapping.
 
@@ -175,7 +175,7 @@ En ciertas distros, habría que liberar de una regla Udev que secuestra el acele
 
 Aunque SimpledeckyTDP, Legion GO Remmaper, y HHD son grandísimas utilidades y mis esfuerzos son sumamente modestos, si quieres probar estas aplicaciones, debes eliminar previamente las mencionadas. 
 
-CSS Loader en Decky y el complemento Color Toggles.
+CSS Loader en Decky y el complemento Colored Toggles.
 
 Allwaysegpu para utilizar la eGPU en Gamescope sin latencia de regreso al utilizar el HDMI de la GPU (CachyOS).
 
@@ -233,7 +233,7 @@ Opciones Avanzadas: Polling de TDP en segundo plano, perfiles AC, undervolt expe
 
 Iluminación RGB de Controles: Control del LED de encendido y anillos RGB de los mandos (modos Solid, Dynamic, Pulse, Spiral, brillo, velocidad, tono/hue y perfiles por juego).
 
-Sincronización con el plugin CSS Loader y el complemento Color Toggles: Al deslizar la iluminación del led de los mandos (En solido ó pulso) se cambia en tiempo real el acento del tema de la interfaz del Gamescope. 
+Sincronización con el plugin CSS Loader y el complemento Colored Toggles: Al deslizar la iluminación del led de los mandos (En solido ó pulso) se cambia en tiempo real el acento del tema de la interfaz del Gamescope. 
 
 Remapeo de Botones y Giroscopio**: Asignación de botones traseros (`Y1`, `Y2`, `Y3`, `M2`, `M3`), activación/desactivación del Touchpad y remapeo de giroscopios izquierdo/derecho por juego.
 
