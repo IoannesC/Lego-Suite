@@ -11,7 +11,7 @@ El uso de este software es responsabilidad de quien lo utiliza. Carece de cualqu
 
 
 ### Notas sobre la v0.198:
-Está probada y funciona correctamente en mi Lenovo Legion Go Gen 1, Z1 Extreme con 16Gb de RAM. No tengo acceso a otros dispositivos. Si llego a conseguir ponerle las manos encima a otro dispositivo o a otra máquina de Lenovo, con gusto optimizaré para esos sistemas; o en su defecto testers con otras máquinas. Por el momento si necesitas probarlo en tu equipo que no es Lenovo Legion Go Gen 1, hazlo por tu propia iniciativa.
+Está probada y funciona correctamente en mi **Lenovo Legion Go Gen 1, Z1 Extreme con 16Gb de RAM en CachyOS con kernel LTS.** No tengo acceso a otros dispositivos. Si llego a conseguir ponerle las manos encima a otro dispositivo o a otra máquina de Lenovo, con gusto optimizaré para esos sistemas; o en su defecto testers con otras máquinas. Por el momento si necesitas probarlo en tu equipo que no es Lenovo Legion Go Gen 1, hazlo por tu propia iniciativa.
 Me gustaría agregar más opciones y más funcionalidades utiles, poco a poco lo iré haciendo. 
 
 ### Sobre LeGO Suite:
@@ -33,6 +33,7 @@ Perfiles personalizados si se está conectado a una eGPU:
 Implementada en v0.198
 
 <img width="300" height="381" alt="Captura de pantalla_20261113_093423" src="https://github.com/user-attachments/assets/65ad3dfe-0099-4bb4-ad71-357f19edd0ef" />
+
 
 
 Al conectar una eGPU, el Plugin detecta en tiempo real la conexión, y si activas la opción, te permite crear perfiles de TDP exclusivos con la eGPU conectada. 
