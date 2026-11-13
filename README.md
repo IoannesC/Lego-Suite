@@ -24,18 +24,42 @@ Hay dos aplicaciones en una. Un práctico Plugin para Decky y una aplicación pa
 
 ### 1. TDP (Energía y Ventilación).
    
-Control de TDP**: Ajuste de TDP global y por juego (WMI de Lenovo y `ryzenadj`).
-Control de GPU y eGPU**: Modos Batería, Balance, Rango de frecuencias, Frecuencia fija y detección/integración con eGPUs externas.
-Controles de CPU**: CPU Boost, SMT, Gobernador de energía (Power Governor) y Preferencia de rendimiento energético (EPP).
-Curvas de Ventilación (Fan Control)**: Curvas de temperatura/velocidad de ventilador personalizadas, perfiles de ventilación por juego y modo de velocidad máxima (Full Fan Speed).
-Límite de Carga de Batería (80%)**: Protección de batería mediante llamadas ACPI de Lenovo.
-Opciones Avanzadas**: Polling de TDP en segundo plano, perfiles AC, undervolt experimental vía `ryzenadj`, y manejo de suspensión/reanudación.
+Control de TDP: Ajuste de TDP global y por juego (WMI de Lenovo y `ryzenadj`).
 
-### 2. Controls (Mandos e Iluminación)
-- **Iluminación RGB de Controles**: Control del LED de encendido y anillos RGB de los mandos (modos Solid, Dynamic, Pulse, Spiral, brillo, velocidad, tono/hue y perfiles por juego).
-- **Remapeo de Botones y Giroscopio**: Asignación de botones traseros (`Y1`, `Y2`, `Y3`, `M2`, `M3`), activación/desactivación del Touchpad y remapeo de giroscopios izquierdo/derecho por juego.
+Control de GPU: Modos Batería, Balance, Rango de frecuencias, Frecuencia fija y detección/integración con eGPUs externas.
 
----
+Perfiles personalizados si se está conectado a una eGPU:
+Novedad implementada en v0.198
+<img width="849" height="1077" alt="Captura de pantalla_20261113_093423" src="https://github.com/user-attachments/assets/c9313848-24c4-469a-8ba2-d30daa728c61" />
+Al conectar una eGPU, el Plugin detecta en tiempo real la conexión, y si activas la opción, te permite crear perfiles de TDP exclusivos con la eGPU conectada. 
+
+Perfiles específicos de TDP por juego, por juegos con carga al alimentador de corriente y con eGPU conectada (Excluyentes entre sí). 
+
+Controles de CPU: CPU Boost, SMT, Gobernador de energía (Power Governor) y Preferencia de rendimiento energético (EPP).
+
+Curvas de Ventilación (Fan Control): Curvas de temperatura/velocidad de ventilador personalizadas, perfiles de ventilación por juego y modo de velocidad máxima (Full Fan Speed).
+
+Temperatura de CPU y GPU en tiempo real, y RPM del ventilador. 
+
+Límite de Carga de Batería (80%): Protección de batería mediante llamadas ACPI de Lenovo.
+Opciones Avanzadas: Polling de TDP en segundo plano, perfiles AC, undervolt experimental vía `ryzenadj`, y manejo de suspensión/reanudación.
+
+### 2. Controles (Mandos e Iluminación)
+
+Iluminación RGB de Controles**: Control del LED de encendido y anillos RGB de los mandos (modos Solid, Dynamic, Pulse, Spiral, brillo, velocidad, tono/hue y perfiles por juego).
+
+Remapeo de Botones y Giroscopio**: Asignación de botones traseros (`Y1`, `Y2`, `Y3`, `M2`, `M3`), activación/desactivación del Touchpad y remapeo de giroscopios izquierdo/derecho por juego.
+
+Ajuste de intensidad de vibración del mando. 
+
+Opción de reseteo de fábrica que borra cualquier configuración del mismo.
+
+Y otras opciones más que podrás descubrir por ti mismo. 
+
+### <div align="center"> LeGO Suite Versión App de Escritorio </div>
+
+<div align="center">  <img width="368" height="307" alt="f2" src="https://github.com/user-attachments/assets/e8ab1454-5ddc-4f9e-9cd4-84a83304eb3e" /> </div>
+
 
 ## Agradecimientos y Créditos (Credits & Acknowledgments)
 
