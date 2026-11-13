@@ -272,4 +272,4 @@ Muchas gracias a todos los autores, mantenedores y contribuidores de estos proye
 
 </details>
 
-<script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js" data-name="bmc-button" data-slug="ioannesc" data-color="#FFDD00" data-emoji="☕" data-font="Cookie" data-text="Buy me a coffee" data-outline-color="#000000" data-font-color="#000000" data-coffee-color="#ffffff" ></script>
+<script data-name="BMC-Widget" data-cfasync="false" src="https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js" data-id="ioannesc" data-description="Support me on Buy me a coffee!" data-message="Thanks!!!" data-color="#5F7FFF" data-position="Right" data-x_margin="18" data-y_margin="18"></script>
