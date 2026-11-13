@@ -50,6 +50,17 @@ There are two applications in one: a handy Decky Plugin and a Desktop Applicatio
 
 <div align="center"> <img width="326" height="449" alt="f1" src="https://github.com/user-attachments/assets/7a841a7f-e3e5-43b3-bef9-b6c555a5b6a4" /> </div>
 
+### Installation
+
+```bash
+curl -L https://github.com/IoannesC/Lego-Suite/releases/latest/download/LeGO-Suite-Plugin-v0.198.zip -o /tmp/lego-plugin.zip && \
+sudo mkdir -p ~/homebrew/plugins/LeGO-Suite && \
+sudo unzip -o /tmp/lego-plugin.zip -d ~/homebrew/plugins/LeGO-Suite && \
+rm /tmp/lego-plugin.zip && \
+bash ~/homebrew/plugins/LeGO-Suite/install.sh && \
+sudo systemctl restart plugin_loader
+```
+
 ### 1. TDP (Power and Fan Control)
    
 TDP Control: Global and per-game TDP adjustment (Lenovo WMI and `ryzenadj`).
@@ -92,6 +103,16 @@ And many other options for you to discover on your own.
 ### <div align="center"> LeGO Suite Desktop App Version </div>
 
 <div align="center">  <img width="368" height="307" alt="f2" src="https://github.com/user-attachments/assets/e8ab1454-5ddc-4f9e-9cd4-84a83304eb3e" /> </div>
+
+### Installation
+
+```bash
+curl -L https://github.com/IoannesC/Lego-Suite/releases/latest/download/LeGO-Suite-Desktop-v0.198.zip -o /tmp/lego-desktop.zip && \
+mkdir -p /tmp/lego-desktop && \
+unzip -o /tmp/lego-desktop.zip -d /tmp/lego-desktop && \
+bash /tmp/lego-desktop/desktop/install_desktop_app.sh && \
+rm -rf /tmp/lego-desktop /tmp/lego-desktop.zip
+```
 
 It offers the same functionality as the plugin, but without per-game profiles. It uses and modifies the default Gamescope profile while on the desktop so you can adjust it in real time (useful when running design or productivity apps that require extra power without having to switch back to Decky). In the Display section, it can inject the proper screen coordinates for the Legion Go so you can use it as a tablet and enable automatic screen rotation based on device orientation.
 
@@ -164,6 +185,17 @@ Hay dos aplicaciones en una. Un práctico Plugin para Decky y una aplicación pa
 
 <div align="center"> <img width="326" height="449" alt="f1" src="https://github.com/user-attachments/assets/7a841a7f-e3e5-43b3-bef9-b6c555a5b6a4" /> </div>
 
+### Instalación
+
+```bash
+curl -L https://github.com/IoannesC/Lego-Suite/releases/latest/download/LeGO-Suite-Plugin-v0.198.zip -o /tmp/lego-plugin.zip && \
+sudo mkdir -p ~/homebrew/plugins/LeGO-Suite && \
+sudo unzip -o /tmp/lego-plugin.zip -d ~/homebrew/plugins/LeGO-Suite && \
+rm /tmp/lego-plugin.zip && \
+bash ~/homebrew/plugins/LeGO-Suite/install.sh && \
+sudo systemctl restart plugin_loader
+```
+
 ### 1. TDP (Energía y Ventilación).
    
 Control de TDP: Ajuste de TDP global y por juego (WMI de Lenovo y `ryzenadj`).
@@ -208,6 +240,16 @@ Y otras opciones más que podrás descubrir por ti mismo.
 ### <div align="center"> LeGO Suite Versión App de Escritorio </div>
 
 <div align="center">  <img width="368" height="307" alt="f2" src="https://github.com/user-attachments/assets/e8ab1454-5ddc-4f9e-9cd4-84a83304eb3e" /> </div>
+
+### Installation
+
+```bash
+curl -L https://github.com/IoannesC/Lego-Suite/releases/latest/download/LeGO-Suite-Desktop-v0.198.zip -o /tmp/lego-desktop.zip && \
+mkdir -p /tmp/lego-desktop && \
+unzip -o /tmp/lego-desktop.zip -d /tmp/lego-desktop && \
+bash /tmp/lego-desktop/desktop/install_desktop_app.sh && \
+rm -rf /tmp/lego-desktop /tmp/lego-desktop.zip
+```
 
 Ofrece la misma funcionalidad del plugin, pero sin perfiles específicos. Utiliza y modifica el perfil predeterminado del Gamescope al estar en el escritorio y poder modificar en tiempo real el mismo (Si utilizamos aplicaciones de diseño o productividad que requieren cierta potencia, y no queremos regresar a Decky). En el apartado Pantalla, puede inyectar las coordenadas correctas de la pantalla de la Legion Go, para utilizarla como Tablet y activar el giro automático según la posición de la misma.
 
