@@ -32,7 +32,8 @@ Perfiles personalizados si se está conectado a una eGPU:
 
 Implementada en v0.198
 
-<img width="849" height="1077" alt="Captura de pantalla_20261113_093423" src="https://github.com/user-attachments/assets/53a69ea0-f8cf-41ce-984d-83c41474cec9" />
+<img width="300" height="381" alt="Captura de pantalla_20261113_093423" src="https://github.com/user-attachments/assets/65ad3dfe-0099-4bb4-ad71-357f19edd0ef" />
+
 
 Al conectar una eGPU, el Plugin detecta en tiempo real la conexión, y si activas la opción, te permite crear perfiles de TDP exclusivos con la eGPU conectada. 
 
