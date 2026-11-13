@@ -18,8 +18,10 @@ Me gustaría agregar más opciones y más funcionalidades utiles, poco a poco lo
 
 Hay dos aplicaciones en una. Un práctico Plugin para Decky y una aplicación para escritorio. Puedes utilizar el plugin para Decky sin necesidad de descargar e instalar la aplicación de escritorio. Pero ambas se complementan y te ofrecen más opciones. 
 
-<img width="326" height="449" alt="f1" src="https://github.com/user-attachments/assets/7a841a7f-e3e5-43b3-bef9-b6c555a5b6a4" />
 ### LeGO Suite Versión Decky Plugin
+
+<img width="326" height="449" alt="f1" src="https://github.com/user-attachments/assets/7a841a7f-e3e5-43b3-bef9-b6c555a5b6a4" />
+
 
 
 ### 1. TDP (Energía y Ventilación).
