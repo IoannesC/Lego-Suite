@@ -131,7 +131,7 @@ This project is based on and inspired by the outstanding work of the Decky Loade
 
 Many thanks to all the authors, maintainers, and contributors of these open-source projects.
 
-[![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://www.buymeacoffee.com/ioannesc)
+[![Buy Me A Coffee](https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png)](https://www.buymeacoffee.com/ioannesc)
 
 <details>
 <summary> 🇪🇸 Traducción al Español (Haz clic para desplegar) </summary>
