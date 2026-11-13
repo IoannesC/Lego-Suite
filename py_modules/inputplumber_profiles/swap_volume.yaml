@@ -1,0 +1,19 @@
+version: 1
+kind: DeviceProfile
+name: Intercambiar Botones de Volumen
+name_es: Intercambiar Botones de Volumen
+name_en: Swap Volume Buttons
+description: Invierte los botones de subir y bajar volumen (+ / -)
+description_es: Invierte los botones de subir y bajar volumen (+ / -)
+description_en: Swap Volume Up and Volume Down buttons
+mapping:
+  - name: Volume up to down
+    source_event:
+      keyboard: KeyVolumeUp
+    target_events:
+      - keyboard: KeyVolumeDown
+  - name: Volume down to up
+    source_event:
+      keyboard: KeyVolumeDown
+    target_events:
+      - keyboard: KeyVolumeUp

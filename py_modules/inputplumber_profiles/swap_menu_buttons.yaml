@@ -1,0 +1,37 @@
+version: 1
+kind: DeviceProfile
+name: Intercambiar Botones de Menú
+name_es: Intercambiar Botones de Menú
+name_en: Swap Menu Buttons
+description: Menú Steam (Guía) con Start y Menú Decky (Ajustes rápidos) con Select
+description_es: Menú Steam (Guía) con Start y Menú Decky (Ajustes rápidos) con Select
+description_en: Steam Menu (Guide) to Start and Decky Menu (QuickAccess) to Select
+mapping:
+  - name: Start to Guide
+    source_event:
+      gamepad:
+        button: Start
+    target_events:
+      - gamepad:
+          button: Guide
+  - name: Guide to Start
+    source_event:
+      gamepad:
+        button: Guide
+    target_events:
+      - gamepad:
+          button: Start
+  - name: Select to QuickAccess
+    source_event:
+      gamepad:
+        button: Select
+    target_events:
+      - gamepad:
+          button: QuickAccess
+  - name: QuickAccess to Select
+    source_event:
+      gamepad:
+        button: QuickAccess
+    target_events:
+      - gamepad:
+          button: Select

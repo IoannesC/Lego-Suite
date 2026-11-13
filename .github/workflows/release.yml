@@ -1,0 +1,55 @@
+name: Release
+
+permissions:
+  contents: write
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - "main"
+      - "dev"
+    tags:
+      - "v*.*.*"
+
+jobs:
+  build_plugin:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup latest Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: latest
+
+      - name: Setup PNPM@10
+        uses: pnpm/action-setup@v4
+        with:
+          version: "10.11.0"
+
+      - name: Build frontend from source
+        run: |
+          ./scripts/build_i18n_json.sh
+          ls src/i18n/languages.json
+          pnpm i
+          pnpm run build
+        continue-on-error: true
+
+      - name: Download Decky Plugin CLI
+        run: |
+          mkdir $(pwd)/cli
+          curl -L -o $(pwd)/cli/decky "https://github.com/SteamDeckHomebrew/cli/releases/latest/download/decky-linux-x86_64"
+          chmod +x $(pwd)/cli/decky
+
+      - name: Build plugin
+        run: |
+          $(pwd)/cli/decky plugin build $(pwd)
+          unzip "out/LeGO Suite.zip" -d "out/LeGO Suite"
+
+      - name: Publish Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: LeGO-Suite
+          path: out/LeGO Suite.zip

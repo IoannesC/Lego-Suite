@@ -1,0 +1,7 @@
+{
+  "es": { "name": "Español" },
+  "en": { "name": "English" },
+  "ko": { "name": "한국어" },
+  "ja": { "name": "日本語" },
+  "zh": { "name": "中文" }
+}

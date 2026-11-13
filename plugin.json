@@ -1,0 +1,11 @@
+{
+  "name": "LeGO Suite",
+  "author": "LeGO Suite",
+  "version": "0.198",
+  "flags": ["root"],
+  "api_version": 1,
+  "publish": {
+    "tags": ["tdp", "legion-go", "rgb", "remapper", "root"],
+    "description": "LeGO Suite v0.198 - Complete TDP, Fan, Battery, RGB & Controller Remapper Suite for Lenovo Legion Go"
+  }
+}

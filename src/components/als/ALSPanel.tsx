@@ -1,0 +1,156 @@
+import t from "../../i18n/i18n";
+import {
+  PanelSection,
+  PanelSectionRow,
+  SliderField,
+  ToggleField,
+} from "@decky/ui";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  selectAlsEnabled,
+  selectAlsPollingRate,
+  selectBrightnessOffset,
+  selectSensitivity,
+  selectSmoothTime,
+  uiSlice,
+} from "../../redux-modules/uiSlice";
+import {
+  brightnessOffsetInfo,
+  pollInfo,
+  sensitivityInfo,
+  smoothTimeInfo,
+} from "../../backend/alsListener";
+
+const useAlsEnabled = () => {
+  const enabledAls = useSelector(selectAlsEnabled);
+  const dispatch = useDispatch();
+
+  const setAlsEnabled = (enabled: boolean) => {
+    return dispatch(uiSlice.actions.setAlsEnabled(enabled));
+  };
+
+  return { enabledAls, setAlsEnabled };
+};
+
+const useAlsPollingRate = () => {
+  const pollingRate = useSelector(selectAlsPollingRate);
+  const dispatch = useDispatch();
+
+  const setPollingRate = (newRate: number) => {
+    return dispatch(uiSlice.actions.setPollingRate(newRate));
+  };
+
+  return { pollingRate, setPollingRate };
+};
+
+const useSensitivity = () => {
+  const sensitivity = useSelector(selectSensitivity);
+  const dispatch = useDispatch();
+
+  const setSensitivity = (val: number) => {
+    return dispatch(uiSlice.actions.setSensitivity(val));
+  };
+
+  return { sensitivity, setSensitivity };
+};
+
+const useBrightnessOffset = () => {
+  const brightnessOffset = useSelector(selectBrightnessOffset);
+  const dispatch = useDispatch();
+
+  const setBrightnessOffset = (val: number) => {
+    return dispatch(uiSlice.actions.setBrightnessOffset(val));
+  };
+
+  return { brightnessOffset, setBrightnessOffset };
+};
+
+const useSmoothTime = () => {
+  const smoothTime = useSelector(selectSmoothTime);
+  const dispatch = useDispatch();
+
+  const setSmoothTime = (newTime: number) => {
+    return dispatch(uiSlice.actions.setSmoothTime(newTime));
+  };
+
+  return { smoothTime, setSmoothTime };
+};
+
+export default function ALSPanel() {
+  const { enabledAls, setAlsEnabled } = useAlsEnabled();
+  const { pollingRate, setPollingRate } = useAlsPollingRate();
+  const { smoothTime, setSmoothTime } = useSmoothTime();
+  const { sensitivity, setSensitivity } = useSensitivity();
+  const { brightnessOffset, setBrightnessOffset } = useBrightnessOffset();
+
+  const [minPollRate, maxPollRate] = pollInfo.range;
+  const [minSmoothTime, maxSmoothTime] = smoothTimeInfo.range;
+  const [minSensitivity, maxSensitivity] = sensitivityInfo.range;
+  const [minOffset, maxOffset] = brightnessOffsetInfo.range;
+
+  return (
+    <>
+      <PanelSection title={t("ALS_PANEL_TITLE", "Ambient Light Sensor")}>
+        <PanelSectionRow>
+          <ToggleField
+            label={t("ALS_ENABLE_AUTO_BRIGHTNESS", "Enable Auto Brightness (Experimental)")}
+            checked={enabledAls}
+            onChange={setAlsEnabled}
+          />
+        </PanelSectionRow>
+        {enabledAls && (
+          <>
+            <PanelSectionRow>
+              <SliderField
+                label={t("ALS_SENSITIVITY", "Sensitivity")}
+                value={sensitivity}
+                min={minSensitivity}
+                max={maxSensitivity}
+                onChange={setSensitivity}
+                step={sensitivityInfo.step}
+                notchTicksVisible
+                showValue
+              />
+            </PanelSectionRow>
+            <PanelSectionRow>
+              <SliderField
+                label={t("ALS_POLL_RATE", "Poll Rate (ms)")}
+                value={pollingRate}
+                min={minPollRate}
+                max={maxPollRate}
+                onChange={setPollingRate}
+                step={pollInfo.step}
+                notchTicksVisible
+                showValue
+              />
+            </PanelSectionRow>
+            <PanelSectionRow>
+              <SliderField
+                label={t("ALS_SMOOTH_TIME", "Smooth Time (ms)")}
+                value={smoothTime}
+                min={minSmoothTime}
+                max={maxSmoothTime}
+                onChange={setSmoothTime}
+                step={smoothTimeInfo.step}
+                notchTicksVisible
+                showValue
+              />
+            </PanelSectionRow>
+            <PanelSectionRow>
+              <SliderField
+                label={t("ALS_BRIGHTNESS_OFFSET", "Brightness Offset")}
+                value={brightnessOffset}
+                min={minOffset}
+                max={maxOffset}
+                onChange={setBrightnessOffset}
+                step={brightnessOffsetInfo.step}
+                notchTicksVisible
+                showValue
+              />
+            </PanelSectionRow>
+          </>
+        )}
+      </PanelSection>
+    </>
+  );
+}
