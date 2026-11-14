@@ -99,7 +99,6 @@ def find_settings_dir() -> Path:
 
     candidates = [
         Path.home() / "homebrew" / "settings" / "LeGO Suite",
-        Path.home() / "homebrew" / "settings" / "LeGO-Suite",
         Path.home() / ".config" / "lego-suite",
     ]
     for c in candidates:

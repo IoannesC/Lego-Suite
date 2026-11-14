@@ -333,7 +333,9 @@ const saveRgbSettings = (store: any) => {
   let syncCt = false;
   try {
     syncCt = window.localStorage.getItem("LEGO_SYNC_COLORED_TOGGLES") === "true";
-  } catch (e) {}
+  } catch (e) {
+    console.error("Failed to read LEGO_SYNC_COLORED_TOGGLES from localStorage:", e);
+  }
 
   const payload = {
     rgbProfiles,

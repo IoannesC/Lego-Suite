@@ -213,7 +213,7 @@ def reset_controllers() -> dict:
         cands = [
             os.environ.get("DECKY_PLUGIN_SETTINGS_DIR") and os.path.join(os.environ.get("DECKY_PLUGIN_SETTINGS_DIR"), "settings.json"),
             os.path.expanduser("~/homebrew/settings/LeGO Suite/settings.json"),
-            os.path.expanduser("~/homebrew/settings/LeGO-Suite/settings.json"),
+            os.path.expanduser("~/homebrew/settings/LeGO Suite/settings.json"),
             os.path.expanduser("~/.config/lego-suite/settings.json"),
             "/tmp/lego-suite-settings/settings.json"
         ]

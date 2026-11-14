@@ -52,10 +52,12 @@ export const RgbSettings: FC<{ controller: ControllerType }> = ({
               "LEGO_SYNC_COLORED_TOGGLES",
               s.syncColoredToggles ? "true" : "false"
             );
-          } catch (e) {}
+          } catch (e) {
+            console.error("Failed to save LEGO_SYNC_COLORED_TOGGLES to localStorage:", e);
+          }
         }
       })
-      .catch(() => {});
+      .catch((err: any) => console.error("get_settings error:", err));
   }, []);
 
   const handleSyncColoredTogglesChange = (checked: boolean) => {
@@ -65,7 +67,9 @@ export const RgbSettings: FC<{ controller: ControllerType }> = ({
         "LEGO_SYNC_COLORED_TOGGLES",
         checked ? "true" : "false"
       );
-    } catch (e) {}
+    } catch (e) {
+      console.error("Failed to save LEGO_SYNC_COLORED_TOGGLES to localStorage:", e);
+    }
     call("set_sync_colored_toggles", checked).catch((err: any) =>
       console.error("set_sync_colored_toggles error:", err)
     );

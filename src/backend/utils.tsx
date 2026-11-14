@@ -97,7 +97,6 @@ export enum ServerAPIMethods {
   SET_SETTING = "set_setting",
   GET_SETTINGS = "get_settings",
   LOG_INFO = "log_info",
-  SET_TDP = "set_tdp",
   SAVE_TDP = "save_tdp",
   POLL_TDP = "poll_tdp",
   PERSIST_TDP = "persist_tdp",
@@ -340,14 +339,6 @@ export const extractCurrentGameId = () =>
 export const readAls = async () => {
   const result = await call<[], unknown>("read_als");
   return Number(result);
-};
-
-export const rgbOn = async (controller: ControllerType) => {
-  return await call(ServerAPIMethods.RGB_ON, controller);
-};
-
-export const rgbOff = async (controller: ControllerType) => {
-  return await call(ServerAPIMethods.RGB_OFF, controller);
 };
 
 export const remapButton = async (

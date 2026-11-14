@@ -52,7 +52,7 @@ def _get_settings_candidates() -> list:
         candidates.append(os.path.join(env_dir, "settings.json"))
     candidates.extend([
         os.path.expanduser("~/homebrew/settings/LeGO Suite/settings.json"),
-        os.path.expanduser("~/homebrew/settings/LeGO-Suite/settings.json"),
+        os.path.expanduser("~/homebrew/settings/LeGO Suite/settings.json"),
         os.path.expanduser("~/.config/lego-suite/settings.json"),
         "/tmp/lego-suite-settings/settings.json"
     ])

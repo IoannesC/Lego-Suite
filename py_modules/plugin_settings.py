@@ -43,7 +43,7 @@ def _detect_settings_directory():
         return env_dir
     candidates = [
         Path.home() / "homebrew" / "settings" / "LeGO Suite",
-        Path.home() / "homebrew" / "settings" / "LeGO-Suite",
+        Path.home() / "homebrew" / "settings" / "LeGO Suite",
         Path.home() / ".config" / "lego-suite",
     ]
     for c in candidates:

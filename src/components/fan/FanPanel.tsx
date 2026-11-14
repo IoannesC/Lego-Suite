@@ -50,8 +50,10 @@ const useTemperatures = () => {
               rpm: res.rpm !== null && res.rpm !== undefined ? Number(res.rpm) : null,
             });
           }
-        }).catch(() => {});
-      } catch (e) {}
+        }).catch((err: any) => console.error("get_temperatures error:", err));
+      } catch (e) {
+        console.error("fetchTemps error:", e);
+      }
     };
     fetchTemps();
     const interval = setInterval(fetchTemps, 2000);
