@@ -56,10 +56,10 @@ There are two applications in one: a handy Decky Plugin and a Desktop Applicatio
 
 ```bash
 curl -L https://github.com/IoannesC/Lego-Suite/releases/latest/download/LeGO-Suite-Plugin-v0.200.zip -o /tmp/lego-plugin.zip && \
-sudo mkdir -p ~/homebrew/plugins/LeGO-Suite && \
-sudo unzip -o /tmp/lego-plugin.zip -d ~/homebrew/plugins/LeGO-Suite && \
+sudo mkdir -p ~/homebrew/plugins/"LeGO Suite" && \
+sudo unzip -o /tmp/lego-plugin.zip -d ~/homebrew/plugins/"LeGO Suite" && \
 rm /tmp/lego-plugin.zip && \
-bash ~/homebrew/plugins/LeGO-Suite/install.sh && \
+bash ~/homebrew/plugins/"LeGO Suite"/install.sh && \
 sudo systemctl restart plugin_loader
 ```
 
@@ -195,10 +195,10 @@ Hay dos aplicaciones en una. Un práctico Plugin para Decky y una aplicación pa
 
 ```bash
 curl -L https://github.com/IoannesC/Lego-Suite/releases/latest/download/LeGO-Suite-Plugin-v0.200.zip -o /tmp/lego-plugin.zip && \
-sudo mkdir -p ~/homebrew/plugins/LeGO-Suite && \
-sudo unzip -o /tmp/lego-plugin.zip -d ~/homebrew/plugins/LeGO-Suite && \
+sudo mkdir -p ~/homebrew/plugins/"LeGO Suite" && \
+sudo unzip -o /tmp/lego-plugin.zip -d ~/homebrew/plugins/"LeGO Suite" && \
 rm /tmp/lego-plugin.zip && \
-bash ~/homebrew/plugins/LeGO-Suite/install.sh && \
+bash ~/homebrew/plugins/"LeGO Suite"/install.sh && \
 sudo systemctl restart plugin_loader
 ```
 
