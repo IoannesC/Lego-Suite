@@ -1,6 +1,6 @@
 <img width="1672" height="941" alt="file_000000001834822f9cf25b1021da0124" src="https://github.com/user-attachments/assets/a18d2591-66ca-44b6-80e3-065768210b3a" />
 
-### <div align="center"> <h2> LeGO Suite v0.198 </h2> </div>
+### <div align="center"> <h2> LeGO Suite v0.200 </h2> </div>
 
 LeGO Suite is the all-in-one control suite designed to get the most out of your Legion Go on Linux.
 
@@ -55,7 +55,7 @@ There are two applications in one: a handy Decky Plugin and a Desktop Applicatio
 ### Installation
 
 ```bash
-curl -L https://github.com/IoannesC/Lego-Suite/releases/latest/download/LeGO-Suite-Plugin-v0.198.zip -o /tmp/lego-plugin.zip && \
+curl -L https://github.com/IoannesC/Lego-Suite/releases/latest/download/LeGO-Suite-Plugin-v0.200.zip -o /tmp/lego-plugin.zip && \
 sudo mkdir -p ~/homebrew/plugins/LeGO-Suite && \
 sudo unzip -o /tmp/lego-plugin.zip -d ~/homebrew/plugins/LeGO-Suite && \
 rm /tmp/lego-plugin.zip && \
@@ -109,7 +109,7 @@ And many other options for you to discover on your own.
 ### Installation
 
 ```bash
-curl -L https://github.com/IoannesC/Lego-Suite/releases/latest/download/LeGO-Suite-Desktop-v0.198.zip -o /tmp/lego-desktop.zip && \
+curl -L https://github.com/IoannesC/Lego-Suite/releases/latest/download/LeGO-Suite-Desktop-v0.200.zip -o /tmp/lego-desktop.zip && \
 mkdir -p /tmp/lego-desktop && \
 unzip -o /tmp/lego-desktop.zip -d /tmp/lego-desktop && \
 bash /tmp/lego-desktop/desktop/install_desktop_app.sh && \
@@ -138,7 +138,7 @@ Many thanks to all the authors, maintainers, and contributors of these open-sour
 
 <img width="1672" height="941" alt="file_000000001834822f9cf25b1021da0124" src="https://github.com/user-attachments/assets/a18d2591-66ca-44b6-80e3-065768210b3a" />
 
-### <div align="center"> <h2> LeGO Suite v0.198 </h2> </div>
+### <div align="center"> <h2> LeGO Suite v0.200 </h2> </div>
 
 LeGO Suite es la suite integral de control para sacarle el mayor provecho a tu Legion Go en Linux. 
 
@@ -194,7 +194,7 @@ Hay dos aplicaciones en una. Un práctico Plugin para Decky y una aplicación pa
 ### Instalación
 
 ```bash
-curl -L https://github.com/IoannesC/Lego-Suite/releases/latest/download/LeGO-Suite-Plugin-v0.198.zip -o /tmp/lego-plugin.zip && \
+curl -L https://github.com/IoannesC/Lego-Suite/releases/latest/download/LeGO-Suite-Plugin-v0.200.zip -o /tmp/lego-plugin.zip && \
 sudo mkdir -p ~/homebrew/plugins/LeGO-Suite && \
 sudo unzip -o /tmp/lego-plugin.zip -d ~/homebrew/plugins/LeGO-Suite && \
 rm /tmp/lego-plugin.zip && \
@@ -250,7 +250,7 @@ Y otras opciones más que podrás descubrir por ti mismo.
 ### Installation
 
 ```bash
-curl -L https://github.com/IoannesC/Lego-Suite/releases/latest/download/LeGO-Suite-Desktop-v0.198.zip -o /tmp/lego-desktop.zip && \
+curl -L https://github.com/IoannesC/Lego-Suite/releases/latest/download/LeGO-Suite-Desktop-v0.200.zip -o /tmp/lego-desktop.zip && \
 mkdir -p /tmp/lego-desktop && \
 unzip -o /tmp/lego-desktop.zip -d /tmp/lego-desktop && \
 bash /tmp/lego-desktop/desktop/install_desktop_app.sh && \
