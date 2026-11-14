@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-LeGO Suite Desktop (v0.198)
+LeGO Suite Desktop (v0.200)
 Aplicación de Modo Escritorio con icono en la bandeja del sistema (System Tray)
 sincronizada en tiempo real con el plugin LeGO Suite de Decky Loader.
 """
@@ -657,7 +657,7 @@ TEXTS = {
         "btn_minimize": "Minimizar",
         "btn_close": "Cerrar",
         "gear_tooltip": "Cambiar colores e idioma de la UI",
-        "tray_tooltip": "LeGO Suite v0.198 • TDP: {tdp}W • Carga: {charge}%"
+        "tray_tooltip": "LeGO Suite v0.200 • TDP: {tdp}W • Carga: {charge}%"
     },
     "en": {
         "tab_tdp": "TDP",
@@ -782,7 +782,7 @@ TEXTS = {
         "btn_minimize": "Minimize",
         "btn_close": "Close",
         "gear_tooltip": "Change UI colors and language",
-        "tray_tooltip": "LeGO Suite v0.198 • TDP: {tdp}W • Charge: {charge}%"
+        "tray_tooltip": "LeGO Suite v0.200 • TDP: {tdp}W • Charge: {charge}%"
     }
 }
 def tr(key: str, lang: str = "es") -> str:
@@ -1355,7 +1355,7 @@ class LeGOSuiteMainWindow(QMainWindow):
         self.ui_language = "es"
         self._auto_rotate_active = False
 
-        self.setWindowTitle("LeGO Suite v0.198")
+        self.setWindowTitle("LeGO Suite v0.200")
         self.resize(430, 660)
         self.setMinimumSize(0, 0)
         self.setMaximumSize(16777215, 16777215)
@@ -1650,7 +1650,7 @@ class LeGOSuiteMainWindow(QMainWindow):
 
         if hasattr(self, "version_label"):
             mode_txt = tr("status_decky_rpc" if self.backend.rpc_available else "status_local_sync", lang)
-            self.version_label.setText(f"Version 0.198 • {mode_txt}")
+            self.version_label.setText(f"Version 0.200 • {mode_txt}")
         if hasattr(self, "tray") and hasattr(self, "slider_tdp"):
             tdp_val = self.slider_tdp.value()
             c_val = getattr(self, "_last_charge_limit_val", 80)
@@ -1728,7 +1728,7 @@ class LeGOSuiteMainWindow(QMainWindow):
             logo_label.setStyleSheet("font-size: 22px; font-weight: 800; background: transparent;")
         logo_box.addWidget(logo_label)
 
-        self.version_label = QLabel("Version 0.198 • Sincronizado")
+        self.version_label = QLabel("Version 0.200 • Sincronizado")
         self.version_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.version_label.setStyleSheet(
             "color: #9ca3af; font-size: 11px; font-weight: 600; letter-spacing: 0.05em; background: transparent;"
@@ -2842,7 +2842,7 @@ class LeGOSuiteMainWindow(QMainWindow):
             pix.fill(QColor("#000000"))
             self.tray.setIcon(QIcon(pix))
 
-        self.tray.setToolTip("LeGO Suite v0.198")
+        self.tray.setToolTip("LeGO Suite v0.200")
 
         menu = QMenu()
         menu.setStyleSheet(
@@ -3048,7 +3048,7 @@ class LeGOSuiteMainWindow(QMainWindow):
                 self._update_ui_texts()
 
             mode_txt = tr("status_decky_rpc" if self.backend.rpc_available else "status_local_sync", self.ui_language)
-            self.version_label.setText(f"Version 0.198 • {mode_txt}")
+            self.version_label.setText(f"Version 0.200 • {mode_txt}")
 
             current_mode = str(s.get("tdpMode", "custom")).lower()
             if hasattr(self, "tdp_mode_buttons"):
@@ -3607,7 +3607,7 @@ def ensure_single_instance(show_callback):
 def main():
     app = QApplication(sys.argv)
     app.setApplicationName("LeGO Suite")
-    app.setApplicationVersion("0.198")
+    app.setApplicationVersion("0.200")
     app.setDesktopFileName("lego-suite-desktop")
     app.setQuitOnLastWindowClosed(False)
 

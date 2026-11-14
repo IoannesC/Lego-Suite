@@ -156,7 +156,7 @@ const App: FC = memo(({}) => {
             fontWeight: 600,
           }}
         >
-          Version 0.198
+          Version 0.200
         </div>
       </div>
 

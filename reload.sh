@@ -1,8 +1,8 @@
 #!/bin/bash
 
 ./scripts/build_i18n_json.sh
-if [ -L "./i18n" ]; then
-  echo "The symlink ./i18n exists."
+if [ -e "./i18n" ]; then
+  echo "./i18n already exists."
 else
   ln -s ./defaults/i18n ./i18n
 fi

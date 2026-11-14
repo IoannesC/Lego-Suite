@@ -45,7 +45,7 @@ const OtaUpdates = () => {
             label={t("SYSTEM_INFO_INSTALLED_VERSION", "Version")}
             bottomSeparator="none"
           >
-            0.198
+            0.200
           </DeckyField>
         </DeckyRow>
         <DeckyRow>
