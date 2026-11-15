@@ -3329,7 +3329,7 @@ class LeGOSuiteMainWindow(QMainWindow):
                         pass
                     try:
                         import inputplumber_utils
-                        if not inputplumber_utils.is_inputplumber_running():
+                        if not inputplumber_utils.is_service_active():
                             return
                         if ip_mode and ip_mode != "default":
                             inputplumber_utils.set_controller_mode(ip_mode)

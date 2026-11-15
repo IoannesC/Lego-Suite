@@ -853,7 +853,7 @@ class Plugin:
         return
 
       for attempt in range(10):
-        if inputplumber_utils.is_inputplumber_running():
+        if inputplumber_utils.is_service_active():
           if has_custom_mode:
             ok = await asyncio.to_thread(inputplumber_utils.set_controller_mode, saved_mode)
             if ok:
