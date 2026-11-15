@@ -40,6 +40,8 @@ CSS Loader on Decky and the Colored Toggles plugin.
 
 All-Ways-EGPU to use the eGPU in Gamescope without loopback latency when using the GPU's HDMI output (CachyOS).
 
+[![Review and tutorial -Spanish-](https://youtube.com)](https://www.youtube.com/watch?v=tS8YEXbgwSo)
+
 
 ### Notes on v0.220:
 
