@@ -34,16 +34,16 @@ def ota_update():
   return False
 
 def get_latest_version():
-  return "0.198"
+  return "0.220"
 
 def reset_settings():
   try:
     settings_dir = os.environ.get("DECKY_PLUGIN_SETTINGS_DIR", f'{decky_plugin.DECKY_USER_HOME}/homebrew/settings/LeGO Suite')
-    settings_file = os.path.join(settings_dir, 'settings.json')
-    if os.path.exists(settings_file):
-      os.remove(settings_file)
-
-    decky_plugin.logger.info(f'removed settings file at {settings_file}')
+    for filename in ('settings.json', 'tdp.json', 'tdpac.json', 'tdpegpu.json'):
+      target_file = os.path.join(settings_dir, filename)
+      if os.path.exists(target_file):
+        os.remove(target_file)
+        decky_plugin.logger.info(f'removed settings file at {target_file}')
 
     return restart_decky_loader()
   except Exception as e:

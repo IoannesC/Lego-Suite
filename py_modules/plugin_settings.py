@@ -1,7 +1,15 @@
 import os
 import json
+import logging
 from pathlib import Path
-from collections import deque 
+from collections import deque
+
+def _log_error(msg):
+    try:
+        import decky_plugin
+        decky_plugin.logger.error(msg)
+    except Exception:
+        logging.getLogger(__name__).error(msg)
 
 class SettingsManager:
     def __init__(self, name="settings", settings_directory=""):
@@ -16,8 +24,8 @@ class SettingsManager:
             if self.filepath.exists():
                 with open(self.filepath, "r", encoding="utf-8") as f:
                     self.settings = json.load(f)
-        except Exception:
-            pass
+        except Exception as e:
+            _log_error(f"Error reading settings file {self.filepath}: {e}")
 
     def setSetting(self, k, v):
         if k == 'tdpProfiles':
@@ -34,8 +42,8 @@ class SettingsManager:
             with open(tmp, "w", encoding="utf-8") as f:
                 json.dump(self.settings, f, indent=4)
             os.replace(tmp, self.filepath)
-        except Exception:
-            pass
+        except Exception as e:
+            _log_error(f"Error reading settings file {self.filepath}: {e}")
 
 def _detect_settings_directory():
     env_dir = os.environ.get("DECKY_PLUGIN_SETTINGS_DIR")
@@ -57,8 +65,8 @@ settings_path = os.path.join(settings_directory, 'settings.json')
 setting_file = SettingsManager(name="settings", settings_directory=settings_directory)
 try:
     setting_file.read()
-except Exception:
-    pass
+except Exception as e:
+    _log_error(f"Error initializing settings file: {e}")
 
 tdp_path = Path(settings_directory) / "tdp.json"
 tdpac_path = Path(settings_directory) / "tdpac.json"
@@ -71,8 +79,8 @@ def _read_json_file(file_path: Path):
                 data = json.load(f)
                 if isinstance(data, dict):
                     return data
-    except Exception:
-        pass
+    except Exception as e:
+        _log_error(f"Error reading JSON file {file_path}: {e}")
     return {}
 
 def _write_json_file(file_path: Path, data: dict):
@@ -82,8 +90,8 @@ def _write_json_file(file_path: Path, data: dict):
         with open(tmp, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=4)
         os.replace(tmp, file_path)
-    except Exception:
-        pass
+    except Exception as e:
+        _log_error(f"Error writing JSON file {file_path}: {e}")
 
 def deep_merge(origin, destination):
     for k, v in origin.items():
@@ -243,8 +251,8 @@ def clear_game_profiles():
     try:
         if tdp_path.exists():
             tdp_path.unlink()
-    except Exception:
-        pass
+    except Exception as e:
+        _log_error(f"Error writing JSON file {file_path}: {e}")
 
     if 'tdpProfiles' in setting_file.settings:
         del setting_file.settings['tdpProfiles']
@@ -255,8 +263,8 @@ def clear_ac_profiles():
     try:
         if tdpac_path.exists():
             tdpac_path.unlink()
-    except Exception:
-        pass
+    except Exception as e:
+        _log_error(f"Error writing JSON file {file_path}: {e}")
 
     if 'tdpProfiles' in setting_file.settings:
         del setting_file.settings['tdpProfiles']
@@ -267,8 +275,8 @@ def clear_egpu_profiles():
     try:
         if tdpegpu_path.exists():
             tdpegpu_path.unlink()
-    except Exception:
-        pass
+    except Exception as e:
+        _log_error(f"Error writing JSON file {file_path}: {e}")
 
     if 'tdpProfiles' in setting_file.settings:
         del setting_file.settings['tdpProfiles']

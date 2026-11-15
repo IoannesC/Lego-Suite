@@ -2,6 +2,7 @@ import { FC, memo, useState, useEffect } from "react";
 import { DialogButton, Focusable } from "@decky/ui";
 import TdpRange from "./components/molecules/TdpRange";
 import { TdpSlider } from "./components/molecules/TdpSlider";
+import { TdpModeButtons, TdpMode, TDP_MODE_COLORS } from "./components/molecules/TdpModeButtons";
 import { PollTdp } from "./components/molecules/PollTdp";
 import { store } from "./redux-modules/store";
 import { Provider, useSelector } from "react-redux";
@@ -19,8 +20,6 @@ import {
   DeckySection,
   DeckyRow,
   DeckyToggle,
-  DeckySlider,
-  NotchLabel,
 } from "./components/atoms/DeckyFrontendLib";
 import { useIsDesktop } from "./hooks/desktopHooks";
 import { AdvancedOptionsEnum } from "./backend/utils";
@@ -32,9 +31,8 @@ import { call } from "@decky/api";
 import RemapButtons from "./components/controller/RemapButtons";
 import ControllerLightingPanel from "./components/rgb/ControllerLightingPanel";
 import FanPanel from "./components/fan/FanPanel";
-import AlsPanel from "./components/als/ALSPanel";
 import InputPlumberSubmenu from "./components/controller/InputPlumberSubmenu";
-import { useChargeLimitEnabled, useScreenDisplayControls } from "./hooks/ui";
+import { useChargeLimitEnabled } from "./hooks/ui";
 import { useSupportsCustomFanCurves } from "./hooks/fan";
 import { LEGO_SUITE_LOGO_DATA_URI } from "./logoData";
 import t, { getCurrentLanguage, setForcedLanguage } from "./i18n/i18n";
@@ -46,6 +44,7 @@ const App: FC = memo(({}) => {
   useFetchInitialStateEffect();
 
   const loading = useIsInitiallyLoading();
+  const [tdpMode, setTdpMode] = useState<TdpMode>("custom");
   const [activeTab, setActiveTab] = useState<ActiveTab>(() => {
     const saved = window.localStorage.getItem(ACTIVE_TAB_STORAGE_KEY);
     if (saved === "controls" || saved === "screen") return saved;
@@ -92,12 +91,6 @@ const App: FC = memo(({}) => {
     chargeLimitEnabled,
     setChargeLimit,
   } = useChargeLimitEnabled();
-  const {
-    screenBrightness,
-    setScreenBrightness,
-    screenContrast,
-    setScreenContrast,
-  } = useScreenDisplayControls();
   const supportsAcpiCall = useSupportsCustomFanCurves();
 
   return (
@@ -156,7 +149,7 @@ const App: FC = memo(({}) => {
             fontWeight: 600,
           }}
         >
-          Version 0.200
+          Version 0.220
         </div>
       </div>
 
@@ -245,7 +238,7 @@ const App: FC = memo(({}) => {
               color: activeTab === "tdp" ? "#ffffff" : "#9ca3af",
               borderBottom:
                 activeTab === "tdp"
-                  ? "2px solid #ffffff"
+                  ? `2px solid ${TDP_MODE_COLORS[tdpMode] || "#ffffff"}`
                   : "2px solid transparent",
               borderRadius: "6px",
             }}
@@ -266,7 +259,7 @@ const App: FC = memo(({}) => {
               color: activeTab === "controls" ? "#ffffff" : "#9ca3af",
               borderBottom:
                 activeTab === "controls"
-                  ? "2px solid #ffffff"
+                  ? `2px solid ${TDP_MODE_COLORS[tdpMode] || "#ffffff"}`
                   : "2px solid transparent",
               borderRadius: "6px",
             }}
@@ -280,9 +273,10 @@ const App: FC = memo(({}) => {
       {!loading && activeTab === "tdp" && (
         <>
           <DeckySection>
+            <TdpModeButtons currentLang={currentLang} onModeChange={setTdpMode} />
             <TdpProfiles isDesktop={isDesktop} />
             {tdpControlEnabled && (
-              <TdpSlider disabled={maxTdpAcProfileEnabled} />
+              <TdpSlider disabled={maxTdpAcProfileEnabled || tdpMode !== "custom"} />
             )}
             {gpuControlEnabled && <Gpu />}
           </DeckySection>

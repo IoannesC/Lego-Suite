@@ -1,0 +1,23 @@
+version: 1
+kind: DeviceProfile
+name: Intercambiar Guide y QuickAccess
+name_es: Intercambiar Guide y QuickAccess
+name_en: Swap Guide and QuickAccess
+description: Intercambia el botón Guía (Steam) y QuickAccess (Decky)
+description_es: Intercambia el botón Guía (Steam) y QuickAccess (Decky)
+description_en: Swap Guide (Steam) and QuickAccess (Decky) buttons
+mapping:
+  - name: Guide to QuickAccess
+    source_event:
+      gamepad:
+        button: Guide
+    target_events:
+      - gamepad:
+          button: QuickAccess
+  - name: QuickAccess to Guide
+    source_event:
+      gamepad:
+        button: QuickAccess
+    target_events:
+      - gamepad:
+          button: Guide

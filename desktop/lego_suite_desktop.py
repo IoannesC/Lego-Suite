@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-LeGO Suite Desktop (v0.200)
+LeGO Suite Desktop (v0.220)
 Aplicación de Modo Escritorio con icono en la bandeja del sistema (System Tray)
 sincronizada en tiempo real con el plugin LeGO Suite de Decky Loader.
 """
@@ -13,6 +13,7 @@ if "QT_QPA_PLATFORM" not in os.environ and "WAYLAND_DISPLAY" in os.environ:
     os.environ["QT_QPA_PLATFORM"] = "xcb"
 
 import json
+import threading
 import math
 import time
 import socket
@@ -90,6 +91,23 @@ HWDB_SENSOR_FILE = Path("/etc/udev/hwdb.d/61-sensor-local.hwdb")
 HWDB_SENSOR_CONTENT = "sensor:modalias:platform:HID-SENSOR-200073*\n ACCEL_MOUNT_MATRIX=1, 0, 0; 0, 1, 0; 0, 0, 1\n"
 
 
+def _get_real_user_home() -> Path:
+    import pwd
+    pkexec_uid = os.environ.get("PKEXEC_UID")
+    if pkexec_uid:
+        try:
+            return Path(pwd.getpwuid(int(pkexec_uid)).pw_dir)
+        except Exception:
+            pass
+    sudo_user = os.environ.get("SUDO_USER")
+    if sudo_user:
+        try:
+            return Path(pwd.getpwnam(sudo_user).pw_dir)
+        except Exception:
+            pass
+    return Path.home()
+
+
 def find_settings_dir() -> Path:
     env_dir = os.environ.get("DECKY_PLUGIN_SETTINGS_DIR")
     if env_dir:
@@ -97,10 +115,14 @@ def find_settings_dir() -> Path:
         if p.exists() or p.parent.exists():
             return p
 
+    real_home = _get_real_user_home()
     candidates = [
+        real_home / "homebrew" / "settings" / "LeGO Suite",
         Path.home() / "homebrew" / "settings" / "LeGO Suite",
-        Path.home() / ".config" / "lego-suite",
     ]
+    if os.geteuid() == 0:
+        candidates.extend(sorted(Path("/home").glob("*/homebrew/settings/LeGO Suite")))
+    candidates.append(real_home / ".config" / "lego-suite")
     for c in candidates:
         if (c / "settings.json").exists():
             return c
@@ -216,8 +238,12 @@ class BackendClient:
 
     def call(self, method: str, *args, **kwargs):
         try:
+            token = ""
+            token_path = PROJECT_ROOT / ".rpc_token"
+            if token_path.exists():
+                token = token_path.read_text(encoding="utf-8").strip()
             with socket.create_connection((RPC_HOST, RPC_PORT), timeout=1.2) as sock:
-                payload = json.dumps({"method": method, "args": list(args), "kwargs": kwargs}) + "\n"
+                payload = json.dumps({"token": token, "method": method, "args": list(args), "kwargs": kwargs}) + "\n"
                 sock.sendall(payload.encode("utf-8"))
                 buf = b""
                 while not buf.endswith(b"\n"):
@@ -557,6 +583,8 @@ TEXTS = {
         "card_fan": "Curvas de Ventilación",
         "chk_fan_enabled": "Activar Curvas de Ventilación Personalizadas",
         "chk_full_fan": "Velocidad Máxima",
+        "chk_thermal_safety": "Seguridad Térmica (Activar máxima velocidad de ventilador\nsi se superan los 80º)",
+        "chk_disable_fan_limits": "Desactivar Límites de Curva",
         "chk_fan_profile": "Activar Perfil de Ventilador",
         "card_range": "Rango de TDP",
         "lbl_min_tdp": "TDP Mínimo",
@@ -646,6 +674,8 @@ TEXTS = {
         "lbl_ip_mode": "Objetivo de emulación",
         "lbl_ip_profiles": "Perfiles de Mapeo Rápido",
         "chk_ip_swap_menu": "Intercambiar Botones de Menú\n(Select/Guide y Start/QuickAccess)",
+        "chk_ip_swap_select_start": "Intercambiar Select y Start",
+        "chk_ip_swap_guide_qa": "Intercambiar Guide y QuickAccess",
         "chk_ip_swap_vol": "Intercambiar Botones de Volumen\n(Invertir + / -)",
         "btn_reset_controllers": "Resetear Mandos",
         "lbl_reset_controllers_desc": "Reinicio USB y valores de fábrica (HHD). Atajo físico: Izq: Legion L + LB + LS | Der: Legion R + RB + RS",
@@ -657,7 +687,7 @@ TEXTS = {
         "btn_minimize": "Minimizar",
         "btn_close": "Cerrar",
         "gear_tooltip": "Cambiar colores e idioma de la UI",
-        "tray_tooltip": "LeGO Suite v0.200 • TDP: {tdp}W • Carga: {charge}%"
+        "tray_tooltip": "LeGO Suite v0.220 • TDP: {tdp}W • Carga: {charge}%"
     },
     "en": {
         "tab_tdp": "TDP",
@@ -682,6 +712,8 @@ TEXTS = {
         "card_fan": "Fan Curves",
         "chk_fan_enabled": "Enable Custom Fan Curves",
         "chk_full_fan": "Full Speed",
+        "chk_thermal_safety": "Thermal Safety (Enable max fan speed if 80°C is exceeded)",
+        "chk_disable_fan_limits": "Disable Fan Curve Limits",
         "chk_fan_profile": "Enable Fan Profile",
         "card_range": "TDP Range",
         "lbl_min_tdp": "Minimum TDP",
@@ -771,6 +803,8 @@ TEXTS = {
         "lbl_ip_mode": "Target Emulation",
         "lbl_ip_profiles": "Quick Mapping Profiles",
         "chk_ip_swap_menu": "Swap Menu Buttons\n(Select/Guide & Start/QuickAccess)",
+        "chk_ip_swap_select_start": "Swap Select & Start",
+        "chk_ip_swap_guide_qa": "Swap Guide & QuickAccess",
         "chk_ip_swap_vol": "Swap Volume Buttons\n(Invert + / -)",
         "btn_reset_controllers": "Reset Controllers",
         "lbl_reset_controllers_desc": "USB reset & factory defaults (HHD). Hardware combo: Left: Legion L + LB + LS | Right: Legion R + RB + RS",
@@ -782,7 +816,7 @@ TEXTS = {
         "btn_minimize": "Minimize",
         "btn_close": "Close",
         "gear_tooltip": "Change UI colors and language",
-        "tray_tooltip": "LeGO Suite v0.200 • TDP: {tdp}W • Charge: {charge}%"
+        "tray_tooltip": "LeGO Suite v0.220 • TDP: {tdp}W • Charge: {charge}%"
     }
 }
 def tr(key: str, lang: str = "es") -> str:
@@ -1238,7 +1272,19 @@ REMAP_OPTIONS = [
 
 RGB_MODES = ["SOLID", "DYNAMIC", "PULSE", "SPIRAL"]
 CHARGE_LIMIT_STEPS = [70, 75, 80, 85, 90, 95]
-FAN_TEMPS = ["40", "50", "60", "70", "80", "90", "100"]
+FAN_TEMPS = ["10", "20", "30", "40", "50", "60", "70", "80", "90", "100"]
+DEFAULT_FAN_VALUES = {
+    "10": 5,
+    "20": 5,
+    "30": 5,
+    "40": 10,
+    "50": 15,
+    "60": 35,
+    "70": 70,
+    "80": 80,
+    "90": 95,
+    "100": 100,
+}
 
 
 class DockHandle(QFrame):
@@ -1340,6 +1386,7 @@ class ControllerShortcutThread(QThread):
 
 
 class LeGOSuiteMainWindow(QMainWindow):
+    inputplumber_info_ready = pyqtSignal(dict)
     def __init__(self, backend: BackendClient):
         super().__init__()
         self.backend = backend
@@ -1355,7 +1402,7 @@ class LeGOSuiteMainWindow(QMainWindow):
         self.ui_language = "es"
         self._auto_rotate_active = False
 
-        self.setWindowTitle("LeGO Suite v0.200")
+        self.setWindowTitle("LeGO Suite v0.220")
         self.resize(430, 660)
         self.setMinimumSize(0, 0)
         self.setMaximumSize(16777215, 16777215)
@@ -1393,6 +1440,7 @@ class LeGOSuiteMainWindow(QMainWindow):
 
         self._controller_thread = ControllerShortcutThread(self)
         self._controller_thread.shortcut_triggered.connect(self.toggle_slide_panel)
+        self.inputplumber_info_ready.connect(self._apply_inputplumber_status)
         self._controller_thread.start()
 
 
@@ -1583,6 +1631,10 @@ class LeGOSuiteMainWindow(QMainWindow):
             self.cmb_ip_mode.blockSignals(False)
         if hasattr(self, "chk_ip_swap_menu"):
             self.chk_ip_swap_menu.setText(tr("chk_ip_swap_menu", lang))
+        if hasattr(self, "chk_ip_swap_select_start"):
+            self.chk_ip_swap_select_start.setText(tr("chk_ip_swap_select_start", lang))
+        if hasattr(self, "chk_ip_swap_guide_qa"):
+            self.chk_ip_swap_guide_qa.setText(tr("chk_ip_swap_guide_qa", lang))
         if hasattr(self, "chk_ip_swap_vol"):
             self.chk_ip_swap_vol.setText(tr("chk_ip_swap_vol", lang))
         if hasattr(self, "btn_reset_ctrl"):
@@ -1615,6 +1667,10 @@ class LeGOSuiteMainWindow(QMainWindow):
             self.chk_fan_enabled.setText(tr("chk_fan_enabled", lang))
         if hasattr(self, "chk_full_fan"):
             self.chk_full_fan.setText(tr("chk_full_fan", lang))
+        if hasattr(self, "chk_thermal_safety"):
+            self.chk_thermal_safety.setText(tr("chk_thermal_safety", lang))
+        if hasattr(self, "chk_disable_fan_limits"):
+            self.chk_disable_fan_limits.setText(tr("chk_disable_fan_limits", lang))
 
         if hasattr(self, "chk_remap_enabled"):
             self.chk_remap_enabled.setText(tr("chk_remap_enabled", lang))
@@ -1650,7 +1706,7 @@ class LeGOSuiteMainWindow(QMainWindow):
 
         if hasattr(self, "version_label"):
             mode_txt = tr("status_decky_rpc" if self.backend.rpc_available else "status_local_sync", lang)
-            self.version_label.setText(f"Version 0.200 • {mode_txt}")
+            self.version_label.setText(f"Version 0.220 • {mode_txt}")
         if hasattr(self, "tray") and hasattr(self, "slider_tdp"):
             tdp_val = self.slider_tdp.value()
             c_val = getattr(self, "_last_charge_limit_val", 80)
@@ -1728,7 +1784,7 @@ class LeGOSuiteMainWindow(QMainWindow):
             logo_label.setStyleSheet("font-size: 22px; font-weight: 800; background: transparent;")
         logo_box.addWidget(logo_label)
 
-        self.version_label = QLabel("Version 0.200 • Sincronizado")
+        self.version_label = QLabel("Version 0.220 • Sincronizado")
         self.version_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.version_label.setStyleSheet(
             "color: #9ca3af; font-size: 11px; font-weight: 600; letter-spacing: 0.05em; background: transparent;"
@@ -2001,17 +2057,28 @@ class LeGOSuiteMainWindow(QMainWindow):
         self.chk_full_fan.toggled.connect(self._on_full_fan_toggled)
         fc_layout.addWidget(self.chk_full_fan)
 
+        self.chk_thermal_safety = QCheckBox(tr("chk_thermal_safety", self.ui_language))
+        self.chk_thermal_safety.toggled.connect(self._on_thermal_safety_toggled)
+        fc_layout.addWidget(self.chk_thermal_safety)
+
+        self.chk_disable_fan_limits = QCheckBox(tr("chk_disable_fan_limits", self.ui_language))
+        self.chk_disable_fan_limits.toggled.connect(self._on_disable_fan_limits_toggled)
+        fc_layout.addWidget(self.chk_disable_fan_limits)
+
         self.fan_sliders = {}
         self.fan_labels = {}
         grid_fan = QGridLayout()
         grid_fan.setSpacing(6)
         for idx, temp in enumerate(FAN_TEMPS):
-            lbl_t = QLabel(f"{temp}°C")
+            lbl_t = QLabel(f"{temp} °C")
             lbl_t.setStyleSheet("color: #9ca3af; font-size: 12px; font-weight: 600;")
             sl = QSlider(Qt.Orientation.Horizontal)
-            sl.setRange(0, 100)
-            sl.setValue(50)
-            lbl_v = QLabel("50%")
+            sl.setRange(5, 115)
+            sl.setSingleStep(5)
+            sl.setPageStep(5)
+            default_spd = DEFAULT_FAN_VALUES[temp]
+            sl.setValue(default_spd)
+            lbl_v = QLabel(f"{default_spd}%")
             lbl_v.setFixedWidth(38)
             lbl_v.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
             lbl_v.setStyleSheet("color: #e5e7eb; font-size: 12px; font-weight: 600;")
@@ -2033,6 +2100,7 @@ class LeGOSuiteMainWindow(QMainWindow):
         card_range, l_range, self.card_range_title = self._make_card(tr("card_range", self.ui_language))
         min_row = QHBoxLayout()
         self.lbl_min_tdp_title = QLabel(tr("lbl_min_tdp", self.ui_language))
+        self.lbl_min_tdp_title.setStyleSheet("color: #ffffff;")
         min_row.addWidget(self.lbl_min_tdp_title)
         self.lbl_min_tdp = QLabel("4 W")
         self.lbl_min_tdp.setProperty("class", "ValueBadge")
@@ -2048,6 +2116,7 @@ class LeGOSuiteMainWindow(QMainWindow):
 
         max_row = QHBoxLayout()
         self.lbl_max_tdp_title = QLabel(tr("lbl_max_tdp", self.ui_language))
+        self.lbl_max_tdp_title.setStyleSheet("color: #ffffff;")
         max_row.addWidget(self.lbl_max_tdp_title)
         self.lbl_max_tdp = QLabel("40 W")
         self.lbl_max_tdp.setProperty("class", "ValueBadge")
@@ -2331,10 +2400,18 @@ class LeGOSuiteMainWindow(QMainWindow):
         self.chk_ip_swap_menu.setStyleSheet("font-size: 11px; font-weight: 500; line-height: 1.2;")
         self.chk_ip_swap_vol = QCheckBox(tr("chk_ip_swap_vol", self.ui_language))
         self.chk_ip_swap_vol.setStyleSheet("font-size: 11px; font-weight: 500; line-height: 1.2;")
+        self.chk_ip_swap_select_start = QCheckBox(tr("chk_ip_swap_select_start", self.ui_language))
+        self.chk_ip_swap_select_start.setStyleSheet("font-size: 11px; font-weight: 500; line-height: 1.2;")
+        self.chk_ip_swap_guide_qa = QCheckBox(tr("chk_ip_swap_guide_qa", self.ui_language))
+        self.chk_ip_swap_guide_qa.setStyleSheet("font-size: 11px; font-weight: 500; line-height: 1.2;")
         self.chk_ip_swap_menu.toggled.connect(self._on_ip_profiles_changed)
         self.chk_ip_swap_vol.toggled.connect(self._on_ip_profiles_changed)
+        self.chk_ip_swap_select_start.toggled.connect(self._on_ip_profiles_changed)
+        self.chk_ip_swap_guide_qa.toggled.connect(self._on_ip_profiles_changed)
         l_ip.addWidget(self.chk_ip_swap_menu)
         l_ip.addWidget(self.chk_ip_swap_vol)
+        l_ip.addWidget(self.chk_ip_swap_select_start)
+        l_ip.addWidget(self.chk_ip_swap_guide_qa)
 
         l_ip.addSpacing(6)
         self.btn_reset_ctrl = QPushButton("🔄  " + tr("btn_reset_controllers", self.ui_language))
@@ -2390,6 +2467,10 @@ class LeGOSuiteMainWindow(QMainWindow):
             self.slider_rgb_hue.setValue(202)
         if hasattr(self, "chk_ip_swap_menu"):
             self.chk_ip_swap_menu.setChecked(False)
+        if hasattr(self, "chk_ip_swap_select_start"):
+            self.chk_ip_swap_select_start.setChecked(False)
+        if hasattr(self, "chk_ip_swap_guide_qa"):
+            self.chk_ip_swap_guide_qa.setChecked(False)
         if hasattr(self, "chk_ip_swap_vol"):
             self.chk_ip_swap_vol.setChecked(False)
 
@@ -2433,12 +2514,20 @@ class LeGOSuiteMainWindow(QMainWindow):
         self._refresh_inputplumber_status()
 
     def _refresh_inputplumber_status(self):
-        try:
-            info = self.backend.call("get_inputplumber_info")
-            if not isinstance(info, dict):
-                import inputplumber_utils
-                info = inputplumber_utils.get_inputplumber_info()
+        def _fetch():
+            try:
+                info = self.backend.call("get_inputplumber_info")
+                if not isinstance(info, dict):
+                    import inputplumber_utils
+                    info = inputplumber_utils.get_inputplumber_info()
+                self.inputplumber_info_ready.emit(info)
+            except Exception as e:
+                print(f"[LeGO Suite Desktop] _refresh_inputplumber_status error: {e}")
 
+        threading.Thread(target=_fetch, daemon=True).start()
+
+    def _apply_inputplumber_status(self, info: dict):
+        try:
             active = info.get("serviceActive") or info.get("dbusReady")
             if active:
                 self.lbl_ip_status.setText(tr("lbl_ip_status_active", self.ui_language))
@@ -2457,10 +2546,16 @@ class LeGOSuiteMainWindow(QMainWindow):
             active_p = info.get("activeProfiles", [])
             self.chk_ip_swap_menu.blockSignals(True)
             self.chk_ip_swap_vol.blockSignals(True)
+            self.chk_ip_swap_select_start.blockSignals(True)
+            self.chk_ip_swap_guide_qa.blockSignals(True)
             self.chk_ip_swap_menu.setChecked("swap_menu_buttons" in active_p)
             self.chk_ip_swap_vol.setChecked("swap_volume" in active_p)
+            self.chk_ip_swap_select_start.setChecked("swap_select_start" in active_p)
+            self.chk_ip_swap_guide_qa.setChecked("swap_guide_quickaccess" in active_p)
             self.chk_ip_swap_menu.blockSignals(False)
             self.chk_ip_swap_vol.blockSignals(False)
+            self.chk_ip_swap_select_start.blockSignals(False)
+            self.chk_ip_swap_guide_qa.blockSignals(False)
         except Exception as e:
             print(f"[LeGO Suite Desktop] _refresh_inputplumber_status error: {e}")
 
@@ -2470,33 +2565,45 @@ class LeGOSuiteMainWindow(QMainWindow):
             active.append("swap_menu_buttons")
         if self.chk_ip_swap_vol.isChecked():
             active.append("swap_volume")
-        try:
-            self.backend.call("set_inputplumber_profiles", active)
-        except Exception:
-            pass
-        try:
-            import inputplumber_utils
-            inputplumber_utils.set_active_profiles(active)
-        except Exception:
-            pass
+        if self.chk_ip_swap_select_start.isChecked():
+            active.append("swap_select_start")
+        if self.chk_ip_swap_guide_qa.isChecked():
+            active.append("swap_guide_quickaccess")
         self.settings_cache["inputPlumberActiveProfiles"] = active
         self._mark_saved()
+
+        def _apply():
+            try:
+                self.backend.call("set_inputplumber_profiles", active)
+            except Exception:
+                pass
+            try:
+                import inputplumber_utils
+                inputplumber_utils.set_active_profiles(active)
+            except Exception:
+                pass
+
+        threading.Thread(target=_apply, daemon=True).start()
 
     def _on_ip_mode_changed(self, idx: int):
         mode = self.cmb_ip_mode.currentData()
         if not mode:
             return
-        try:
-            self.backend.call("set_inputplumber_mode", mode)
-        except Exception:
-            pass
-        try:
-            import inputplumber_utils
-            inputplumber_utils.set_controller_mode(mode)
-        except Exception:
-            pass
         self.settings_cache["inputPlumberMode"] = mode
         self._mark_saved()
+
+        def _apply():
+            try:
+                self.backend.call("set_inputplumber_mode", mode)
+            except Exception:
+                pass
+            try:
+                import inputplumber_utils
+                inputplumber_utils.set_controller_mode(mode)
+            except Exception:
+                pass
+
+        threading.Thread(target=_apply, daemon=True).start()
 
 
     def _build_screen_tab(self) -> QWidget:
@@ -2842,7 +2949,7 @@ class LeGOSuiteMainWindow(QMainWindow):
             pix.fill(QColor("#000000"))
             self.tray.setIcon(QIcon(pix))
 
-        self.tray.setToolTip("LeGO Suite v0.200")
+        self.tray.setToolTip("LeGO Suite v0.220")
 
         menu = QMenu()
         menu.setStyleSheet(
@@ -3048,7 +3155,7 @@ class LeGOSuiteMainWindow(QMainWindow):
                 self._update_ui_texts()
 
             mode_txt = tr("status_decky_rpc" if self.backend.rpc_available else "status_local_sync", self.ui_language)
-            self.version_label.setText(f"Version 0.200 • {mode_txt}")
+            self.version_label.setText(f"Version 0.220 • {mode_txt}")
 
             current_mode = str(s.get("tdpMode", "custom")).lower()
             if hasattr(self, "tdp_mode_buttons"):
@@ -3113,8 +3220,12 @@ class LeGOSuiteMainWindow(QMainWindow):
             self.fan_controls_container.setVisible(fan_enabled)
             fan_prof = (s.get("fan") or {}).get("default") or {}
             self.chk_full_fan.setChecked(bool(fan_prof.get("fullFanSpeedEnabled", False)))
+            self.chk_thermal_safety.setChecked(bool(fan_prof.get("thermalSafetyEnabled", False)))
             for temp in FAN_TEMPS:
-                spd = int(fan_prof.get(temp, 50))
+                spd = int(fan_prof.get(temp, DEFAULT_FAN_VALUES[temp]))
+                spd = max(5, min(115, round(spd / 5) * 5))
+                if not self.chk_disable_fan_limits.isChecked() and int(temp) >= 70 and spd < 70:
+                    spd = 70
                 self.fan_sliders[temp].setValue(spd)
                 self.fan_labels[temp].setText(f"{spd}%")
                 self.fan_sliders[temp].setEnabled(not self.chk_full_fan.isChecked())
@@ -3196,10 +3307,37 @@ class LeGOSuiteMainWindow(QMainWindow):
                 self.chk_ip_swap_menu.blockSignals(True)
                 self.chk_ip_swap_menu.setChecked("swap_menu_buttons" in active_p)
                 self.chk_ip_swap_menu.blockSignals(False)
+            if hasattr(self, "chk_ip_swap_select_start"):
+                self.chk_ip_swap_select_start.blockSignals(True)
+                self.chk_ip_swap_select_start.setChecked("swap_select_start" in active_p)
+                self.chk_ip_swap_select_start.blockSignals(False)
+            if hasattr(self, "chk_ip_swap_guide_qa"):
+                self.chk_ip_swap_guide_qa.blockSignals(True)
+                self.chk_ip_swap_guide_qa.setChecked("swap_guide_quickaccess" in active_p)
+                self.chk_ip_swap_guide_qa.blockSignals(False)
             if hasattr(self, "chk_ip_swap_vol"):
                 self.chk_ip_swap_vol.blockSignals(True)
                 self.chk_ip_swap_vol.setChecked("swap_volume" in active_p)
                 self.chk_ip_swap_vol.blockSignals(False)
+
+            if (ip_mode and ip_mode != "default") or active_p:
+                def _restore_ip_standalone():
+                    try:
+                        self.backend.call("get_settings")
+                        return
+                    except Exception:
+                        pass
+                    try:
+                        import inputplumber_utils
+                        if not inputplumber_utils.is_inputplumber_running():
+                            return
+                        if ip_mode and ip_mode != "default":
+                            inputplumber_utils.set_controller_mode(ip_mode)
+                        elif active_p:
+                            inputplumber_utils.apply_active_profiles()
+                    except Exception:
+                        pass
+                threading.Thread(target=_restore_ip_standalone, daemon=True).start()
 
             charge_disp = c_val if c_enabled else 100
             self.tray.setToolTip(
@@ -3219,6 +3357,16 @@ class LeGOSuiteMainWindow(QMainWindow):
 
                 if is_full_fan and (rpm_v is None or int(rpm_v) < 6000):
                     rpm_v = 6500
+
+                is_thermal_safety = hasattr(self, "chk_thermal_safety") and self.chk_thermal_safety.isChecked()
+                if is_thermal_safety and not is_full_fan and cpu_t is not None:
+                    t_cpu = float(cpu_t)
+                    if t_cpu > 80.0 and not getattr(self, "_thermal_safety_active", False):
+                        self._thermal_safety_active = True
+                        self._set_thermal_safety_full_fan(True)
+                    elif t_cpu <= 75.0 and getattr(self, "_thermal_safety_active", False):
+                        self._thermal_safety_active = False
+                        self._set_thermal_safety_full_fan(False)
 
                 if cpu_t is not None and hasattr(self, "lbl_cpu_temp_val"):
                     t_val = float(cpu_t)
@@ -3250,7 +3398,23 @@ class LeGOSuiteMainWindow(QMainWindow):
     def _on_tdp_mode_selected(self, mode: str):
         if self._updating_ui:
             return
-        self.backend.call("set_tdp_mode", mode)
+        res = self.backend.call("set_tdp_mode", mode)
+        if not res and os.geteuid() != 0:
+            try:
+                import subprocess
+                py_mod = str(PROJECT_ROOT / "py_modules")
+                proj_root = str(PROJECT_ROOT)
+                cmd = (
+                    f"import sys, types; sys.path.insert(0, {py_mod!r}); sys.path.insert(0, {proj_root!r}); "
+                    f"dp = types.ModuleType('decky_plugin'); dp.logger = type('L', (), {{'info': lambda *a, **k: None, 'error': lambda *a, **k: None, 'warning': lambda *a, **k: None}})(); sys.modules['decky_plugin'] = dp; "
+                    f"import legion_space; from devices import lenovo; "
+                    f"legion_space.set_tdp_mode({mode!r}); "
+                    f"pp_map = {{'quiet': 'low-power', 'balanced': 'balanced', 'performance': 'performance', 'custom': 'custom'}}; "
+                    f"lenovo.set_platform_profile(pp_map.get({mode!r}, 'custom'))"
+                )
+                subprocess.run(["pkexec", sys.executable, "-c", cmd], check=False)
+            except Exception as e:
+                print(f"[LeGO Suite Desktop] pkexec set_tdp_mode error: {e}")
         if hasattr(self, "tdp_mode_buttons"):
             for m_key, btn in self.tdp_mode_buttons.items():
                 is_active = (m_key == mode)
@@ -3378,26 +3542,86 @@ class LeGOSuiteMainWindow(QMainWindow):
             return
         self._on_fan_curve_commit()
 
+    def _on_thermal_safety_toggled(self, checked: bool):
+        if self._updating_ui:
+            return
+        if not checked and getattr(self, "_thermal_safety_active", False):
+            self._thermal_safety_active = False
+            self._set_thermal_safety_full_fan(False)
+        self._on_fan_curve_commit()
+
+    def _set_thermal_safety_full_fan(self, enable: bool):
+        try:
+            import legion_space
+            legion_space.set_full_fan_speed(enable)
+            if not enable and hasattr(self, "chk_fan_enabled") and self.chk_fan_enabled.isChecked():
+                default_fan = dict((self.settings_cache.get("fan") or {}).get("default") or {})
+                for temp, sl in self.fan_sliders.items():
+                    default_fan[temp] = sl.value()
+                legion_space.set_active_fan_curve(default_fan)
+        except Exception as e:
+            print(f"[LeGO Suite Desktop] thermal safety error: {e}")
+
+    def _on_disable_fan_limits_toggled(self, checked: bool):
+        if self._updating_ui:
+            return
+        if not checked:
+            changed = False
+            for temp in ("70", "80", "90", "100"):
+                sl = self.fan_sliders.get(temp)
+                if sl and sl.value() < 70:
+                    sl.blockSignals(True)
+                    sl.setValue(70)
+                    sl.blockSignals(False)
+                    self.fan_labels[temp].setText("70%")
+                    changed = True
+            if changed:
+                self._on_fan_curve_commit()
+
     def _on_fan_point_preview(self, temp: str, val: int):
-        self.fan_labels[temp].setText(f"{val}%")
+        snapped = max(5, min(115, round(val / 5) * 5))
+        if hasattr(self, "chk_disable_fan_limits") and not self.chk_disable_fan_limits.isChecked():
+            if int(temp) >= 70 and snapped < 70:
+                snapped = 70
+        if snapped != val:
+            sl = self.fan_sliders[temp]
+            sl.blockSignals(True)
+            sl.setValue(snapped)
+            sl.blockSignals(False)
+        self.fan_labels[temp].setText(f"{snapped}%")
 
     def _on_fan_curve_commit(self):
         if self._updating_ui:
             return
         default_fan = dict((self.settings_cache.get("fan") or {}).get("default") or {})
-        default_fan.setdefault("10", 5)
-        default_fan.setdefault("20", 5)
-        default_fan.setdefault("30", 5)
         for temp, sl in self.fan_sliders.items():
             default_fan[temp] = sl.value()
         default_fan["fullFanSpeedEnabled"] = self.chk_full_fan.isChecked()
+        default_fan["thermalSafetyEnabled"] = self.chk_thermal_safety.isChecked()
 
         fan_info = {
             "fanProfiles": {"default": default_fan},
             "fanPerGameProfilesEnabled": False,
             "customFanCurvesEnabled": self.chk_fan_enabled.isChecked(),
         }
-        self.backend.call("save_fan_settings", fan_info, "default")
+        res = self.backend.call("save_fan_settings", fan_info, "default")
+        if not res and os.geteuid() != 0:
+            try:
+                import subprocess
+                py_mod = str(PROJECT_ROOT / "py_modules")
+                proj_root = str(PROJECT_ROOT)
+                full_fan = bool(default_fan.get("fullFanSpeedEnabled", False))
+                custom_fan = bool(fan_info.get("customFanCurvesEnabled", False))
+                cmd = (
+                    f"import sys, types; sys.path.insert(0, {py_mod!r}); sys.path.insert(0, {proj_root!r}); "
+                    f"dp = types.ModuleType('decky_plugin'); dp.logger = type('L', (), {{'info': lambda *a, **k: None, 'error': lambda *a, **k: None, 'warning': lambda *a, **k: None}})(); sys.modules['decky_plugin'] = dp; "
+                    f"import legion_space; "
+                    f"legion_space.set_full_fan_speed({full_fan!r}); "
+                    + (f"legion_space.set_active_fan_curve({default_fan!r}); " if custom_fan and not full_fan else "")
+                )
+                subprocess.run(["pkexec", sys.executable, "-c", cmd], check=False)
+            except Exception as e:
+                print(f"[LeGO Suite Desktop] pkexec save_fan_settings error: {e}")
         self._mark_saved()
 
 
@@ -3605,9 +3829,21 @@ def ensure_single_instance(show_callback):
 
 
 def main():
+    if os.geteuid() != 0 and "--no-elevate" not in sys.argv:
+        try:
+            env_args = []
+            for var in ("DISPLAY", "XAUTHORITY", "WAYLAND_DISPLAY", "XDG_RUNTIME_DIR", "DBUS_SESSION_BUS_ADDRESS", "QT_QPA_PLATFORM"):
+                val = os.environ.get(var)
+                if val:
+                    env_args.append(f"{var}={val}")
+            cmd = ["pkexec", "env", *env_args, sys.executable, os.path.abspath(__file__), *sys.argv[1:], "--no-elevate"]
+            os.execvp("pkexec", cmd)
+        except Exception as e:
+            print(f"[LeGO Suite Desktop] pkexec elevation warning: {e}")
+
     app = QApplication(sys.argv)
     app.setApplicationName("LeGO Suite")
-    app.setApplicationVersion("0.200")
+    app.setApplicationVersion("0.220")
     app.setDesktopFileName("lego-suite-desktop")
     app.setQuitOnLastWindowClosed(False)
 

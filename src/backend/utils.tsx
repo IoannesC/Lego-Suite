@@ -1,7 +1,7 @@
 import { callable, call } from "@decky/api";
 import { Router } from "@decky/ui";
 import { IS_DESKTOP } from "../components/atoms/DeckyFrontendLib";
-import { ControllerType, RemapActions, RemappableButtons } from "./constants";
+import { RemapActions, RemappableButtons } from "./constants";
 
 export enum Devices {
   LEGION_GO = "83E1",
@@ -125,7 +125,14 @@ export enum ServerAPIMethods {
   SET_CHARGE_LIMIT = "set_charge_limit",
   SET_ALS_ENABLED = "set_als_enabled",
   SAVE_SETTINGS = "save_settings",
+  GET_TDP_MODE = "get_tdp_mode",
+  SET_TDP_MODE = "set_tdp_mode",
 }
+
+export const getTdpMode = callable<[], string>(ServerAPIMethods.GET_TDP_MODE);
+export const setTdpMode = (mode: string, gameId: string = "default") => {
+  return call(ServerAPIMethods.SET_TDP_MODE, mode, gameId);
+};
 
 export const getSettings = callable<[], unknown>(ServerAPIMethods.GET_SETTINGS);
 export const setSetting = ({

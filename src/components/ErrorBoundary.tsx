@@ -13,17 +13,17 @@ type StateType = {
 };
 
 class ErrorBoundary extends Component<PropsType, StateType> {
-  constructor(props) {
+  constructor(props: PropsType) {
     super(props);
     this.state = { hasError: false, title: props?.title };
   }
 
-  static getDerivedStateFromError(error) {
+  static getDerivedStateFromError(error: any) {
     logInfo({ info: JSON.stringify(error) });
     return { hasError: true };
   }
 
-  componentDidCatch(error, errorInfo) {
+  componentDidCatch(error: any, errorInfo: any) {
     logInfo({
       info: {
         error: JSON.stringify(error),

@@ -21,6 +21,7 @@ const DEFAULT_FAN_VALUES: FanProfile = {
   90: 95,
   100: 100,
   fullFanSpeedEnabled: false,
+  thermalSafetyEnabled: false,
 };
 
 type FanSpeed = number;
@@ -40,6 +41,7 @@ type FanCurve = {
 
 interface FanProfile extends FanCurve {
   fullFanSpeedEnabled: boolean;
+  thermalSafetyEnabled?: boolean;
 }
 
 type FanProfiles = {
@@ -88,6 +90,15 @@ export const fanSlice = createSlice({
         : "default";
       bootstrapFanProfile(state, targetId);
       state.fanProfiles[targetId].fullFanSpeedEnabled = enabled;
+    },
+    setThermalSafetyEnabled: (state, action: PayloadAction<boolean>) => {
+      const enabled = action.payload;
+      const perGameProfilesEnabled = state.fanPerGameProfilesEnabled;
+      const targetId = perGameProfilesEnabled
+        ? extractCurrentGameId()
+        : "default";
+      bootstrapFanProfile(state, targetId);
+      state.fanProfiles[targetId].thermalSafetyEnabled = enabled;
     },
     updateFanCurve: (
       state,
@@ -168,6 +179,7 @@ export const selectActiveFanCurve = (state: RootState) => {
 
   const p = cloneDeep(profile) as any;
   delete p.fullFanSpeedEnabled;
+  delete p.thermalSafetyEnabled;
   const x = p as FanCurve;
 
   return x;
@@ -178,11 +190,17 @@ export const selectEnableFullFanSpeedMode = (state: RootState) => {
   return Boolean(profile?.fullFanSpeedEnabled);
 };
 
+export const selectThermalSafetyEnabled = (state: RootState) => {
+  const profile = selectActiveFanProfile(state);
+  return Boolean(profile?.thermalSafetyEnabled);
+};
+
 const mutatingActionTypes = [
   fanSlice.actions.setFanPerGameProfilesEnabled.type,
   fanSlice.actions.updateFanCurve.type,
   fanSlice.actions.updateFanProfiles.type,
   fanSlice.actions.setEnableFullFanSpeedMode.type,
+  fanSlice.actions.setThermalSafetyEnabled.type,
 ];
 
 export const saveFanSettingsMiddleware =

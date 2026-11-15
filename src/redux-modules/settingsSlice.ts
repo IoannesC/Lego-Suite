@@ -230,7 +230,7 @@ export const settingsSlice = createSlice({
       }
       if (advancedOptions) {
         state.advancedOptions = advancedOptions;
-        advancedOptions.forEach((option) => {
+        advancedOptions.forEach((option: any) => {
           set(state, `advanced.${option.statePath}`, option.currentValue);
         });
       }

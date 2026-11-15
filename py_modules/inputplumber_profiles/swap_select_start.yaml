@@ -1,0 +1,23 @@
+version: 1
+kind: DeviceProfile
+name: Intercambiar Select y Start
+name_es: Intercambiar Select y Start
+name_en: Swap Select and Start
+description: Intercambia los botones Select y Start
+description_es: Intercambia los botones Select y Start
+description_en: Swap Select and Start buttons
+mapping:
+  - name: Select to Start
+    source_event:
+      gamepad:
+        button: Select
+    target_events:
+      - gamepad:
+          button: Start
+  - name: Start to Select
+    source_event:
+      gamepad:
+        button: Start
+    target_events:
+      - gamepad:
+          button: Select

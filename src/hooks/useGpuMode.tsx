@@ -6,7 +6,7 @@ const useGpuMode = () => {
   const { activeGameId, gpuMode } = useSelector(getGpuModeSelector);
   const dispatch = useDispatch();
 
-  const setMode = useCallback((mode) => {
+  const setMode = useCallback((mode: any) => {
     return dispatch(setGpuMode(mode));
   }, []);
 

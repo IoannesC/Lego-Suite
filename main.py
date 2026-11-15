@@ -129,7 +129,7 @@ class Plugin:
 
       settings['systemLanguage'] = i18n.get_current_language()
       settings['language'] = i18n.get_current_language()
-      settings['pluginVersionNum'] = '0.198'
+      settings['pluginVersionNum'] = '0.220'
 
       try:
         egpu_st = egpu_utils.get_egpu_status()
@@ -159,6 +159,8 @@ class Plugin:
     plugin_utils.set_values_for_game_id(gameId)
   
   async def persist_tdp(self, tdp, gameId):
+    if not isinstance(tdp, (int, float)) or isinstance(tdp, bool) or not (1 <= tdp <= 150):
+      raise ValueError(f"Invalid TDP value: {tdp!r}")
     plugin_utils.persist_tdp(tdp, gameId)
 
   async def persist_gpu(self, minGpuFrequency, maxGpuFrequency, gameId):
@@ -516,9 +518,15 @@ class Plugin:
           active_fan_profile = dict(fan_profile)
 
       enable_full_fan_speed = active_fan_profile.get("fullFanSpeedEnabled", False)
+      thermal_safety_enabled = active_fan_profile.get("thermalSafetyEnabled", False)
       if 'fullFanSpeedEnabled' in active_fan_profile:
         del active_fan_profile['fullFanSpeedEnabled']
+      if 'thermalSafetyEnabled' in active_fan_profile:
+        del active_fan_profile['thermalSafetyEnabled']
       active_fan_curve = list(active_fan_profile.values())
+
+      if not thermal_safety_enabled:
+        self._thermal_safety_active = False
 
       if enable_full_fan_speed:
         legion_space.set_full_fan_speed(True)
@@ -560,6 +568,13 @@ class Plugin:
           lenovo.set_platform_profile(pp_map[mode])
       except Exception:
         pass
+      if mode == "custom":
+        try:
+          tdp_profile = get_active_tdp_profile(gameId)
+          with plugin_timeout.time_limit(3):
+            plugin_utils.set_values_for_tdp_profile(tdp_profile)
+        except Exception:
+          pass
       return res
     except Exception as e:
       decky_plugin.logger.error(f'set_tdp_mode error {e}')
@@ -588,10 +603,42 @@ class Plugin:
         if settings.get('chargeLimitEnabled', False):
           target_pct = int(settings.get('chargeLimitValue', 80))
           legion_space.set_charge_limit(True, target_pct)
+        await self._check_thermal_safety(settings)
       except asyncio.CancelledError:
         break
       except Exception as e:
         decky_plugin.logger.error(f'charge_limit_watcher error {e}')
+
+  async def _check_thermal_safety(self, settings):
+    try:
+      fan_profiles = settings.get('fan', {})
+      active_profile = fan_profiles.get('default', {})
+      if not active_profile.get('thermalSafetyEnabled', False):
+        if getattr(self, '_thermal_safety_active', False):
+          self._thermal_safety_active = False
+          if not active_profile.get('fullFanSpeedEnabled', False):
+            legion_space.set_full_fan_speed(False)
+        return
+      if active_profile.get('fullFanSpeedEnabled', False):
+        return
+      temps = await self.get_temperatures()
+      cpu_t = temps.get('cpu')
+      if cpu_t is None:
+        return
+      t_val = float(cpu_t)
+      if t_val > 80.0 and not getattr(self, '_thermal_safety_active', False):
+        self._thermal_safety_active = True
+        legion_space.set_full_fan_speed(True)
+      elif t_val <= 75.0 and getattr(self, '_thermal_safety_active', False):
+        self._thermal_safety_active = False
+        legion_space.set_full_fan_speed(False)
+        current_mode = str(settings.get('tdpMode', 'custom')).lower()
+        if current_mode == 'custom' and settings.get('customFanCurvesEnabled', False) and remapper_settings.supports_custom_fan_curves():
+          curve = [v for k, v in active_profile.items() if k not in ('fullFanSpeedEnabled', 'thermalSafetyEnabled')]
+          if curve:
+            legion_space.set_active_fan_curve(curve)
+    except Exception as e:
+      decky_plugin.logger.error(f'thermal_safety error {e}')
 
   async def is_legion_go_2(self):
     return legion_go2_brightness.is_legion_go_2()
@@ -688,24 +735,54 @@ class Plugin:
     return controllers.reset_controllers()
 
 
+  _ALLOWED_RPC_METHODS = frozenset({
+    "disable_fan_profiles",
+    "get_inputplumber_info",
+    "get_power_control_info",
+    "get_settings",
+    "get_temperatures",
+    "persist_cpu_boost",
+    "persist_smt",
+    "persist_tdp",
+    "remap_button",
+    "reset_controllers",
+    "save_controller_settings",
+    "save_fan_settings",
+    "save_rgb_settings",
+    "set_charge_limit",
+    "set_inputplumber_mode",
+    "set_inputplumber_profiles",
+    "set_power_led",
+    "set_rumble_intensity",
+    "set_setting",
+    "set_tdp_mode",
+    "set_touchpad",
+  })
+
   async def _handle_desktop_rpc(self, reader: asyncio.StreamReader, writer: asyncio.StreamWriter):
     try:
       data = await asyncio.wait_for(reader.readline(), timeout=5.0)
       if not data:
         writer.close()
         return
+      import hmac
       import json
       req = json.loads(data.decode('utf-8'))
-      method_name = req.get('method')
-      args = req.get('args', [])
-      kwargs = req.get('kwargs', {})
-
-      if not method_name or method_name.startswith('_') or not hasattr(self, method_name):
-        resp = {'ok': False, 'error': f'Unknown method: {method_name}'}
+      token = req.get('token', '')
+      expected_token = getattr(self, '_rpc_token', '')
+      if not expected_token or not isinstance(token, str) or not hmac.compare_digest(token, expected_token):
+        resp = {'ok': False, 'error': 'Unauthorized'}
       else:
-        fn = getattr(self, method_name)
-        res = await fn(*args, **kwargs)
-        resp = {'ok': True, 'result': res}
+        method_name = req.get('method')
+        args = req.get('args', [])
+        kwargs = req.get('kwargs', {})
+
+        if not method_name or method_name not in self._ALLOWED_RPC_METHODS or not hasattr(self, method_name):
+          resp = {'ok': False, 'error': f'Unknown or disallowed method: {method_name}'}
+        else:
+          fn = getattr(self, method_name)
+          res = await fn(*args, **kwargs)
+          resp = {'ok': True, 'result': res}
     except Exception as e:
       decky_plugin.logger.error(f"Desktop RPC error: {e}")
       resp = {'ok': False, 'error': str(e)}
@@ -746,7 +823,16 @@ class Plugin:
     self._charge_limit_task = asyncio.create_task(
       self._charge_limit_watcher_loop()
     )
+    self._restore_inputplumber_task = asyncio.create_task(
+      self._restore_inputplumber_on_start()
+    )
     try:
+      import secrets
+      self._rpc_token = secrets.token_hex(32)
+      self._rpc_token_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".rpc_token")
+      fd = os.open(self._rpc_token_path, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+      with os.fdopen(fd, "w") as f:
+        f.write(self._rpc_token)
       self._rpc_server = await asyncio.start_server(
         self._handle_desktop_rpc, '127.0.0.1', 47392
       )
@@ -754,16 +840,55 @@ class Plugin:
     except Exception as e:
       decky_plugin.logger.error(f"Could not start Desktop RPC server: {e}")
 
+  async def _restore_inputplumber_on_start(self):
+    """Restore saved InputPlumber controller mode and profiles on plugin startup."""
+    try:
+      settings = get_saved_settings()
+      saved_mode = settings.get("inputPlumberMode")
+      saved_profiles = settings.get("inputPlumberActiveProfiles")
+
+      has_custom_mode = bool(saved_mode and saved_mode != "default")
+      has_custom_profiles = bool(saved_profiles)
+      if not has_custom_mode and not has_custom_profiles:
+        return
+
+      for attempt in range(10):
+        if inputplumber_utils.is_inputplumber_running():
+          if has_custom_mode:
+            ok = await asyncio.to_thread(inputplumber_utils.set_controller_mode, saved_mode)
+            if ok:
+              decky_plugin.logger.info(f"Restored InputPlumber mode on start: {saved_mode}")
+              return
+          elif has_custom_profiles:
+            ok = await asyncio.to_thread(inputplumber_utils.apply_active_profiles)
+            if ok:
+              decky_plugin.logger.info(f"Restored InputPlumber profiles on start: {saved_profiles}")
+              return
+        await asyncio.sleep(2)
+
+      decky_plugin.logger.warning("Timed out waiting for InputPlumber to restore saved settings on start")
+    except asyncio.CancelledError:
+      pass
+    except Exception as e:
+      decky_plugin.logger.error(f"Error restoring InputPlumber on start: {e}")
+
   async def _unload(self):
     decky_plugin.logger.info("LeGO Suite Unloading")
     legion_go2_brightness.stop_backlight_watcher()
     if hasattr(self, '_rpc_server') and self._rpc_server:
       self._rpc_server.close()
       await self._rpc_server.wait_closed()
+    if hasattr(self, '_rpc_token_path') and os.path.exists(self._rpc_token_path):
+      try:
+        os.remove(self._rpc_token_path)
+      except Exception:
+        pass
     if hasattr(self, '_backlight_task'):
       self._backlight_task.cancel()
     if hasattr(self, '_charge_limit_task'):
       self._charge_limit_task.cancel()
+    if hasattr(self, '_restore_inputplumber_task'):
+      self._restore_inputplumber_task.cancel()
 
   async def _uninstall(self):
     decky_plugin.logger.info("LeGO Suite Uninstalling")

@@ -27,7 +27,7 @@ import t from "../../i18n/i18n";
 
 const calculateDisabled = (
   option: AdvancedOption,
-  advancedState: { [k: string]: boolean },
+  advancedState: Record<string, any>,
 ) => {
   if (option.disabled) {
     
@@ -35,21 +35,25 @@ const calculateDisabled = (
 
     if (disabled.ifFalsy) {
       
-      const { ifFalsy, hideIfDisabled = false } = disabled;
+      const { ifFalsy, hideIfDisabled = false } = disabled as { ifFalsy?: string[]; hideIfDisabled?: boolean };
 
-      for (let i = 0; i < ifFalsy.length; i++) {
-        if (!advancedState[ifFalsy[i]]) {
-          return { disabled: true, hideIfDisabled };
+      if (ifFalsy) {
+        for (let i = 0; i < ifFalsy.length; i++) {
+          if (!advancedState[ifFalsy[i]]) {
+            return { disabled: true, hideIfDisabled };
+          }
         }
       }
     }
     if (disabled.ifTruthy) {
       
-      const { ifTruthy, hideIfDisabled = false } = disabled;
+      const { ifTruthy, hideIfDisabled = false } = disabled as { ifTruthy?: string[]; hideIfDisabled?: boolean };
 
-      for (let i = 0; i < ifTruthy.length; i++) {
-        if (advancedState[ifTruthy[i]]) {
-          return { disabled: true, hideIfDisabled };
+      if (ifTruthy) {
+        for (let i = 0; i < ifTruthy.length; i++) {
+          if (advancedState[ifTruthy[i]]) {
+            return { disabled: true, hideIfDisabled };
+          }
         }
       }
     }
@@ -60,7 +64,7 @@ const calculateDisabled = (
 
 const calculateUiHide = (
   option: AdvancedOption,
-  advancedState: { [k: string]: boolean },
+  advancedState: Record<string, any>,
 ) => {
   if (option.uiShouldHideField) {
     
@@ -68,21 +72,25 @@ const calculateUiHide = (
 
     if (uiShouldHideField.ifFalsy) {
       
-      const { ifFalsy } = uiShouldHideField;
+      const { ifFalsy } = uiShouldHideField as { ifFalsy?: string[] };
 
-      for (let i = 0; i < ifFalsy.length; i++) {
-        if (!advancedState[ifFalsy[i]]) {
-          return { uiShouldHideField: true };
+      if (ifFalsy) {
+        for (let i = 0; i < ifFalsy.length; i++) {
+          if (!advancedState[ifFalsy[i]]) {
+            return { uiShouldHideField: true };
+          }
         }
       }
     }
     if (uiShouldHideField.ifTruthy) {
       
-      const { ifTruthy } = uiShouldHideField;
+      const { ifTruthy } = uiShouldHideField as { ifTruthy?: string[] };
 
-      for (let i = 0; i < ifTruthy.length; i++) {
-        if (advancedState[ifTruthy[i]]) {
-          return { uiShouldHideField: true };
+      if (ifTruthy) {
+        for (let i = 0; i < ifTruthy.length; i++) {
+          if (advancedState[ifTruthy[i]]) {
+            return { uiShouldHideField: true };
+          }
         }
       }
     }
@@ -152,7 +160,7 @@ const AdvancedOptions = () => {
                   <DeckyToggle
                     key={idx}
                     label={displayName}
-                    checked={value}
+                    checked={Boolean(value)}
                     description={displayDesc}
                     highlightOnFocus
                     bottomSeparator="none"

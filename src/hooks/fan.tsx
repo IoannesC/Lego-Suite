@@ -3,6 +3,7 @@ import {
   fanSlice,
   selectCustomFanCurvesEnabled,
   selectEnableFullFanSpeedMode,
+  selectThermalSafetyEnabled,
   selectFanPerGameProfilesEnabled,
   selectSupportsCustomFanCurves,
 } from "../redux-modules/fanSlice";
@@ -17,6 +18,19 @@ export const useEnableFullFanSpeedMode = () => {
   return {
     enableFullFanSpeedMode: result,
     setEnableFullFanSpeedMode: setter,
+  };
+};
+
+export const useThermalSafetyEnabled = () => {
+  const result = useSelector(selectThermalSafetyEnabled);
+  const dispatch = useDispatch();
+
+  const setter = (enabled: boolean) => {
+    return dispatch(fanSlice.actions.setThermalSafetyEnabled(enabled));
+  };
+  return {
+    thermalSafetyEnabled: result,
+    setThermalSafetyEnabled: setter,
   };
 };
 

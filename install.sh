@@ -7,8 +7,7 @@ fi
 
 if [ ! -f "/etc/udev/rules.d/90-legion-go-remapper.rules" ]; then
 cat << EOF | sudo tee -a "/etc/udev/rules.d/90-legion-go-remapper.rules"
-SUBSYSTEMS=="usb", ATTRS{idVendor}=="17ef", TAG+="uaccess"
-SUBSYSTEMS=="usb", ATTRS{idVendor}=="17ef", MODE="0666"
+SUBSYSTEM=="hidraw", SUBSYSTEMS=="usb", ATTRS{idVendor}=="17ef", TAG+="uaccess"
 EOF
 fi
 

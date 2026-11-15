@@ -8,6 +8,7 @@ import {
 import {
   useCustomFanCurvesEnabled,
   useEnableFullFanSpeedMode,
+  useThermalSafetyEnabled,
   useFanPerGameProfilesEnabled,
   useSupportsCustomFanCurves,
 } from "../../hooks/fan";
@@ -73,6 +74,8 @@ const FanPanel = () => {
 
   const { enableFullFanSpeedMode, setEnableFullFanSpeedMode } =
     useEnableFullFanSpeedMode();
+  const { thermalSafetyEnabled, setThermalSafetyEnabled } =
+    useThermalSafetyEnabled();
 
   const { customFanCurvesEnabled, setCustomFanCurvesEnabled } =
     useCustomFanCurvesEnabled();
@@ -249,13 +252,25 @@ const FanPanel = () => {
               </ButtonItem>
             </PanelSectionRow>
             {showSliders && (
-              <PanelSectionRow>
-                <ToggleField
-                  label={t("FAN_ENABLE_FULL_SPEED", "Enable Full Fan Speed Mode")}
-                  checked={enableFullFanSpeedMode}
-                  onChange={setEnableFullFanSpeedMode}
-                />
-              </PanelSectionRow>
+              <>
+                <PanelSectionRow>
+                  <ToggleField
+                    label={t("FAN_ENABLE_FULL_SPEED", "Enable Full Fan Speed Mode")}
+                    checked={enableFullFanSpeedMode}
+                    onChange={setEnableFullFanSpeedMode}
+                  />
+                </PanelSectionRow>
+                <PanelSectionRow>
+                  <ToggleField
+                    label={t(
+                      "FAN_THERMAL_SAFETY",
+                      "Thermal Safety (Enable max fan speed if 80°C is exceeded)"
+                    )}
+                    checked={thermalSafetyEnabled}
+                    onChange={setThermalSafetyEnabled}
+                  />
+                </PanelSectionRow>
+              </>
             )}
           </>
         )}

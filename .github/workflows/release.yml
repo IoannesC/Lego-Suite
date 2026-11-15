@@ -19,10 +19,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup latest Node.js
+      - name: Setup Node.js 22
         uses: actions/setup-node@v4
         with:
-          node-version: latest
+          node-version: "22"
 
       - name: Setup PNPM@10
         uses: pnpm/action-setup@v4
@@ -33,9 +33,9 @@ jobs:
         run: |
           ./scripts/build_i18n_json.sh
           ls src/i18n/languages.json
-          pnpm i
+          pnpm install --frozen-lockfile
+          pnpm exec tsc --noEmit
           pnpm run build
-        continue-on-error: true
 
       - name: Download Decky Plugin CLI
         run: |
