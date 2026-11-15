@@ -188,6 +188,8 @@ CSS Loader en Decky y el complemento Colored Toggles.
 Allwaysegpu para utilizar la eGPU en Gamescope sin latencia de regreso al utilizar el HDMI de la GPU (CachyOS).
 
 
+[![Review y tutorial -Español-](https://youtube.com)](https://www.youtube.com/watch?v=tS8YEXbgwSo)
+
 ### Notas sobre la v0.220:
 Nuevo modo de seguridad térmica para evitar sobrecalentamientos por cambios bruscos de temperatura. 
 Dos nuevos swaps de botones, para dar mayores opciones de configuración. 
