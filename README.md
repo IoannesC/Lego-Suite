@@ -40,6 +40,12 @@ CSS Loader on Decky and the Colored Toggles plugin.
 
 All-Ways-EGPU to use the eGPU in Gamescope without loopback latency when using the GPU's HDMI output (CachyOS).
 
+
+### Notes on v0.220:
+
+New thermal safety mode to prevent overheating caused by sudden temperature changes.
+Two new button swaps, to provide greater configuration options.
+
 ### Notes on v0.198:
 It has been tested and works properly on my **Lenovo Legion Go Gen 1, Z1 Extreme with 16GB of RAM on CachyOS with the LTS kernel.** I do not have access to other devices. If I ever manage to get my hands on another device or another Lenovo machine, I will gladly optimize it for those systems—or alternatively, collaborate with testers who own other machines. For the time being, if you need to test it on a device other than the Lenovo Legion Go Gen 1, please do so at your own initiative.
 I would like to add more options and useful features, and I will be implementing them little by little.
@@ -178,6 +184,11 @@ Aunque SimpledeckyTDP, Legion GO Remmaper, y HHD son grandísimas utilidades y m
 CSS Loader en Decky y el complemento Colored Toggles.
 
 Allwaysegpu para utilizar la eGPU en Gamescope sin latencia de regreso al utilizar el HDMI de la GPU (CachyOS).
+
+
+### Notas sobre la v0.220:
+Nuevo modo de seguridad térmica para evitar sobrecalentamientos por cambios bruscos de temperatura. 
+Dos nuevos swaps de botones, para dar mayores opciones de configuración. 
 
 ### Notas sobre la v0.198:
 Está probada y funciona correctamente en mi **Lenovo Legion Go Gen 1, Z1 Extreme con 16Gb de RAM en CachyOS con kernel LTS.** No tengo acceso a otros dispositivos. Si llego a conseguir ponerle las manos encima a otro dispositivo o a otra máquina de Lenovo, con gusto optimizaré para esos sistemas; o en su defecto testers con otras máquinas. Por el momento si necesitas probarlo en tu equipo que no es Lenovo Legion Go Gen 1, hazlo por tu propia iniciativa.
