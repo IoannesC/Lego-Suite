@@ -40,6 +40,8 @@ CSS Loader on Decky and the Colored Toggles plugin.
 
 All-Ways-EGPU to use the eGPU in Gamescope without loopback latency when using the GPU's HDMI output (CachyOS).
 
+Unifideck for managing games from non-Steam stores in Gamescope (the OptiScaler Injector module detects this content and injects OptiScaler into it).
+
 [![Review and tutorial -Spanish-](https://youtube.com)](https://www.youtube.com/watch?v=tS8YEXbgwSo)
 
 <details>
@@ -203,6 +205,7 @@ CSS Loader en Decky y el complemento Colored Toggles.
 
 Allwaysegpu para utilizar la eGPU en Gamescope sin latencia de regreso al utilizar el HDMI de la GPU (CachyOS).
 
+Unifideck para la gestión de juegos de tiendas ajenas a Steam en el Gamescope (El módulo Optiscaler Injector detecta estos contenidos e inyecta optiscaler en estos).
 
 [![Review y tutorial -Español-](https://youtube.com)](https://www.youtube.com/watch?v=tS8YEXbgwSo)
 
