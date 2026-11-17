@@ -42,8 +42,22 @@ All-Ways-EGPU to use the eGPU in Gamescope without loopback latency when using t
 
 [![Review and tutorial -Spanish-](https://youtube.com)](https://www.youtube.com/watch?v=tS8YEXbgwSo)
 
+<details>
+<summary><b>Notes on v0.351:</b></summary>
+   
+Added the OptiScaler Injector module, based on [Decky Framegen](https://github.com/xXJSONDeruloXx/Decky-Framegen), which injects OptiScaler into Steam games, Non-Steam games, and games installed via Unifideck. It detects games built with Unreal Engine to patch them properly.
 
-### Notes on v0.351:
+<img width="326" height="449" alt="Captura de pantalla_20261117_115522" src="https://github.com/user-attachments/assets/4ff3a72e-48bd-4b1d-b93d-62a45e836f51" />
+
+Added an option to disable the OptiScaler Injector module in the plugin directly from the desktop app (in real time).
+
+<img width="326" height="449" alt="Captura de pantalla_20261117_115847" src="https://github.com/user-attachments/assets/99c02031-2c65-42d6-8c94-4cc3017a968f" />
+
+Added system resource monitoring to both the app and the plugin.
+
+</details>
+
+### Notes on v0.220:
 
 New thermal safety mode to prevent overheating caused by sudden temperature changes.
 Two new button swaps, to provide greater configuration options.
@@ -189,6 +203,22 @@ Allwaysegpu para utilizar la eGPU en Gamescope sin latencia de regreso al utiliz
 
 
 [![Review y tutorial -Español-](https://youtube.com)](https://www.youtube.com/watch?v=tS8YEXbgwSo)
+
+<details>
+<summary><b>Notas sobre la v0.351:</b></summary>
+   
+Se añadió el módulo Otptiscaler Injector, basado en [Decky Framegen](https://github.com/xXJSONDeruloXx/Decky-Framegen) que inyecta optiscaler en juegos de Steam, juegos No Steam y juegos instalados por Unifideck. Detecta juegos desarrollados con Unreal Engine para parcharlos correctamente. 
+
+<img width="326" height="449" alt="Captura de pantalla_20261117_115522" src="https://github.com/user-attachments/assets/4ff3a72e-48bd-4b1d-b93d-62a45e836f51" />
+
+Se añadió la opción de desactivar el modulo de Optiscaler injector en el plugin desde la aplicación de escritorio (En tiempo real). 
+
+<img width="326" height="449" alt="Captura de pantalla_20261117_115847" src="https://github.com/user-attachments/assets/99c02031-2c65-42d6-8c94-4cc3017a968f" />
+
+Añadido el monitoreo de recursos del sistema en App y en plugin. 
+
+</details>
+
 
 ### Notas sobre la v0.351:
 Nuevo modo de seguridad térmica para evitar sobrecalentamientos por cambios bruscos de temperatura. 
