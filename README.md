@@ -1,6 +1,6 @@
 <img width="1672" height="941" alt="file_000000001834822f9cf25b1021da0124" src="https://github.com/user-attachments/assets/a18d2591-66ca-44b6-80e3-065768210b3a" />
 
-### <div align="center"> <h2> LeGO Suite v0.220 </h2> </div>
+### <div align="center"> <h2> LeGO Suite v0.351 </h2> </div>
 
 LeGO Suite is the all-in-one control suite designed to get the most out of your Legion Go on Linux.
 
@@ -43,7 +43,7 @@ All-Ways-EGPU to use the eGPU in Gamescope without loopback latency when using t
 [![Review and tutorial -Spanish-](https://youtube.com)](https://www.youtube.com/watch?v=tS8YEXbgwSo)
 
 
-### Notes on v0.220:
+### Notes on v0.351:
 
 New thermal safety mode to prevent overheating caused by sudden temperature changes.
 Two new button swaps, to provide greater configuration options.
@@ -63,7 +63,7 @@ There are two applications in one: a handy Decky Plugin and a Desktop Applicatio
 ### Installation
 
 ```bash
-curl -L https://github.com/IoannesC/Lego-Suite/releases/latest/download/LeGO-Suite-Plugin-v0.220.zip -o /tmp/lego-plugin.zip && \
+curl -L https://github.com/IoannesC/Lego-Suite/releases/latest/download/LeGO-Suite-Plugin-v0.351.zip -o /tmp/lego-plugin.zip && \
 sudo mkdir -p ~/homebrew/plugins/"LeGO Suite" && \
 sudo unzip -o /tmp/lego-plugin.zip -d ~/homebrew/plugins/"LeGO Suite" && \
 rm /tmp/lego-plugin.zip && \
@@ -117,7 +117,7 @@ And many other options for you to discover on your own.
 ### Installation
 
 ```bash
-curl -L https://github.com/IoannesC/Lego-Suite/releases/latest/download/LeGO-Suite-Desktop-v0.220.zip -o /tmp/lego-desktop.zip && \
+curl -L https://github.com/IoannesC/Lego-Suite/releases/latest/download/LeGO-Suite-Desktop-v0.351.zip -o /tmp/lego-desktop.zip && \
 mkdir -p /tmp/lego-desktop && \
 unzip -o /tmp/lego-desktop.zip -d /tmp/lego-desktop && \
 bash /tmp/lego-desktop/desktop/install_desktop_app.sh && \
@@ -146,7 +146,7 @@ Many thanks to all the authors, maintainers, and contributors of these open-sour
 
 <img width="1672" height="941" alt="file_000000001834822f9cf25b1021da0124" src="https://github.com/user-attachments/assets/a18d2591-66ca-44b6-80e3-065768210b3a" />
 
-### <div align="center"> <h2> LeGO Suite v0.220 </h2> </div>
+### <div align="center"> <h2> LeGO Suite v0.351 </h2> </div>
 
 LeGO Suite es la suite integral de control para sacarle el mayor provecho a tu Legion Go en Linux. 
 
@@ -190,7 +190,7 @@ Allwaysegpu para utilizar la eGPU en Gamescope sin latencia de regreso al utiliz
 
 [![Review y tutorial -Español-](https://youtube.com)](https://www.youtube.com/watch?v=tS8YEXbgwSo)
 
-### Notas sobre la v0.220:
+### Notas sobre la v0.351:
 Nuevo modo de seguridad térmica para evitar sobrecalentamientos por cambios bruscos de temperatura. 
 Dos nuevos swaps de botones, para dar mayores opciones de configuración. 
 
@@ -209,7 +209,7 @@ Hay dos aplicaciones en una. Un práctico Plugin para Decky y una aplicación pa
 ### Instalación
 
 ```bash
-curl -L https://github.com/IoannesC/Lego-Suite/releases/latest/download/LeGO-Suite-Plugin-v0.220.zip -o /tmp/lego-plugin.zip && \
+curl -L https://github.com/IoannesC/Lego-Suite/releases/latest/download/LeGO-Suite-Plugin-v0.351.zip -o /tmp/lego-plugin.zip && \
 sudo mkdir -p ~/homebrew/plugins/"LeGO Suite" && \
 sudo unzip -o /tmp/lego-plugin.zip -d ~/homebrew/plugins/"LeGO Suite" && \
 rm /tmp/lego-plugin.zip && \
@@ -265,7 +265,7 @@ Y otras opciones más que podrás descubrir por ti mismo.
 ### Installation
 
 ```bash
-curl -L https://github.com/IoannesC/Lego-Suite/releases/latest/download/LeGO-Suite-Desktop-v0.220.zip -o /tmp/lego-desktop.zip && \
+curl -L https://github.com/IoannesC/Lego-Suite/releases/latest/download/LeGO-Suite-Desktop-v0.351.zip -o /tmp/lego-desktop.zip && \
 mkdir -p /tmp/lego-desktop && \
 unzip -o /tmp/lego-desktop.zip -d /tmp/lego-desktop && \
 bash /tmp/lego-desktop/desktop/install_desktop_app.sh && \

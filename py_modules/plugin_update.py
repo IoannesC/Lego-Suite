@@ -34,7 +34,7 @@ def ota_update():
   return False
 
 def get_latest_version():
-  return "0.220"
+  return "0.351"
 
 def reset_settings():
   try:

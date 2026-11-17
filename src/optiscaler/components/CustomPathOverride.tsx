@@ -1,0 +1,308 @@
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { ButtonItem, Field, PanelSectionRow, ToggleField } from "@decky/ui";
+import { FileSelectionType, openFilePicker } from "@decky/api";
+import { getPathDefaults, runManualPatch, runManualUnpatch } from "../api";
+import type { ApiResponse } from "../types/index";
+import { SmartClipboardButton } from "./SmartClipboardButton";
+import t from "../../i18n/i18n";
+
+interface PathDefaults {
+  home: string;
+  steamCommon: string;
+}
+
+const DEFAULT_HOME = "/home";
+const DEFAULT_STEAM_COMMON = "/home/deck/.local/share/Steam/steamapps/common";
+
+const INITIAL_DEFAULTS: PathDefaults = {
+  home: DEFAULT_HOME,
+  steamCommon: DEFAULT_STEAM_COMMON,
+};
+
+const normalizePath = (value: string) => value.replace(/\\/g, "/");
+
+const stripTrailingSlash = (value: string) =>
+  value.length > 1 && value.endsWith("/") ? value.slice(0, -1) : value;
+
+const ensureDirectory = (value: string) => {
+  const normalized = normalizePath(value);
+  const lastSegment = normalized.substring(normalized.lastIndexOf("/") + 1);
+  if (!lastSegment || !lastSegment.includes(".")) {
+    return stripTrailingSlash(normalized);
+  }
+  const parent = normalized.slice(0, normalized.lastIndexOf("/"));
+  return parent || "/";
+};
+
+interface ManualPatchControlsProps {
+  isAvailable: boolean;
+  onManualModeChange?: (enabled: boolean) => void;
+  dllName: string;
+  fsr4Variant: string;
+}
+
+interface PickerState {
+  selectedPath: string | null;
+  lastError: string | null;
+}
+
+const INITIAL_PICKER_STATE: PickerState = {
+  selectedPath: null,
+  lastError: null,
+};
+
+const formatResultMessage = (result: ApiResponse | null) => {
+  if (!result) return null;
+  if (result.status === "success") {
+    return result.message || result.output || t("OPTISCALER_OP_SUCCESS", "Operation completed successfully.");
+  }
+  return result.message || result.output || t("OPTISCALER_OP_FAILED", "Operation failed.");
+};
+
+export const ManualPatchControls = ({ isAvailable, onManualModeChange, dllName, fsr4Variant }: ManualPatchControlsProps) => {
+  const [isEnabled, setEnabled] = useState(false);
+  const [defaults, setDefaults] = useState<PathDefaults>(INITIAL_DEFAULTS);
+  const [pickerState, setPickerState] = useState<PickerState>(INITIAL_PICKER_STATE);
+  const [isPatching, setIsPatching] = useState(false);
+  const [isUnpatching, setIsUnpatching] = useState(false);
+  const [operationResult, setOperationResult] = useState<ApiResponse | null>(null);
+  const [lastOperation, setLastOperation] = useState<"patch" | "unpatch" | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    (async () => {
+      try {
+        const response = await getPathDefaults();
+        if (!response || cancelled) return;
+
+        const home = response.home ? normalizePath(response.home) : DEFAULT_HOME;
+        const steamCommon = response.steam_common
+          ? normalizePath(response.steam_common)
+          : normalizePath(`${stripTrailingSlash(home)}/.local/share/Steam/steamapps/common`);
+
+        setDefaults({
+          home,
+          steamCommon: steamCommon || DEFAULT_STEAM_COMMON,
+        });
+      } catch (err) {
+        console.error("ManualPatchControls -> getPathDefaults", err);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!isAvailable) {
+      setEnabled(false);
+      setPickerState(INITIAL_PICKER_STATE);
+      setOperationResult(null);
+      setLastOperation(null);
+      onManualModeChange?.(false);
+    }
+  }, [isAvailable, onManualModeChange]);
+
+  const canInteract = isAvailable && isEnabled;
+  const selectedPath = pickerState.selectedPath;
+  const statusMessage = useMemo(() => formatResultMessage(operationResult), [operationResult]);
+  const wasSuccessful = operationResult?.status === "success";
+  const statusLabel = useMemo(() => {
+    if (!operationResult || !lastOperation) return null;
+    if (operationResult.status === "success") {
+      return lastOperation === "patch" ? t("OPTISCALER_GAME_PATCHED", "Game patched") : t("OPTISCALER_GAME_UNPATCHED", "Game unpatched");
+    }
+    return lastOperation === "patch" ? t("OPTISCALER_PATCH_FAILED", "Patch failed") : t("OPTISCALER_UNPATCH_FAILED", "Unpatch failed");
+  }, [lastOperation, operationResult]);
+
+  const openDirectoryPicker = useCallback(async () => {
+    const candidates = [
+      selectedPath,
+      defaults.steamCommon,
+      defaults.home,
+    ];
+
+    let lastError: string | null = null;
+
+    for (const candidate of candidates) {
+      if (!candidate) continue;
+
+      const startPath = ensureDirectory(candidate);
+
+      try {
+        const result = await openFilePicker(
+          FileSelectionType.FOLDER,
+          startPath,
+          true,
+          true,
+          undefined,
+          undefined,
+          true
+        );
+
+        if (result?.path) {
+          setPickerState({ selectedPath: normalizePath(result.path), lastError: null });
+          setOperationResult(null);
+          return;
+        }
+      } catch (err) {
+        console.error("ManualPatchControls -> openDirectoryPicker", err);
+        lastError = err instanceof Error ? err.message : String(err);
+      }
+    }
+
+    setPickerState((prev) => ({ ...prev, lastError }));
+  }, [defaults.home, defaults.steamCommon, selectedPath]);
+
+  const runOperation = useCallback(
+    async (action: "patch" | "unpatch") => {
+      if (!selectedPath) return;
+
+      const setBusy = action === "patch" ? setIsPatching : setIsUnpatching;
+  setLastOperation(action);
+      setBusy(true);
+      setOperationResult(null);
+
+      try {
+        const response =
+          action === "patch"
+            ? await runManualPatch(selectedPath, dllName, fsr4Variant)
+            : await runManualUnpatch(selectedPath);
+        setOperationResult(response ?? { status: "error", message: t("OPTISCALER_NO_RESPONSE", "No response from backend.") });
+      } catch (err) {
+        setOperationResult({
+          status: "error",
+          message: err instanceof Error ? err.message : String(err),
+        });
+      } finally {
+        setBusy(false);
+      }
+    },
+    [selectedPath, dllName, fsr4Variant]
+  );
+
+  const handleToggle = (value: boolean) => {
+    if (!isAvailable) {
+      setEnabled(false);
+      return;
+    }
+
+    setEnabled(value);
+    onManualModeChange?.(value);
+    if (!value) {
+      setPickerState(INITIAL_PICKER_STATE);
+      setOperationResult(null);
+      setLastOperation(null);
+    }
+  };
+
+  const busy = isPatching || isUnpatching;
+
+  return (
+    <>
+      <PanelSectionRow>
+        <ToggleField
+          label={t("OPTISCALER_ADVANCED_MODE", "Advanced Mode")}
+          description={
+            isAvailable
+              ? t("OPTISCALER_ADVANCED_MODE_DESC_ON", "Manually apply OptiScaler to a specific game directory.")
+              : t("OPTISCALER_ADVANCED_MODE_DESC_OFF", "Install OptiScaler first to enable manual patching.")
+          }
+          checked={isEnabled && isAvailable}
+          disabled={!isAvailable}
+          onChange={handleToggle}
+        />
+      </PanelSectionRow>
+
+      {canInteract && (
+        <>
+          <SmartClipboardButton
+            command={
+              dllName === "OptiScaler.asi"
+                ? "SteamDeck=0 %command%"
+                : `WINEDLLOVERRIDES="${dllName.replace(".dll", "")}=n,b" SteamDeck=0 %command%`
+            }
+            buttonText={t("OPTISCALER_MANUAL_LAUNCH_CMD", "Manual launch cmd")}
+          />
+          <PanelSectionRow>
+            <ButtonItem
+              layout="below"
+              onClick={openDirectoryPicker}
+              description={t("OPTISCALER_SELECT_DIRECTORY_DESC", "Choose the game's installation directory (where the EXE lives).")}
+            >
+              {t("OPTISCALER_SELECT_DIRECTORY", "Select directory")}
+            </ButtonItem>
+          </PanelSectionRow>
+
+          {pickerState.lastError && (
+            <PanelSectionRow>
+              <Field
+                label={t("OPTISCALER_PICKER_ERROR", "Picker error")}
+                description={pickerState.lastError}
+              />
+            </PanelSectionRow>
+          )}
+
+          {selectedPath && (
+            <>
+              <PanelSectionRow>
+                <Field
+                  label={t("OPTISCALER_TARGET_DIRECTORY", "Target directory")}
+                  description={t("OPTISCALER_TARGET_DIRECTORY_DESC", "OptiScaler files will be copied here.")}
+                >
+                  <div
+                    style={{
+                      fontFamily: "monospace",
+                      backgroundColor: "rgba(255, 255, 255, 0.05)",
+                      border: "1px solid rgba(255, 255, 255, 0.1)",
+                      borderRadius: "4px",
+                      padding: "6px 8px",
+                      width: "100%",
+                      boxSizing: "border-box",
+                      whiteSpace: "pre-wrap",
+                      wordBreak: "break-word",
+                    }}
+                  >
+                    {selectedPath}
+                  </div>
+                </Field>
+              </PanelSectionRow>
+
+              <PanelSectionRow>
+                <ButtonItem
+                  layout="below"
+                  disabled={busy}
+                  onClick={() => runOperation("patch")}
+                >
+                  {isPatching ? t("OPTISCALER_PATCHING", "Patching...") : t("OPTISCALER_PATCH_DIRECTORY", "Patch directory")}
+                </ButtonItem>
+              </PanelSectionRow>
+
+              <PanelSectionRow>
+                <ButtonItem
+                  layout="below"
+                  disabled={busy}
+                  onClick={() => runOperation("unpatch")}
+                >
+                  {isUnpatching ? t("OPTISCALER_REVERTING", "Reverting...") : t("OPTISCALER_UNPATCH_DIRECTORY", "Unpatch directory")}
+                </ButtonItem>
+              </PanelSectionRow>
+            </>
+          )}
+
+          {operationResult && (
+            <PanelSectionRow>
+              <Field
+                label={statusLabel ?? (wasSuccessful ? t("OPTISCALER_LAST_ACTION_OK", "Last action succeeded") : t("OPTISCALER_LAST_ACTION_FAIL", "Last action failed"))}
+              >
+                {!wasSuccessful && statusMessage ? statusMessage : null}
+              </Field>
+            </PanelSectionRow>
+          )}
+        </>
+      )}
+    </>
+  );
+};

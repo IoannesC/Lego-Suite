@@ -48,19 +48,61 @@ done
 
 KWIN_RULES="$HOME/.config/kwinrulesrc"
 if [ -f "$KWIN_RULES" ] || [ -d "$HOME/.config" ]; then
-  cat > "$KWIN_RULES" << 'EOF'
-[General]
-count=1
-rules=1
+  if [ -f "$KWIN_RULES" ]; then
+    cp -f "$KWIN_RULES" "${KWIN_RULES}.bak"
+  fi
+  /usr/bin/python3 - "$KWIN_RULES" << 'EOF'
+import configparser
+import os
+import sys
 
-[1]
-Description=LeGO Suite Top Right
-above=true
-aboverule=2
-noborder=true
-noborderrule=2
-wmclass=lego-suite-desktop
-wmclassmatch=1
+path = sys.argv[1]
+cfg = configparser.RawConfigParser(strict=False)
+cfg.optionxform = str
+
+if os.path.exists(path):
+    cfg.read(path, encoding="utf-8")
+
+if not cfg.has_section("General"):
+    cfg.add_section("General")
+
+rules_raw = cfg.get("General", "rules", fallback="").strip()
+rules_list = [r.strip() for r in rules_raw.split(",") if r.strip()]
+
+target_sec = None
+for sec in cfg.sections():
+    if sec == "General":
+        continue
+    if (
+        cfg.get(sec, "wmclass", fallback="") == "lego-suite-desktop"
+        or cfg.get(sec, "Description", fallback="") == "LeGO Suite Top Right"
+    ):
+        target_sec = sec
+        break
+
+if target_sec is None:
+    idx = 1
+    while str(idx) in cfg.sections() or str(idx) in rules_list:
+        idx += 1
+    target_sec = str(idx)
+    cfg.add_section(target_sec)
+    rules_list.append(target_sec)
+elif target_sec not in rules_list:
+    rules_list.append(target_sec)
+
+cfg.set(target_sec, "Description", "LeGO Suite Top Right")
+cfg.set(target_sec, "above", "true")
+cfg.set(target_sec, "aboverule", "2")
+cfg.set(target_sec, "noborder", "true")
+cfg.set(target_sec, "noborderrule", "2")
+cfg.set(target_sec, "wmclass", "lego-suite-desktop")
+cfg.set(target_sec, "wmclassmatch", "1")
+
+cfg.set("General", "rules", ",".join(rules_list))
+cfg.set("General", "count", str(len(rules_list)))
+
+with open(path, "w", encoding="utf-8") as f:
+    cfg.write(f, space_around_delimiters=False)
 EOF
   qdbus6 org.kde.KWin /KWin reconfigure 2>/dev/null || true
 fi

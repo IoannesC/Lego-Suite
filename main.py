@@ -4,6 +4,7 @@ from time import sleep
 import asyncio
 import logging
 
+import optiscaler_injector
 import ac_power
 import egpu_utils
 import decky_plugin
@@ -28,6 +29,7 @@ import plugin_utils
 import migrations
 import steam_info
 import device_utils
+import game_details
 from devices import lenovo
 import charge_limit
 import i18n
@@ -45,6 +47,69 @@ import inputplumber_utils
 import css_loader_utils
 
 class Plugin:
+  _optiscaler = optiscaler_injector.OptiscalerInjectorModule()
+
+  def _is_optiscaler_enabled(self) -> bool:
+    try:
+      settings = get_saved_settings()
+      return bool(settings.get('optiscalerEnabled', True))
+    except Exception:
+      return True
+
+  async def get_optiscaler_enabled(self) -> bool:
+    return self._is_optiscaler_enabled()
+
+  async def set_optiscaler_enabled(self, enabled: bool) -> bool:
+    persist_setting('optiscalerEnabled', bool(enabled))
+    return bool(enabled)
+
+  async def extract_static_optiscaler(self, *args, **kwargs):
+    if not self._is_optiscaler_enabled():
+      return {'status': 'disabled', 'message': 'Optiscaler Injector is disabled'}
+    return await self._optiscaler.extract_static_optiscaler(*args, **kwargs)
+
+  async def run_uninstall_fgmod(self, *args, **kwargs):
+    return await self._optiscaler.run_uninstall_fgmod(*args, **kwargs)
+
+  async def set_default_fsr4_variant(self, *args, **kwargs):
+    return await self._optiscaler.set_default_fsr4_variant(*args, **kwargs)
+
+  async def run_install_fgmod(self, *args, **kwargs):
+    if not self._is_optiscaler_enabled():
+      return {'status': 'disabled', 'message': 'Optiscaler Injector is disabled'}
+    return await self._optiscaler.run_install_fgmod(*args, **kwargs)
+
+  async def check_fgmod_path(self, *args, **kwargs):
+    return await self._optiscaler.check_fgmod_path(*args, **kwargs)
+
+  async def list_installed_games(self, *args, **kwargs):
+    return await self._optiscaler.list_installed_games(*args, **kwargs)
+
+  async def get_path_defaults(self, *args, **kwargs):
+    return await self._optiscaler.get_path_defaults(*args, **kwargs)
+
+  async def log_error(self, *args, **kwargs):
+    return await self._optiscaler.log_error(*args, **kwargs)
+
+  async def manual_patch_directory(self, *args, **kwargs):
+    if not self._is_optiscaler_enabled():
+      return {'status': 'disabled', 'message': 'Optiscaler Injector is disabled'}
+    return await self._optiscaler.manual_patch_directory(*args, **kwargs)
+
+  async def manual_unpatch_directory(self, *args, **kwargs):
+    return await self._optiscaler.manual_unpatch_directory(*args, **kwargs)
+
+  async def get_game_status(self, *args, **kwargs):
+    return await self._optiscaler.get_game_status(*args, **kwargs)
+
+  async def patch_game(self, *args, **kwargs):
+    if not self._is_optiscaler_enabled():
+      return {'status': 'disabled', 'message': 'Optiscaler Injector is disabled'}
+    return await self._optiscaler.patch_game(*args, **kwargs)
+
+  async def unpatch_game(self, *args, **kwargs):
+    return await self._optiscaler.unpatch_game(*args, **kwargs)
+
 
   async def log_info(self, info):
     decky_plugin.logger.info(info)
@@ -127,9 +192,10 @@ class Plugin:
       except Exception as e:
         decky_plugin.logger.error(f"main#get_settings failed to get info {e}")
 
+      settings['optiscalerEnabled'] = settings.get('optiscalerEnabled', True)
       settings['systemLanguage'] = i18n.get_current_language()
       settings['language'] = i18n.get_current_language()
-      settings['pluginVersionNum'] = '0.220'
+      settings['pluginVersionNum'] = '0.351'
 
       try:
         egpu_st = egpu_utils.get_egpu_status()
@@ -243,6 +309,13 @@ class Plugin:
   
   async def get_latest_version_num(self):
     return plugin_update.get_latest_version()
+
+  async def record_game_details(self, gameId: str, title: str):
+    try:
+      return game_details.record_game_details(gameId, title)
+    except Exception as e:
+      decky_plugin.logger.error(f'main#record_game_details error {e}')
+      return {}
 
   async def poll_tdp(self, currentGameId: str):
     settings = get_saved_settings()
@@ -494,6 +567,53 @@ class Plugin:
       decky_plugin.logger.error(f"get_temperatures error: {e}")
       return {"cpu": None, "gpu": None, "rpm": None, "isEgpu": False, "egpuName": ""}
 
+  async def get_system_resources(self):
+    cpu_pct = None
+    gpu_pct = None
+    ram_pct = None
+    try:
+      with open("/proc/stat", "r") as f:
+        parts = f.readline().split()
+        if len(parts) >= 5 and parts[0] == "cpu":
+          vals = [int(x) for x in parts[1:8]]
+          idle = vals[3] + (vals[4] if len(vals) > 4 else 0)
+          total = sum(vals)
+          prev = getattr(self, "_prev_cpu_times", None)
+          self._prev_cpu_times = (idle, total)
+          if prev is not None:
+            d_total = total - prev[1]
+            d_idle = idle - prev[0]
+            if d_total > 0:
+              cpu_pct = max(0.0, min(100.0, 100.0 * (d_total - d_idle) / d_total))
+    except Exception:
+      pass
+
+    try:
+      for p in glob.glob("/sys/class/drm/card*/device/gpu_busy_percent"):
+        with open(p, "r") as f:
+          gpu_pct = float(f.read().strip())
+          break
+    except Exception:
+      pass
+
+    try:
+      mem_total = None
+      mem_avail = None
+      with open("/proc/meminfo", "r") as f:
+        for line in f:
+          if line.startswith("MemTotal:"):
+            mem_total = int(line.split()[1])
+          elif line.startswith("MemAvailable:"):
+            mem_avail = int(line.split()[1])
+          if mem_total is not None and mem_avail is not None:
+            break
+      if mem_total and mem_avail is not None:
+        ram_pct = max(0.0, min(100.0, 100.0 * (mem_total - mem_avail) / mem_total))
+    except Exception:
+      pass
+
+    return {"cpu": cpu_pct, "gpu": gpu_pct, "ram": ram_pct}
+
   async def get_cpu_temp(self):
     temps = await self.get_temperatures()
     return temps.get("cpu")
@@ -612,7 +732,12 @@ class Plugin:
   async def _check_thermal_safety(self, settings):
     try:
       fan_profiles = settings.get('fan', {})
-      active_profile = fan_profiles.get('default', {})
+      active_id = 'default'
+      if settings.get('fanPerGameProfilesEnabled', False):
+        game_id = settings.get('activeGameId') or settings.get('currentGameId')
+        if game_id and game_id in fan_profiles:
+          active_id = game_id
+      active_profile = fan_profiles.get(active_id, fan_profiles.get('default', {}))
       if not active_profile.get('thermalSafetyEnabled', False):
         if getattr(self, '_thermal_safety_active', False):
           self._thermal_safety_active = False
@@ -622,10 +747,10 @@ class Plugin:
       if active_profile.get('fullFanSpeedEnabled', False):
         return
       temps = await self.get_temperatures()
-      cpu_t = temps.get('cpu')
-      if cpu_t is None:
+      candidates = [float(t) for t in (temps.get('cpu'), temps.get('gpu')) if t is not None]
+      if not candidates:
         return
-      t_val = float(cpu_t)
+      t_val = max(candidates)
       if t_val > 80.0 and not getattr(self, '_thermal_safety_active', False):
         self._thermal_safety_active = True
         legion_space.set_full_fan_speed(True)
@@ -802,6 +927,11 @@ class Plugin:
 
   async def _main(self):
     decky_plugin.logger.info("LeGO Suite Starting")
+    try:
+      if self._is_optiscaler_enabled():
+        await self._optiscaler._main()
+    except Exception as e:
+      decky_plugin.logger.error(f'Error starting optiscaler module: {e}')
     migrations.check_ryzenadj_coall_support()
 
     try:
@@ -874,6 +1004,11 @@ class Plugin:
 
   async def _unload(self):
     decky_plugin.logger.info("LeGO Suite Unloading")
+    try:
+      if hasattr(self, '_optiscaler'):
+        await self._optiscaler._unload()
+    except Exception as e:
+      decky_plugin.logger.error(f'Error unloading optiscaler module: {e}')
     legion_go2_brightness.stop_backlight_watcher()
     if hasattr(self, '_rpc_server') and self._rpc_server:
       self._rpc_server.close()

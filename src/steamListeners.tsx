@@ -16,6 +16,7 @@ import {
   getSupportsCustomAcPower,
   logInfo,
   onResume as backendOnResume,
+  recordGameDetails,
   setMaxTdp,
   setPollTdp,
 } from "./backend/utils";
@@ -59,6 +60,10 @@ export const currentGameInfoListener = () => {
 
       
       store.dispatch(setCurrentGameInfo(results));
+
+      if (results.id && results.id !== "default") {
+        recordGameDetails(results.id, results.displayName);
+      }
 
       if (
         advanced[AdvancedOptionsEnum.AC_POWER_PROFILES] &&

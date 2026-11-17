@@ -24,20 +24,22 @@ import {
 import { useIsDesktop } from "./hooks/desktopHooks";
 import { AdvancedOptionsEnum } from "./backend/utils";
 import { useAdvancedOption } from "./hooks/useAdvanced";
-import { maxTdpAcProfilesEnabledSelector, getSystemLangSelector } from "./redux-modules/settingsSlice";
+import { maxTdpAcProfilesEnabledSelector, getSystemLangSelector, optiscalerEnabledSelector } from "./redux-modules/settingsSlice";
+import OptiscalerInjectorTab from "./optiscaler/OptiscalerInjectorTab";
 import { call } from "@decky/api";
 
 
 import RemapButtons from "./components/controller/RemapButtons";
 import ControllerLightingPanel from "./components/rgb/ControllerLightingPanel";
 import FanPanel from "./components/fan/FanPanel";
+import ResourceMonitor from "./components/ResourceMonitor";
 import InputPlumberSubmenu from "./components/controller/InputPlumberSubmenu";
 import { useChargeLimitEnabled } from "./hooks/ui";
 import { useSupportsCustomFanCurves } from "./hooks/fan";
 import { LEGO_SUITE_LOGO_DATA_URI } from "./logoData";
 import t, { getCurrentLanguage, setForcedLanguage } from "./i18n/i18n";
 
-type ActiveTab = "tdp" | "controls" | "screen";
+type ActiveTab = "tdp" | "controls" | "screen" | "optiscaler";
 const ACTIVE_TAB_STORAGE_KEY = "legoSuite.activeTab";
 
 const App: FC = memo(({}) => {
@@ -47,7 +49,7 @@ const App: FC = memo(({}) => {
   const [tdpMode, setTdpMode] = useState<TdpMode>("custom");
   const [activeTab, setActiveTab] = useState<ActiveTab>(() => {
     const saved = window.localStorage.getItem(ACTIVE_TAB_STORAGE_KEY);
-    if (saved === "controls" || saved === "screen") return saved;
+    if (saved === "controls" || saved === "screen" || saved === "optiscaler") return saved;
     return "tdp";
   });
   const [showSettings, setShowSettings] = useState(false);
@@ -59,7 +61,14 @@ const App: FC = memo(({}) => {
     window.localStorage.setItem(ACTIVE_TAB_STORAGE_KEY, tab);
   };
 
+  const optiscalerEnabled = useSelector(optiscalerEnabledSelector);
   const backendLang = useSelector(getSystemLangSelector);
+
+  useEffect(() => {
+    if (!optiscalerEnabled && activeTab === "optiscaler") {
+      handleSelectTab("tdp");
+    }
+  }, [optiscalerEnabled, activeTab]);
 
   useEffect(() => {
     if (backendLang && (backendLang === "es" || backendLang === "en")) {
@@ -149,7 +158,7 @@ const App: FC = memo(({}) => {
             fontWeight: 600,
           }}
         >
-          Version 0.220
+          Version 0.351
         </div>
       </div>
 
@@ -266,7 +275,33 @@ const App: FC = memo(({}) => {
           >
             {t("TAB_CONTROLS", "Controls")}
           </DialogButton>
-
+          {optiscalerEnabled && (
+            <DialogButton
+              onClick={() => handleSelectTab("optiscaler")}
+              style={{
+                flex: 1,
+                minWidth: 0,
+                padding: "8px 4px",
+                fontWeight: activeTab === "optiscaler" ? 700 : 500,
+                backgroundColor:
+                  activeTab === "optiscaler"
+                    ? "rgba(255, 255, 255, 0.22)"
+                    : "rgba(255, 255, 255, 0.06)",
+                color: activeTab === "optiscaler" ? "#ffffff" : "#9ca3af",
+                borderBottom:
+                  activeTab === "optiscaler"
+                    ? `2px solid ${TDP_MODE_COLORS[tdpMode] || "#ffffff"}`
+                    : "2px solid transparent",
+                borderRadius: "6px",
+                fontSize: "11px",
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              }}
+            >
+              Optiscaler Injector
+            </DialogButton>
+          )}
         </Focusable>
       </div>
 
@@ -287,6 +322,9 @@ const App: FC = memo(({}) => {
               <PollTdp />
             </>
           )}
+          <ErrorBoundary title="Resource Monitor">
+            <ResourceMonitor />
+          </ErrorBoundary>
           <ErrorBoundary title="Fan Panel">
             <FanPanel />
           </ErrorBoundary>
@@ -379,6 +417,12 @@ const App: FC = memo(({}) => {
             </>
           )}
         </>
+      )}
+
+      {!loading && activeTab === "optiscaler" && optiscalerEnabled && (
+        <ErrorBoundary title="Optiscaler Injector">
+          <OptiscalerInjectorTab />
+        </ErrorBoundary>
       )}
 
 

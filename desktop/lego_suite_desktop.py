@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-LeGO Suite Desktop (v0.220)
+LeGO Suite Desktop (v0.351)
 Aplicación de Modo Escritorio con icono en la bandeja del sistema (System Tray)
 sincronizada en tiempo real con el plugin LeGO Suite de Decky Loader.
 """
@@ -581,6 +581,7 @@ TEXTS = {
         "lbl_charge_val": "Límite de Carga",
         "card_monitor": "Monitoreo Térmico y Ventilador",
         "card_fan": "Curvas de Ventilación",
+        "card_resources": "Monitoreo de Recursos",
         "chk_fan_enabled": "Activar Curvas de Ventilación Personalizadas",
         "chk_full_fan": "Velocidad Máxima",
         "chk_thermal_safety": "Seguridad Térmica (Activar máxima velocidad de ventilador\nsi se superan los 80º)",
@@ -682,12 +683,13 @@ TEXTS = {
         "msg_reset_controllers_success": "Mandos reseteados correctamente",
         "chk_dock_mode": "Barra lateral replegable al borde",
         "chk_dock_mode_desc": "Muestra un botón en la cabecera para replegar la ventana en una pestaña lateral y desplegarla al tocarla.",
+        "chk_optiscaler_enabled": "Activar Optiscaler Injector en el plugin",
         "btn_dock_collapse": "Replegar al borde derecho",
         "btn_dock_expand": "Desplegar panel",
         "btn_minimize": "Minimizar",
         "btn_close": "Cerrar",
         "gear_tooltip": "Cambiar colores e idioma de la UI",
-        "tray_tooltip": "LeGO Suite v0.220 • TDP: {tdp}W • Carga: {charge}%"
+        "tray_tooltip": "LeGO Suite v0.351 • TDP: {tdp}W • Carga: {charge}%"
     },
     "en": {
         "tab_tdp": "TDP",
@@ -710,6 +712,7 @@ TEXTS = {
         "lbl_charge_val": "Charge Limit",
         "card_monitor": "Thermal & Fan Monitor",
         "card_fan": "Fan Curves",
+        "card_resources": "Resource Monitor",
         "chk_fan_enabled": "Enable Custom Fan Curves",
         "chk_full_fan": "Full Speed",
         "chk_thermal_safety": "Thermal Safety (Enable max fan speed if 80°C is exceeded)",
@@ -811,12 +814,13 @@ TEXTS = {
         "msg_reset_controllers_success": "Controllers reset successfully",
         "chk_dock_mode": "Collapsible sidebar edge tab",
         "chk_dock_mode_desc": "Adds a header button to collapse the window into a side tab and slide open when touched.",
+        "chk_optiscaler_enabled": "Enable Optiscaler Injector in the plugin",
         "btn_dock_collapse": "Collapse to right edge",
         "btn_dock_expand": "Expand panel",
         "btn_minimize": "Minimize",
         "btn_close": "Close",
         "gear_tooltip": "Change UI colors and language",
-        "tray_tooltip": "LeGO Suite v0.220 • TDP: {tdp}W • Charge: {charge}%"
+        "tray_tooltip": "LeGO Suite v0.351 • TDP: {tdp}W • Charge: {charge}%"
     }
 }
 def tr(key: str, lang: str = "es") -> str:
@@ -825,7 +829,7 @@ def tr(key: str, lang: str = "es") -> str:
 
 
 class ThemeSettingsDialog(QDialog):
-    def __init__(self, parent, bg_color: str, content_color: str, accent_color: str, current_lang: str, on_apply_callback, dock_mode: bool = True, content_color_2: str = ""):
+    def __init__(self, parent, bg_color: str, content_color: str, accent_color: str, current_lang: str, on_apply_callback, dock_mode: bool = True, content_color_2: str = "", optiscaler_enabled: bool = True):
         super().__init__(parent)
         self.bg_color = bg_color
         self.content_color = content_color
@@ -833,10 +837,11 @@ class ThemeSettingsDialog(QDialog):
         self.accent_color = accent_color or DEFAULT_ACCENT_COLOR
         self.current_lang = current_lang or "es"
         self.dock_mode = bool(dock_mode)
+        self.optiscaler_enabled = bool(optiscaler_enabled)
         self.on_apply = on_apply_callback
 
         self.setWindowTitle(tr("settings_title", self.current_lang))
-        self.setFixedSize(410, 520)
+        self.setFixedSize(410, 555)
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(18, 16, 18, 16)
@@ -875,6 +880,12 @@ class ThemeSettingsDialog(QDialog):
         dock_box.addWidget(self.lbl_dock_desc)
         layout.addLayout(dock_box)
 
+        self.chk_optiscaler_enabled = QCheckBox(tr("chk_optiscaler_enabled", self.current_lang))
+        self.chk_optiscaler_enabled.setChecked(self.optiscaler_enabled)
+        self.chk_optiscaler_enabled.setStyleSheet("color: #e5e7eb; font-weight: 600; font-size: 13px;")
+        self.chk_optiscaler_enabled.toggled.connect(self._on_optiscaler_toggled)
+        layout.addWidget(self.chk_optiscaler_enabled)
+
         sep = QFrame()
         sep.setFrameShape(QFrame.Shape.HLine)
         sep.setStyleSheet("color: rgba(255, 255, 255, 0.15);")
@@ -882,6 +893,7 @@ class ThemeSettingsDialog(QDialog):
 
         bg_row = QHBoxLayout()
         self.lbl_bg = QLabel(tr("lbl_bg_color", self.current_lang))
+        self.lbl_bg.setProperty("class", "RowLabel")
         self.btn_pick_bg = QPushButton(self.bg_color)
         self.btn_pick_bg.setCursor(Qt.CursorShape.PointingHandCursor)
         self.btn_pick_bg.clicked.connect(self._pick_bg_color)
@@ -892,6 +904,7 @@ class ThemeSettingsDialog(QDialog):
 
         ct_row = QHBoxLayout()
         self.lbl_ct = QLabel(tr("lbl_ct_color", self.current_lang))
+        self.lbl_ct.setProperty("class", "RowLabel")
         self.btn_pick_ct = QPushButton(self.content_color)
         self.btn_pick_ct.setCursor(Qt.CursorShape.PointingHandCursor)
         self.btn_pick_ct.clicked.connect(self._pick_content_color)
@@ -902,6 +915,7 @@ class ThemeSettingsDialog(QDialog):
 
         ct2_row = QHBoxLayout()
         self.lbl_ct2 = QLabel(tr("lbl_ct2_color", self.current_lang))
+        self.lbl_ct2.setProperty("class", "RowLabel")
         self.btn_pick_ct2 = QPushButton(self.content_color_2)
         self.btn_pick_ct2.setCursor(Qt.CursorShape.PointingHandCursor)
         self.btn_pick_ct2.clicked.connect(self._pick_content_color_2)
@@ -912,6 +926,7 @@ class ThemeSettingsDialog(QDialog):
 
         ac_row = QHBoxLayout()
         self.lbl_ac = QLabel(tr("lbl_ac_color", self.current_lang))
+        self.lbl_ac.setProperty("class", "RowLabel")
         self.btn_pick_ac = QPushButton(self.accent_color)
         self.btn_pick_ac.setCursor(Qt.CursorShape.PointingHandCursor)
         self.btn_pick_ac.clicked.connect(self._pick_accent_color)
@@ -965,11 +980,16 @@ class ThemeSettingsDialog(QDialog):
 
     def _on_dock_mode_toggled(self, checked: bool):
         self.dock_mode = bool(checked)
-        self.on_apply(self.bg_color, self.content_color, self.accent_color, self.current_lang, self.dock_mode, self.content_color_2)
+        self.on_apply(self.bg_color, self.content_color, self.accent_color, self.current_lang, self.dock_mode, self.content_color_2, self.optiscaler_enabled)
+
+    def _on_optiscaler_toggled(self, checked: bool):
+        self.optiscaler_enabled = bool(checked)
+        self.on_apply(self.bg_color, self.content_color, self.accent_color, self.current_lang, self.dock_mode, self.content_color_2, self.optiscaler_enabled)
 
     def _on_accept_clicked(self):
         self.dock_mode = self.chk_dock_mode.isChecked()
-        self.on_apply(self.bg_color, self.content_color, self.accent_color, self.current_lang, self.dock_mode, self.content_color_2)
+        self.optiscaler_enabled = self.chk_optiscaler_enabled.isChecked()
+        self.on_apply(self.bg_color, self.content_color, self.accent_color, self.current_lang, self.dock_mode, self.content_color_2, self.optiscaler_enabled)
         self.accept()
 
     def _update_swatch_buttons(self):
@@ -1023,6 +1043,7 @@ class ThemeSettingsDialog(QDialog):
             self.lbl_lang.setText(tr("lbl_language", self.current_lang))
             self.chk_dock_mode.setText(tr("chk_dock_mode", self.current_lang))
             self.lbl_dock_desc.setText(tr("chk_dock_mode_desc", self.current_lang))
+            self.chk_optiscaler_enabled.setText(tr("chk_optiscaler_enabled", self.current_lang))
             self.lbl_bg.setText(tr("lbl_bg_color", self.current_lang))
             self.lbl_ct.setText(tr("lbl_ct_color", self.current_lang))
             if hasattr(self, "lbl_ct2"):
@@ -1033,7 +1054,7 @@ class ThemeSettingsDialog(QDialog):
                 p_btn.setText(tr(p_key, self.current_lang))
             self.btn_reset.setText(tr("btn_reset", self.current_lang))
             self.btn_accept.setText(tr("btn_accept", self.current_lang))
-            self.on_apply(self.bg_color, self.content_color, self.accent_color, self.current_lang, self.dock_mode, self.content_color_2)
+            self.on_apply(self.bg_color, self.content_color, self.accent_color, self.current_lang, self.dock_mode, self.content_color_2, self.optiscaler_enabled)
 
     def _set_colors(self, bg: str, ct: str, ac: str, ct2: str = ""):
         self.bg_color = bg
@@ -1041,7 +1062,7 @@ class ThemeSettingsDialog(QDialog):
         self.content_color_2 = ct2 or _lighten_hex(ct, 1.15)
         self.accent_color = ac
         self._update_swatch_buttons()
-        self.on_apply(bg, ct, ac, self.current_lang, self.dock_mode, self.content_color_2)
+        self.on_apply(bg, ct, ac, self.current_lang, self.dock_mode, self.content_color_2, self.optiscaler_enabled)
 
 class AnimatedFanWidget(QWidget):
     """Widget animado que dibuja un ventilador giratorio con aspas estilizadas y velocidad según RPM."""
@@ -1402,7 +1423,7 @@ class LeGOSuiteMainWindow(QMainWindow):
         self.ui_language = "es"
         self._auto_rotate_active = False
 
-        self.setWindowTitle("LeGO Suite v0.220")
+        self.setWindowTitle("LeGO Suite v0.351")
         self.resize(430, 660)
         self.setMinimumSize(0, 0)
         self.setMaximumSize(16777215, 16777215)
@@ -1576,6 +1597,8 @@ class LeGOSuiteMainWindow(QMainWindow):
             self.card_monitor_title.setText(tr("card_monitor", lang))
         if hasattr(self, "card_fan_title") and self.card_fan_title:
             self.card_fan_title.setText(tr("card_fan", lang))
+        if hasattr(self, "card_resources_title") and self.card_resources_title:
+            self.card_resources_title.setText(tr("card_resources", lang))
         if hasattr(self, "card_range_title") and self.card_range_title:
             self.card_range_title.setText(tr("card_range", lang))
         if hasattr(self, "card_rgb_title") and self.card_rgb_title:
@@ -1706,7 +1729,7 @@ class LeGOSuiteMainWindow(QMainWindow):
 
         if hasattr(self, "version_label"):
             mode_txt = tr("status_decky_rpc" if self.backend.rpc_available else "status_local_sync", lang)
-            self.version_label.setText(f"Version 0.220 • {mode_txt}")
+            self.version_label.setText(f"Version 0.351 • {mode_txt}")
         if hasattr(self, "tray") and hasattr(self, "slider_tdp"):
             tdp_val = self.slider_tdp.value()
             c_val = getattr(self, "_last_charge_limit_val", 80)
@@ -1784,7 +1807,7 @@ class LeGOSuiteMainWindow(QMainWindow):
             logo_label.setStyleSheet("font-size: 22px; font-weight: 800; background: transparent;")
         logo_box.addWidget(logo_label)
 
-        self.version_label = QLabel("Version 0.220 • Sincronizado")
+        self.version_label = QLabel("Version 0.351 • Sincronizado")
         self.version_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.version_label.setStyleSheet(
             "color: #9ca3af; font-size: 11px; font-weight: 600; letter-spacing: 0.05em; background: transparent;"
@@ -2000,6 +2023,99 @@ class LeGOSuiteMainWindow(QMainWindow):
         l_bat.addWidget(self.chk_charge_limit)
         vbox.addWidget(card_bat)
 
+        card_resources, l_resources, self.card_resources_title = self._make_card(tr("card_resources", self.ui_language))
+
+        res_row = QHBoxLayout()
+        res_row.setContentsMargins(4, 2, 4, 2)
+        res_row.setSpacing(8)
+
+        res_cpu_box = QHBoxLayout()
+        res_cpu_box.setSpacing(5)
+        lbl_res_cpu_icon = QLabel()
+        cpu_pm = QPixmap(16, 16)
+        cpu_pm.fill(Qt.GlobalColor.transparent)
+        p_cpu = QPainter(cpu_pm)
+        p_cpu.setRenderHint(QPainter.RenderHint.Antialiasing)
+        p_cpu.setPen(QColor("#9ca3af"))
+        p_cpu.setBrush(QColor("#38bdf8"))
+        p_cpu.drawRoundedRect(4, 4, 8, 8, 1.5, 1.5)
+        for i in (5, 8, 11):
+            p_cpu.drawLine(i, 1, i, 3)
+            p_cpu.drawLine(i, 13, i, 15)
+            p_cpu.drawLine(1, i, 3, i)
+            p_cpu.drawLine(13, i, 15, i)
+        p_cpu.end()
+        lbl_res_cpu_icon.setPixmap(cpu_pm)
+        lbl_res_cpu_title = QLabel("CPU:")
+        lbl_res_cpu_title.setStyleSheet("font-weight: 700; font-size: 11px; color: #9ca3af;")
+        self.lbl_cpu_usage_val = QLabel("-- %")
+        self.lbl_cpu_usage_val.setStyleSheet("color: #38bdf8; font-weight: 800; font-size: 12px; background: rgba(56, 189, 248, 0.12); padding: 2px 6px; border-radius: 5px;")
+        res_cpu_box.addWidget(lbl_res_cpu_icon)
+        res_cpu_box.addWidget(lbl_res_cpu_title)
+        res_cpu_box.addWidget(self.lbl_cpu_usage_val)
+        res_row.addLayout(res_cpu_box)
+
+        res_row.addStretch()
+
+        res_gpu_box = QHBoxLayout()
+        res_gpu_box.setSpacing(5)
+        lbl_res_gpu_icon = QLabel()
+        gpu_pm = QPixmap(16, 16)
+        gpu_pm.fill(Qt.GlobalColor.transparent)
+        p_gpu = QPainter(gpu_pm)
+        p_gpu.setRenderHint(QPainter.RenderHint.Antialiasing)
+        p_gpu.setPen(QColor("#9ca3af"))
+        p_gpu.setBrush(QColor("#38bdf8"))
+        p_gpu.drawRoundedRect(4, 4, 8, 8, 1.5, 1.5)
+        for i in (5, 8, 11):
+            p_gpu.drawLine(i, 1, i, 3)
+            p_gpu.drawLine(i, 13, i, 15)
+            p_gpu.drawLine(1, i, 3, i)
+            p_gpu.drawLine(13, i, 15, i)
+        p_gpu.end()
+        lbl_res_gpu_icon.setPixmap(gpu_pm)
+        lbl_res_gpu_title = QLabel("GPU:")
+        lbl_res_gpu_title.setStyleSheet("font-weight: 700; font-size: 11px; color: #9ca3af;")
+        self.lbl_gpu_usage_val = QLabel("-- %")
+        self.lbl_gpu_usage_val.setStyleSheet("color: #38bdf8; font-weight: 800; font-size: 12px; background: rgba(56, 189, 248, 0.12); padding: 2px 6px; border-radius: 5px;")
+        res_gpu_box.addWidget(lbl_res_gpu_icon)
+        res_gpu_box.addWidget(lbl_res_gpu_title)
+        res_gpu_box.addWidget(self.lbl_gpu_usage_val)
+        res_row.addLayout(res_gpu_box)
+
+        res_row.addStretch()
+
+        res_ram_box = QHBoxLayout()
+        res_ram_box.setSpacing(5)
+        lbl_res_ram_icon = QLabel()
+        ram_pm = QPixmap(16, 16)
+        ram_pm.fill(Qt.GlobalColor.transparent)
+        p_ram = QPainter(ram_pm)
+        p_ram.setRenderHint(QPainter.RenderHint.Antialiasing)
+        p_ram.setPen(QColor("#9ca3af"))
+        p_ram.setBrush(QColor("#1e293b"))
+        p_ram.drawRoundedRect(1, 4, 14, 7, 1, 1)
+        p_ram.setBrush(QColor("#38bdf8"))
+        p_ram.setPen(Qt.PenStyle.NoPen)
+        for x in (3, 7, 11):
+            p_ram.drawRect(x, 6, 2, 3)
+        p_ram.setPen(QColor("#facc15"))
+        for x in (2, 4, 6, 9, 11, 13):
+            p_ram.drawLine(x, 12, x, 13)
+        p_ram.end()
+        lbl_res_ram_icon.setPixmap(ram_pm)
+        lbl_res_ram_title = QLabel("RAM:")
+        lbl_res_ram_title.setStyleSheet("font-weight: 700; font-size: 11px; color: #9ca3af;")
+        self.lbl_ram_usage_val = QLabel("-- %")
+        self.lbl_ram_usage_val.setStyleSheet("color: #38bdf8; font-weight: 800; font-size: 12px; background: rgba(56, 189, 248, 0.12); padding: 2px 6px; border-radius: 5px;")
+        res_ram_box.addWidget(lbl_res_ram_icon)
+        res_ram_box.addWidget(lbl_res_ram_title)
+        res_ram_box.addWidget(self.lbl_ram_usage_val)
+        res_row.addLayout(res_ram_box)
+
+        l_resources.addLayout(res_row)
+        custom_vbox.addWidget(card_resources)
+
         card_monitor, l_monitor, self.card_monitor_title = self._make_card(tr("card_monitor", self.ui_language))
 
         temp_row = QHBoxLayout()
@@ -2199,6 +2315,7 @@ class LeGOSuiteMainWindow(QMainWindow):
 
         b_top = QHBoxLayout()
         self.lbl_rgb_b_title = QLabel(tr("lbl_rgb_brightness", self.ui_language))
+        self.lbl_rgb_b_title.setProperty("class", "RowLabel")
         b_top.addWidget(self.lbl_rgb_b_title)
         self.lbl_rgb_brightness = QLabel("50%")
         self.lbl_rgb_brightness.setProperty("class", "ValueBadge")
@@ -2219,6 +2336,7 @@ class LeGOSuiteMainWindow(QMainWindow):
         sp_vbox.setSpacing(4)
         sp_top = QHBoxLayout()
         self.lbl_rgb_s_title = QLabel(tr("lbl_rgb_speed", self.ui_language))
+        self.lbl_rgb_s_title.setProperty("class", "RowLabel")
         sp_top.addWidget(self.lbl_rgb_s_title)
         self.lbl_rgb_speed = QLabel("50%")
         self.lbl_rgb_speed.setProperty("class", "ValueBadge")
@@ -2239,7 +2357,9 @@ class LeGOSuiteMainWindow(QMainWindow):
         hue_vbox.setContentsMargins(0, 0, 0, 0)
         hue_vbox.setSpacing(4)
         h_top = QHBoxLayout()
-        h_top.addWidget(QLabel("Hue (Color)"))
+        lbl_rgb_h_title = QLabel("Hue (Color)")
+        lbl_rgb_h_title.setProperty("class", "RowLabel")
+        h_top.addWidget(lbl_rgb_h_title)
         self.lbl_rgb_hue = QLabel("0°")
         self.lbl_rgb_hue.setProperty("class", "ValueBadge")
         h_top.addStretch()
@@ -2255,7 +2375,7 @@ class LeGOSuiteMainWindow(QMainWindow):
         hue_vbox.addWidget(self.slider_rgb_hue)
 
         self.chk_sync_slider_color = QCheckBox(tr("chk_sync_slider_color", self.ui_language))
-        self.chk_sync_slider_color.setStyleSheet("font-size: 11px; font-weight: 600; margin-top: 4px;")
+        self.chk_sync_slider_color.setStyleSheet("color: #e5e7eb; font-size: 11px; font-weight: 600; margin-top: 4px;")
         self.chk_sync_slider_color.toggled.connect(self._on_sync_slider_color_toggled)
         hue_vbox.addWidget(self.chk_sync_slider_color)
 
@@ -2659,6 +2779,7 @@ class LeGOSuiteMainWindow(QMainWindow):
             self._apply_and_save_theme,
             getattr(self, "dock_mode_enabled", True),
             getattr(self, "ui_content_color_2", DEFAULT_CONTENT_COLOR_2),
+            bool(self.settings_cache.get("optiscalerEnabled", True)),
         )
         dlg.setStyleSheet(build_dynamic_stylesheet(self.ui_bg_color, self.ui_content_color, self.ui_accent_color, getattr(self, "ui_content_color_2", DEFAULT_CONTENT_COLOR_2)))
         dlg.exec()
@@ -2671,6 +2792,7 @@ class LeGOSuiteMainWindow(QMainWindow):
         lang: str = "es",
         dock_mode: bool = True,
         content_color_2: str = "",
+        optiscaler_enabled: bool = True,
     ):
         self.ui_bg_color = bg_color
         self.ui_content_color = content_color
@@ -2681,21 +2803,37 @@ class LeGOSuiteMainWindow(QMainWindow):
         if hasattr(self, "btn_dock"):
             self.btn_dock.setVisible(self.dock_mode_enabled)
         self.setStyleSheet(build_dynamic_stylesheet(bg_color, content_color, accent_color, self.ui_content_color_2))
+        self._theme_saved_at = time.monotonic()
+        theme_payload = {
+            "bgColor": bg_color,
+            "contentColor": content_color,
+            "contentColor2": self.ui_content_color_2,
+            "accentColor": accent_color,
+            "language": lang,
+            "dockModeEnabled": self.dock_mode_enabled,
+            "topRightTouchGesture": self.dock_mode_enabled,
+        }
+        self.settings_cache["optiscalerEnabled"] = bool(optiscaler_enabled)
         self.backend.call(
             "save_settings",
             {
                 "language": lang,
-                "desktopTheme": {
-                    "bgColor": bg_color,
-                    "contentColor": content_color,
-                    "contentColor2": self.ui_content_color_2,
-                    "accentColor": accent_color,
-                    "language": lang,
-                    "dockModeEnabled": self.dock_mode_enabled,
-                    "topRightTouchGesture": self.dock_mode_enabled,
-                }
+                "desktopTheme": theme_payload,
+                "optiscalerEnabled": bool(optiscaler_enabled),
             },
         )
+        try:
+            current = {}
+            if SETTINGS_FILE.exists():
+                current = json.loads(SETTINGS_FILE.read_text(encoding="utf-8"))
+                if not isinstance(current, dict):
+                    current = {}
+            current["language"] = lang
+            current["desktopTheme"] = theme_payload
+            current["optiscalerEnabled"] = bool(optiscaler_enabled)
+            SETTINGS_FILE.write_text(json.dumps(current, indent=2), encoding="utf-8")
+        except Exception:
+            pass
         self._update_ui_texts()
         self._mark_saved()
 
@@ -2949,7 +3087,7 @@ class LeGOSuiteMainWindow(QMainWindow):
             pix.fill(QColor("#000000"))
             self.tray.setIcon(QIcon(pix))
 
-        self.tray.setToolTip("LeGO Suite v0.220")
+        self.tray.setToolTip("LeGO Suite v0.351")
 
         menu = QMenu()
         menu.setStyleSheet(
@@ -3132,30 +3270,31 @@ class LeGOSuiteMainWindow(QMainWindow):
     def _apply_settings_to_ui(self, s: dict):
         self._updating_ui = True
         try:
-            theme = s.get("desktopTheme") or {}
-            new_bg = theme.get("bgColor") or DEFAULT_BG_COLOR
-            new_ct = theme.get("contentColor") or DEFAULT_CONTENT_COLOR
-            new_ct2 = theme.get("contentColor2") or _lighten_hex(new_ct, 1.15)
-            new_ac = theme.get("accentColor") or DEFAULT_ACCENT_COLOR
-            new_lang = s.get("language") or theme.get("language") or "es"
-            new_dock = theme.get("dockModeEnabled", theme.get("topRightTouchGesture", True))
-            self.dock_mode_enabled = bool(new_dock)
-            if hasattr(self, "btn_dock"):
-                self.btn_dock.setVisible(self.dock_mode_enabled)
+            if time.monotonic() - getattr(self, "_theme_saved_at", 0.0) >= 8.0:
+                theme = s.get("desktopTheme") or {}
+                new_bg = theme.get("bgColor") or DEFAULT_BG_COLOR
+                new_ct = theme.get("contentColor") or DEFAULT_CONTENT_COLOR
+                new_ct2 = theme.get("contentColor2") or _lighten_hex(new_ct, 1.15)
+                new_ac = theme.get("accentColor") or DEFAULT_ACCENT_COLOR
+                new_lang = s.get("language") or theme.get("language") or "es"
+                new_dock = theme.get("dockModeEnabled", theme.get("topRightTouchGesture", True))
+                self.dock_mode_enabled = bool(new_dock)
+                if hasattr(self, "btn_dock"):
+                    self.btn_dock.setVisible(self.dock_mode_enabled)
 
-            if (new_bg != self.ui_bg_color or new_ct != self.ui_content_color 
-                or new_ct2 != getattr(self, "ui_content_color_2", "")
-                or new_ac != self.ui_accent_color or new_lang != self.ui_language):
-                self.ui_bg_color = new_bg
-                self.ui_content_color = new_ct
-                self.ui_content_color_2 = new_ct2
-                self.ui_accent_color = new_ac
-                self.ui_language = new_lang
-                self.setStyleSheet(build_dynamic_stylesheet(new_bg, new_ct, new_ac, new_ct2))
-                self._update_ui_texts()
+                if (new_bg != self.ui_bg_color or new_ct != self.ui_content_color 
+                    or new_ct2 != getattr(self, "ui_content_color_2", "")
+                    or new_ac != self.ui_accent_color or new_lang != self.ui_language):
+                    self.ui_bg_color = new_bg
+                    self.ui_content_color = new_ct
+                    self.ui_content_color_2 = new_ct2
+                    self.ui_accent_color = new_ac
+                    self.ui_language = new_lang
+                    self.setStyleSheet(build_dynamic_stylesheet(new_bg, new_ct, new_ac, new_ct2))
+                    self._update_ui_texts()
 
             mode_txt = tr("status_decky_rpc" if self.backend.rpc_available else "status_local_sync", self.ui_language)
-            self.version_label.setText(f"Version 0.220 • {mode_txt}")
+            self.version_label.setText(f"Version 0.351 • {mode_txt}")
 
             current_mode = str(s.get("tdpMode", "custom")).lower()
             if hasattr(self, "tdp_mode_buttons"):
@@ -3359,12 +3498,13 @@ class LeGOSuiteMainWindow(QMainWindow):
                     rpm_v = 6500
 
                 is_thermal_safety = hasattr(self, "chk_thermal_safety") and self.chk_thermal_safety.isChecked()
-                if is_thermal_safety and not is_full_fan and cpu_t is not None:
-                    t_cpu = float(cpu_t)
-                    if t_cpu > 80.0 and not getattr(self, "_thermal_safety_active", False):
+                temp_candidates = [float(t) for t in (cpu_t, gpu_t) if t is not None]
+                if is_thermal_safety and not is_full_fan and temp_candidates:
+                    t_max = max(temp_candidates)
+                    if t_max > 80.0 and not getattr(self, "_thermal_safety_active", False):
                         self._thermal_safety_active = True
                         self._set_thermal_safety_full_fan(True)
-                    elif t_cpu <= 75.0 and getattr(self, "_thermal_safety_active", False):
+                    elif t_max <= 75.0 and getattr(self, "_thermal_safety_active", False):
                         self._thermal_safety_active = False
                         self._set_thermal_safety_full_fan(False)
 
@@ -3391,8 +3531,64 @@ class LeGOSuiteMainWindow(QMainWindow):
                         bg_color = "rgba(56, 189, 248, 0.12)" if val_rpm < 4000 else ("rgba(250, 204, 21, 0.12)" if val_rpm < 5500 else "rgba(239, 68, 68, 0.15)")
                         self.lbl_fan_rpm_val.setStyleSheet(f"color: {color}; font-weight: 800; font-size: 12px; background: {bg_color}; padding: 2px 6px; border-radius: 5px;")
                         self.lbl_fan_rpm_val.setText(f"{val_rpm} RPM")
+
+                cpu_pct, gpu_pct, ram_pct = self._read_system_resources()
+                for attr, val in (("lbl_cpu_usage_val", cpu_pct), ("lbl_gpu_usage_val", gpu_pct), ("lbl_ram_usage_val", ram_pct)):
+                    if val is not None and hasattr(self, attr):
+                        lbl = getattr(self, attr)
+                        color = "#38bdf8" if val < 60 else ("#facc15" if val < 85 else "#ef4444")
+                        bg_color = "rgba(56, 189, 248, 0.12)" if val < 60 else ("rgba(250, 204, 21, 0.12)" if val < 85 else "rgba(239, 68, 68, 0.15)")
+                        lbl.setStyleSheet(f"color: {color}; font-weight: 800; font-size: 12px; background: {bg_color}; padding: 2px 6px; border-radius: 5px;")
+                        lbl.setText(f"{val:.0f}%")
         except Exception:
             pass
+
+    def _read_system_resources(self):
+        cpu_pct = None
+        gpu_pct = None
+        ram_pct = None
+        try:
+            with open("/proc/stat", "r") as f:
+                parts = f.readline().split()
+                if len(parts) >= 5 and parts[0] == "cpu":
+                    vals = [int(x) for x in parts[1:8]]
+                    idle = vals[3] + (vals[4] if len(vals) > 4 else 0)
+                    total = sum(vals)
+                    prev = getattr(self, "_prev_cpu_times", None)
+                    self._prev_cpu_times = (idle, total)
+                    if prev is not None:
+                        d_total = total - prev[1]
+                        d_idle = idle - prev[0]
+                        if d_total > 0:
+                            cpu_pct = max(0.0, min(100.0, 100.0 * (d_total - d_idle) / d_total))
+        except Exception:
+            pass
+
+        try:
+            for p in glob.glob("/sys/class/drm/card*/device/gpu_busy_percent"):
+                with open(p, "r") as f:
+                    gpu_pct = float(f.read().strip())
+                    break
+        except Exception:
+            pass
+
+        try:
+            mem_total = None
+            mem_avail = None
+            with open("/proc/meminfo", "r") as f:
+                for line in f:
+                    if line.startswith("MemTotal:"):
+                        mem_total = int(line.split()[1])
+                    elif line.startswith("MemAvailable:"):
+                        mem_avail = int(line.split()[1])
+                    if mem_total is not None and mem_avail is not None:
+                        break
+            if mem_total and mem_avail is not None:
+                ram_pct = max(0.0, min(100.0, 100.0 * (mem_total - mem_avail) / mem_total))
+        except Exception:
+            pass
+
+        return cpu_pct, gpu_pct, ram_pct
 
 
     def _on_tdp_mode_selected(self, mode: str):
@@ -3843,7 +4039,7 @@ def main():
 
     app = QApplication(sys.argv)
     app.setApplicationName("LeGO Suite")
-    app.setApplicationVersion("0.220")
+    app.setApplicationVersion("0.351")
     app.setDesktopFileName("lego-suite-desktop")
     app.setQuitOnLastWindowClosed(False)
 

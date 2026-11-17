@@ -1,0 +1,141 @@
+import t from "../../i18n/i18n";
+
+// Common types for the application
+
+export interface ResultType {
+  status: string;
+  message?: string;
+  output?: string;
+}
+
+export interface GameType {
+  appid: number;
+  name: string;
+}
+
+// Common style definitions
+export const STYLES = {
+  resultBox: {
+    padding: '12px',
+    marginTop: '16px',
+    backgroundColor: 'var(--decky-selected-ui-bg)',
+    borderRadius: '8px',
+    border: '1px solid var(--decky-border-color)',
+    fontSize: '14px'
+  },
+  statusInstalled: { 
+    color: '#22c55e',
+    fontWeight: 'bold',
+    fontSize: '14px'
+  },
+  statusNotInstalled: { 
+    color: '#f97316',
+    fontWeight: 'bold',
+    fontSize: '14px'
+  },
+  statusSuccess: { color: "#22c55e" },
+  statusError: { color: "#ef4444" },
+  preWrap: { whiteSpace: "pre-wrap" as const },
+  instructionCard: {
+    padding: '14px',
+    backgroundColor: 'var(--decky-selected-ui-bg)',
+    borderRadius: '8px',
+    border: '1px solid var(--decky-border-color)',
+    marginTop: '8px',
+    fontSize: '13px',
+    lineHeight: '1.4'
+  }
+};
+
+// Proxy DLL name options for OptiScaler injection
+export const getProxyDllOptions = () => [
+  { value: "dxgi.dll",       label: t("OPTISCALER_DLL_DXGI_DEFAULT", "dxgi.dll (default)"),  hint: t("OPTISCALER_DLL_DXGI_HINT", "Works for most DX12 games. Default.") },
+  { value: "winmm.dll",      label: "winmm.dll",      hint: t("OPTISCALER_DLL_WINMM_HINT", "Use when dxgi.dll conflicts with an existing game file.") },
+  { value: "version.dll",    label: "version.dll",    hint: t("OPTISCALER_DLL_VERSION_HINT", "Common fallback; works well with many launchers.") },
+  { value: "dbghelp.dll",    label: "dbghelp.dll",    hint: t("OPTISCALER_DLL_DBGHELP_HINT", "Use for debug helper hook paths.") },
+  { value: "winhttp.dll",    label: "winhttp.dll",    hint: t("OPTISCALER_DLL_WINHTTP_HINT", "Use when other DLL names conflict.") },
+  { value: "wininet.dll",    label: "wininet.dll",    hint: t("OPTISCALER_DLL_WININET_HINT", "Use when other DLL names conflict.") },
+  { value: "OptiScaler.asi", label: "OptiScaler.asi", hint: t("OPTISCALER_DLL_ASI_HINT", "For ASI loaders. Requires an ASI loader already installed in the game.") },
+] as const;
+
+export const PROXY_DLL_OPTIONS = [
+  { value: "dxgi.dll",       label: "dxgi.dll (default)",  hint: "Works for most DX12 games. Default." },
+  { value: "winmm.dll",      label: "winmm.dll",      hint: "Use when dxgi.dll conflicts with an existing game file." },
+  { value: "version.dll",    label: "version.dll",    hint: "Common fallback; works well with many launchers." },
+  { value: "dbghelp.dll",    label: "dbghelp.dll",    hint: "Use for debug helper hook paths." },
+  { value: "winhttp.dll",    label: "winhttp.dll",    hint: "Use when other DLL names conflict." },
+  { value: "wininet.dll",    label: "wininet.dll",    hint: "Use when other DLL names conflict." },
+  { value: "OptiScaler.asi", label: "OptiScaler.asi", hint: "For ASI loaders. Requires an ASI loader already installed in the game." },
+] as const;
+
+export type ProxyDllValue = typeof PROXY_DLL_OPTIONS[number]["value"];
+export const DEFAULT_PROXY_DLL: ProxyDllValue = "dxgi.dll";
+
+export const getFsr4VariantOptions = () => [
+  {
+    value: "rdna23-int8",
+    label: t("OPTISCALER_FSR4_RDNA23_LABEL", "4.0.2c | RDNA2/3 Compatibility"),
+    hint: t("OPTISCALER_FSR4_RDNA23_HINT", "Older compatible runtime for RDNA2/3. In most cases, use the Valve 4.1.1 path for RDNA2 or the regular 4.1.1 driver override."),
+  },
+  {
+    value: "rdna4-native",
+    label: t("OPTISCALER_FSR4_RDNA4_LABEL", "4.1.1 | FFX 2.3 SDK"),
+    hint: t("OPTISCALER_FSR4_RDNA4_HINT", "Uses OptiScaler 0.9.4's bundled FSR4.1.1 SDK upscaler. Official FSR4 support is RDNA4 (FP8) and RDNA3 desktop GPUs (INT8)."),
+  },
+  {
+    value: "rdna34-official-411",
+    label: t("OPTISCALER_FSR4_RDNA34_LABEL", "4.1.1 | Driver Override"),
+    hint: t("OPTISCALER_FSR4_RDNA34_HINT", "Uses the final bundled FSR4.1.1 SDK upscaler plus the separately bundled 4.1.1 amdxcffx64.dll driver override."),
+  },
+  {
+    value: "rdna2-valve-411-pre10",
+    label: t("OPTISCALER_FSR4_RDNA2_VALVE_LABEL", "4.1.1 | Valve RDNA2 Compatibility"),
+    hint: t("OPTISCALER_FSR4_RDNA2_VALVE_HINT", "Uses the final bundled FSR4.1.1 SDK upscaler with the existing pre10 injector, Valve 4.1.1 amdxcffx64.dll, amdxc64.dll, and RDNA2-specific INI overrides."),
+  },
+] as const;
+
+export const FSR4_VARIANT_OPTIONS = [
+  {
+    value: "rdna23-int8",
+    label: "4.0.2c | RDNA2/3 Compatibility",
+    hint: "Older compatible runtime for RDNA2/3. In most cases, use the Valve 4.1.1 path for RDNA2 or the regular 4.1.1 driver override.",
+  },
+  {
+    value: "rdna4-native",
+    label: "4.1.1 | FFX 2.3 SDK",
+    hint: "Uses OptiScaler 0.9.4's bundled FSR4.1.1 SDK upscaler. Official FSR4 support is RDNA4 (FP8) and RDNA3 desktop GPUs (INT8).",
+  },
+  {
+    value: "rdna34-official-411",
+    label: "4.1.1 | Driver Override",
+    hint: "Uses the final bundled FSR4.1.1 SDK upscaler plus the separately bundled 4.1.1 amdxcffx64.dll driver override.",
+  },
+  {
+    value: "rdna2-valve-411-pre10",
+    label: "4.1.1 | Valve RDNA2 Compatibility",
+    hint: "Uses the final bundled FSR4.1.1 SDK upscaler with the existing pre10 injector, Valve 4.1.1 amdxcffx64.dll, amdxc64.dll, and RDNA2-specific INI overrides.",
+  },
+] as const;
+
+export type Fsr4VariantValue = typeof FSR4_VARIANT_OPTIONS[number]["value"];
+export const DEFAULT_FSR4_VARIANT: Fsr4VariantValue = "rdna23-int8";
+
+// Common timeout values
+export const TIMEOUTS = {
+  resultDisplay: 5000,  // 5 seconds
+  pathCheck: 3000       // 3 seconds
+};
+
+// Message strings
+export const MESSAGES = {
+  get modInstalled() { return t("OPTISCALER_MOD_INSTALLED", "OptiScaler Mod Installed"); },
+  get modNotInstalled() { return t("OPTISCALER_MOD_NOT_INSTALLED", "OptiScaler Mod Not Installed"); },
+  get installing() { return t("OPTISCALER_INSTALLING", "Installing OptiScaler..."); },
+  get installButton() { return t("OPTISCALER_INSTALL_BUTTON", "Setup OptiScaler Mod"); },
+  get uninstalling() { return t("OPTISCALER_UNINSTALLING", "Removing OptiScaler..."); },
+  get uninstallButton() { return t("OPTISCALER_UNINSTALL_BUTTON", "Remove OptiScaler Mod"); },
+  get installSuccess() { return t("OPTISCALER_INSTALL_SUCCESS", "OptiScaler mod setup successfully!"); },
+  get uninstallSuccess() { return t("OPTISCALER_UNINSTALL_SUCCESS", "OptiScaler mod removed successfully."); },
+  get instructionTitle() { return t("OPTISCALER_INSTRUCTION_TITLE", "How to Use:"); },
+  get instructionText() { return t("OPTISCALER_INSTRUCTION_TEXT", "Use 'Copy launch options' for the standard direct launch-options method. If you want the wrapper commands instead, enable Manual Mode to reveal 'Copy Patch Command' and 'Copy Unpatch Command'.\n\nIn-game: Enable DLSS in graphics settings to unlock FSR 3.1/XeSS 2.0 in DirectX12 Games.\n\nFor extended OptiScaler options, assign a back button to a keyboard's 'Insert' key."); }
+};

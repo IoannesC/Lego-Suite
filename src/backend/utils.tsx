@@ -151,6 +151,10 @@ export const setSetting = ({
 export const onSuspend = callable(ServerAPIMethods.ON_SUSPEND);
 export const onResume = callable(ServerAPIMethods.ON_RESUME);
 
+export const recordGameDetails = (gameId: string, title: string) => {
+  return call("record_game_details", gameId, title);
+};
+
 export const setPollTdp = ({ currentGameId }: { currentGameId: string }) => {
   if (IS_DESKTOP) {
     return call(ServerAPIMethods.POLL_TDP, { currentGameId });

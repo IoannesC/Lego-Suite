@@ -83,6 +83,7 @@ export interface SettingsState extends TdpRangeState, PollState, GpuState {
   cpuVendor?: string;
   isAcPower?: boolean;
   systemLanguage?: string;
+  optiscalerEnabled?: boolean;
 }
 
 export type InitialStateType = Partial<SettingsState>;
@@ -113,6 +114,7 @@ const initialState: SettingsState = {
   },
   pollRate: DEFAULT_POLL_RATE, 
   pluginVersionNum: "",
+  optiscalerEnabled: true,
 };
 
 export const settingsSlice = createSlice({
@@ -215,6 +217,7 @@ export const settingsSlice = createSlice({
       state.initialLoad = false;
       state.cpuVendor = cpuVendor;
       state.systemLanguage = systemLanguage;
+      (state as any).optiscalerEnabled = (action.payload as any).optiscalerEnabled !== undefined ? Boolean((action.payload as any).optiscalerEnabled) : true;
       state.supportsCustomAcPowerManagement = supportsCustomAcPowerManagement;
       (state as any).isEgpu = Boolean(isEgpu);
       (state as any).egpuName = egpuName || "";
@@ -714,3 +717,6 @@ export const {
 } = settingsSlice.actions;
 
 export default settingsSlice.reducer;
+
+export const optiscalerEnabledSelector = (state: RootState) =>
+  state.settings.optiscalerEnabled !== false;
