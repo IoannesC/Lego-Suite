@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { call } from "@decky/api";
 import { PanelSection } from "@decky/ui";
-import t from "../i18n/i18n";
 
 interface SystemResources {
   cpu: number | null;

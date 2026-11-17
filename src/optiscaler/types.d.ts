@@ -21,4 +21,7 @@ declare const SteamClient: {
     ): { unregister: () => void };
     SetAppLaunchOptions(appId: number, options: string): void;
   };
+  System?: any;
+  User?: any;
+  [key: string]: any;
 };
