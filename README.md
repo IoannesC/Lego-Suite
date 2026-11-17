@@ -144,6 +144,8 @@ It offers the same functionality as the plugin, but without per-game profiles. I
 
 This project is based on and inspired by the outstanding work of the Decky Loader community and Linux / Lenovo Legion Go tool developers:
 
+- **[OptiScaler](https://github.com)** for the use of OptiScaler. 
+- **[Decky Framegen](https://github.com)** by [xXJSONDeruloXx](https://github.com) for the OptiScaler injection structure and the respective LeGO Suite module.
 - **[SimpleDeckyTDP](https://github.com/aarron-lee/SimpleDeckyTDP)** by [Aarron Lee](https://github.com/aarron-lee) — Core thermal control architecture, TDP, fan curves, and original plugin structure.
 - **[LegionGoRemapper](https://github.com/aarron-lee/LegionGoRemapper)** by [Aarron Lee](https://github.com/aarron-lee) — Controller HID communication protocol, remapping profiles, and RGB ring control.
 - **[All-Ways-EGPU](https://github.com/egpu-io/all-ways-egpu)** — For external GPU (eGPU) detection and management logic on Linux.
@@ -307,7 +309,8 @@ Ofrece la misma funcionalidad del plugin, pero sin perfiles específicos. Utiliz
 ## Agradecimientos y Créditos (Credits & Acknowledgments)
 
 Este proyecto se basa e inspira en el excelente trabajo de la comunidad de Decky Loader y desarrolladores de herramientas para Linux y Lenovo Legion Go:
-
+- **[OptiScaler](https://github.com/optiscaler/OptiScaler)** por el uso de Optiscaler. 
+- **[Decky Framegen](https://github.com/xXJSONDeruloXx/Decky-Framegen)** por [xXJSONDeruloXx]([https://github.com/aarron-lee](https://github.com/xXJSONDeruloXx) por la estructura de inyección de Optiscaler y el modulo respectivo de LeGO Suite. 
 - **[SimpleDeckyTDP](https://github.com/aarron-lee/SimpleDeckyTDP)** por [Aarron Lee](https://github.com/aarron-lee) — Arquitectura base de control térmico, TDP, curvas de ventilador y estructura original del plugin.
 - **[LegionGoRemapper](https://github.com/aarron-lee/LegionGoRemapper)** por [Aarron Lee](https://github.com/aarron-lee) — Protocolo de comunicación HID de mandos, perfiles de remapeo y control de anillos RGB.
 - **[All-Ways-EGPU](https://github.com/egpu-io/all-ways-egpu)** — Por la lógica, detección y gestión de GPU externa (eGPU) en Linux.
