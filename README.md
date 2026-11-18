@@ -150,7 +150,7 @@ This project is based on and inspired by the outstanding work of the Decky Loade
 - **[Decky Framegen](https://github.com)** by [xXJSONDeruloXx](https://github.com) for the OptiScaler injection structure and the respective LeGO Suite module.
 - **[SimpleDeckyTDP](https://github.com/aarron-lee/SimpleDeckyTDP)** by [Aarron Lee](https://github.com/aarron-lee) — Core thermal control architecture, TDP, fan curves, and original plugin structure.
 - **[LegionGoRemapper](https://github.com/aarron-lee/LegionGoRemapper)** by [Aarron Lee](https://github.com/aarron-lee) — Controller HID communication protocol, remapping profiles, and RGB ring control.
-- **[All-Ways-EGPU](https://github.com/egpu-io/all-ways-egpu)** — For external GPU (eGPU) detection and management logic on Linux.
+- **[All-Ways-EGPU](https://github.com/ewagner12/all-ways-egpu)** by [ewagner12](https://github.com/ewagner12) — For external GPU (eGPU) detection and management logic on Linux.
 - **[Decky Loader](https://github.com/SteamDeckHomebrew/decky-loader)** — For the plugin platform, API, and environment on SteamOS / Bazzite.
 - **[RyzenAdj](https://github.com/FlyGoat/RyzenAdj)** — For the power management tools and library for AMD Ryzen processors.
 - **Handheld Daemon (HHD) / InputPlumber** — For controller emulation support, profiles, and drivers on Linux.
@@ -316,7 +316,7 @@ Este proyecto se basa e inspira en el excelente trabajo de la comunidad de Decky
 - **[Decky Framegen](https://github.com/xXJSONDeruloXx/Decky-Framegen)** por [xXJSONDeruloXx]([https://github.com/aarron-lee](https://github.com/xXJSONDeruloXx) por la estructura de inyección de Optiscaler y el modulo respectivo de LeGO Suite. 
 - **[SimpleDeckyTDP](https://github.com/aarron-lee/SimpleDeckyTDP)** por [Aarron Lee](https://github.com/aarron-lee) — Arquitectura base de control térmico, TDP, curvas de ventilador y estructura original del plugin.
 - **[LegionGoRemapper](https://github.com/aarron-lee/LegionGoRemapper)** por [Aarron Lee](https://github.com/aarron-lee) — Protocolo de comunicación HID de mandos, perfiles de remapeo y control de anillos RGB.
-- **[All-Ways-EGPU](https://github.com/egpu-io/all-ways-egpu)** — Por la lógica, detección y gestión de GPU externa (eGPU) en Linux.
+- **[All-Ways-EGPU](https://github.com/ewagner12/all-ways-egpu)** by [ewagner12](https://github.com/ewagner12) — Por la lógica, detección y gestión de GPU externa (eGPU) en Linux.
 - **[Decky Loader](https://github.com/SteamDeckHomebrew/decky-loader)** — Por la plataforma, API y entorno para plugins en SteamOS / Bazzite.
 - **[RyzenAdj](https://github.com/FlyGoat/RyzenAdj)** — Por las herramientas y biblioteca de gestión de energía para procesadores AMD Ryzen.
 - **Handheld Daemon (HHD) / InputPlumber** — Por el soporte de emulación de mandos, perfiles y drivers en Linux.
